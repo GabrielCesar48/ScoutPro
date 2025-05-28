@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Comissão Técnica - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stats-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+        color: #6c757d;
+        font-size: 1rem;
+        margin: 0;
+    }
+    
+    .quick-actions {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .action-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .action-button:last-child {
+        margin-bottom: 0;
+    }
+    
+    .action-button:hover {
+        transform: translateX(5px);
+    }
+    
+    .action-button i {
+        font-size: 1.5rem;
+        margin-right: 0.75rem;
+    }
+    
+    .recent-activity {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        color: white;
+    }
+    
+    .activity-content {
+        flex: 1;
+    }
+    
+    .activity-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .activity-time {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="dashboard-header fade-in">
+    <h1>
+        <i class="fas fa-clipboard-list"></i>
+        Painel da Comissão Técnica
+    </h1>
+    <p>Bem-vindo, {{ user.full_name|default:user.username }}! Gerencie jogadores e avaliações</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card fade-in">
+            <div class="stats-icon text-primary">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stats-number text-primary">{{ total_players|default:0 }}</div>
+            <p class="stats-label">Jogadores Ativos</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card fade-in">
+            <div class="stats-icon text-success">
+                <i class="fas fa-futbol"></i>
+            </div>
+            <div class="stats-number text-success">0</div>
+            <p class="stats-label">Jogos Este Mês</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card fade-in">
+            <div class="stats-icon text-warning">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stats-number text-warning">0</div>
+            <p class="stats-label">Avaliações Hoje</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card fade-in">
+            <div class="stats-icon text-info">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stats-number text-info">{{ total_teams|default:1 }}</div>
+            <p class="stats-label">Times</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Quick Actions -->
+    <div class="col-lg-4 mb-4">
+        <div class="quick-actions fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-bolt text-warning"></i>
+                Ações Rápidas
+            </h5>
+            
+            <a href="#" class="action-button bg-primary text-white">
+                <i class="fas fa-plus"></i>
+                Novo Jogo/Treino
+            </a>
+            
+            <a href="#" class="action-button bg-success text-white">
+                <i class="fas fa-star"></i>
+                Avaliar Jogadores
+            </a>
+            
+            <a href="#" class="action-button bg-info text-white">
+                <i class="fas fa-user-plus"></i>
+                Cadastrar Jogador
+            </a>
+            
+            <a href="#" class="action-button bg-warning text-white">
+                <i class="fas fa-chart-bar"></i>
+                Ver Relatórios
+            </a>
+            
+            <a href="#" class="action-button bg-secondary text-white">
+                <i class="fas fa-cog"></i>
+                Configurações
+            </a>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-lg-8 mb-4">
+        <div class="recent-activity fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-clock text-info"></i>
+                Atividade Recente
+            </h5>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-success">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Sistema inicializado</div>
+                    <p class="activity-time">Há poucos minutos</p>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-primary">
+                    <i class="fas fa-futbol"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Pronto para cadastrar jogos</div>
+                    <p class="activity-time">Aguardando primeira configuração</p>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon bg-info">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Dashboard configurado</div>
+                    <p class="activity-time">Sistema pronto para uso</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Next Steps -->
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info fade-in" role="alert">
+            <h5 class="alert-heading">
+                <i class="fas fa-lightbulb"></i>
+                Próximos Passos
+            </h5>
+            <hr>
+            <p class="mb-0">
+                <strong>1.</strong> Cadastre jogadores no sistema<br>
+                <strong>2.</strong> Configure times e escalações<br>
+                <strong>3.</strong> Inicie sua primeira avaliação<br>
+                <strong>4.</strong> Acompanhe estatísticas e relatórios
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animação sequencial dos cards
+    const cards = document.querySelectorAll('.fade-in');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Adicionar efeitos hover aos botões de ação
+    const actionButtons = document.querySelectorAll('.action-button');
+    actionButtons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.boxShadow = 'none';
+        });
+    });
+});
+</script>
+{% endblock %}

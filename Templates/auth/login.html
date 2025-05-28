@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        min-height: calc(100vh - 160px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 0;
+    }
+    
+    .login-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 900px;
+        width: 100%;
+    }
+    
+    .login-left {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 500px;
+    }
+    
+    .login-right {
+        padding: 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 500px;
+    }
+    
+    .login-logo {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #28a745;
+    }
+    
+    .login-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .login-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+    
+    .form-floating {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        border-radius: 10px;
+        padding: 0.875rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .btn-login:hover {
+        background: linear-gradient(135deg, #0056b3, #004085);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+    }
+    
+    .login-features {
+        list-style: none;
+        padding: 0;
+        margin: 2rem 0;
+    }
+    
+    .login-features li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+    
+    .login-features li i {
+        margin-right: 0.75rem;
+        color: #28a745;
+        font-size: 1.2rem;
+    }
+    
+    .user-type-info {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .user-type-info h6 {
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .user-type-info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .user-type-info li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .user-type-info li i {
+        margin-right: 0.5rem;
+        width: 16px;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .login-container {
+            padding: 10px;
+        }
+        
+        .login-left {
+            padding: 2rem 1.5rem;
+            min-height: auto;
+        }
+        
+        .login-right {
+            padding: 2rem 1.5rem;
+            min-height: auto;
+        }
+        
+        .login-title {
+            font-size: 2rem;
+        }
+        
+        .login-logo {
+            font-size: 3rem;
+        }
+        
+        .login-features {
+            margin: 1rem 0;
+        }
+        
+        .user-type-info {
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+    }
+    
+    /* Animações */
+    .slide-in-left {
+        animation: slideInLeft 0.6s ease-out;
+    }
+    
+    .slide-in-right {
+        animation: slideInRight 0.6s ease-out;
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="row g-0">
+            <!-- Left Side - Branding -->
+            <div class="col-lg-6">
+                <div class="login-left slide-in-left">
+                    <div class="login-logo">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <h1 class="login-title">ScoutPro</h1>
+                    <p class="login-subtitle">
+                        Sistema profissional de avaliação de jogadores
+                    </p>
+                    
+                    <ul class="login-features">
+                        <li>
+                            <i class="fas fa-chart-line"></i>
+                            Avaliações em tempo real
+                        </li>
+                        <li>
+                            <i class="fas fa-users"></i>
+                            Gestão completa de times
+                        </li>
+                        <li>
+                            <i class="fas fa-mobile-alt"></i>
+                            Interface responsiva
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt"></i>
+                            Dados seguros e confiáveis
+                        </li>
+                    </ul>
+                    
+                    <div class="user-type-info">
+                        <h6><i class="fas fa-info-circle"></i> Tipos de Usuário</h6>
+                        <ul>
+                            <li>
+                                <i class="fas fa-clipboard-check"></i>
+                                <strong>Comissão Técnica:</strong> Avaliação completa
+                            </li>
+                            <li>
+                                <i class="fas fa-running"></i>
+                                <strong>Jogador:</strong> Acompanhamento pessoal
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side - Login Form -->
+            <div class="col-lg-6">
+                <div class="login-right slide-in-right">
+                    <div class="text-center mb-4">
+                        <h2 class="mb-2">Bem-vindo de volta!</h2>
+                        <p class="text-muted">Faça login para acessar sua conta</p>
+                    </div>
+                    
+                    <form method="post" id="loginForm">
+                        {% csrf_token %}
+                        
+                        <!-- Username Field -->
+                        <div class="form-floating">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="id_username" 
+                                name="username" 
+                                placeholder="Nome de usuário"
+                                required
+                                autocomplete="username"
+                            >
+                            <label for="id_username">
+                                <i class="fas fa-user me-2"></i>
+                                Nome de usuário
+                            </label>
+                        </div>
+                        
+                        <!-- Password Field -->
+                        <div class="form-floating">
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="id_password" 
+                                name="password" 
+                                placeholder="Senha"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <label for="id_password">
+                                <i class="fas fa-lock me-2"></i>
+                                Senha
+                            </label>
+                        </div>
+                        
+                        <!-- Remember Me -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me">
+                            <label class="form-check-label" for="remember_me">
+                                Lembrar de mim
+                            </label>
+                        </div>
+                        
+                        <!-- Login Button -->
+                        <button type="submit" class="btn btn-primary btn-login">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Entrar
+                        </button>
+                        
+                        <!-- Forgot Password -->
+                        <div class="text-center mt-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-question-circle me-1"></i>
+                                Esqueceu sua senha?
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <!-- Demo Users Info -->
+                    <div class="alert alert-info mt-4" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle"></i>
+                            Usuários de Demonstração
+                        </h6>
+                        <hr>
+                        <p class="mb-2">
+                            <strong>Comissão Técnica:</strong><br>
+                            Usuário: <code>coach</code> | Senha: <code>coach123</code>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Jogador:</strong><br>
+                            Usuário: <code>player</code> | Senha: <code>player123</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', function(e) {
+        // Mostrar loading no botão
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Entrando...';
+        submitBtn.disabled = true;
+        
+        // Mostrar loader global
+        showLoader();
+    });
+    
+    // Adicionar efeitos de focus nos inputs
+    const inputs = form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            if (!this.value) {
+                this.parentElement.classList.remove('focused');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

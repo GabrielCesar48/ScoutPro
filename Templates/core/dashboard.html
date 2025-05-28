@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .welcome-card h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .redirect-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin: 1rem 0;
+    }
+    
+    .redirect-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .redirect-btn {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-top: 1rem;
+    }
+    
+    .redirect-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-card fade-in">
+    <h1>
+        <i class="fas fa-futbol"></i>
+        Bem-vindo ao ScoutPro!
+    </h1>
+    <p class="lead">Sistema profissional de avaliação de jogadores</p>
+</div>
+
+<div class="row">
+    {% if user.user_type == 'coach' %}
+        <div class="col-md-6 offset-md-3">
+            <div class="redirect-card fade-in">
+                <div class="redirect-icon text-primary">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h3>Painel da Comissão Técnica</h3>
+                <p class="text-muted">Acesse o dashboard completo para gerenciar jogadores e avaliações</p>
+                <a href="{% url 'core:coach_dashboard' %}" class="btn btn-primary redirect-btn">
+                    <i class="fas fa-arrow-right"></i>
+                    Acessar Dashboard
+                </a>
+            </div>
+        </div>
+    {% elif user.user_type == 'player' %}
+        <div class="col-md-6 offset-md-3">
+            <div class="redirect-card fade-in">
+                <div class="redirect-icon text-success">
+                    <i class="fas fa-running"></i>
+                </div>
+                <h3>Dashboard do Jogador</h3>
+                <p class="text-muted">Acompanhe suas estatísticas e evolução pessoal</p>
+                <a href="{% url 'core:player_dashboard' %}" class="btn btn-success redirect-btn">
+                    <i class="fas fa-arrow-right"></i>
+                    Acessar Dashboard
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-md-8 offset-md-2">
+            <div class="redirect-card fade-in">
+                <div class="redirect-icon text-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Tipo de usuário não definido</h3>
+                <p class="text-muted">
+                    Seu perfil ainda não foi configurado corretamente.<br>
+                    Entre em contato com o administrador do sistema.
+                </p>
+                <div class="mt-3">
+                    <a href="{% url 'core:profile' %}" class="btn btn-outline-primary redirect-btn me-2">
+                        <i class="fas fa-user"></i>
+                        Ver Perfil
+                    </a>
+                    <a href="{% url 'core:logout' %}" class="btn btn-outline-secondary redirect-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- System Info -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info fade-in" role="alert">
+            <h5 class="alert-heading">
+                <i class="fas fa-info-circle"></i>
+                Sobre o ScoutPro
+            </h5>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Avaliações em tempo real</strong> durante jogos e treinos
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Relatórios detalhados</strong> de performance
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Interface responsiva</strong> para todos os dispositivos
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Sistema multi-usuário</strong> com diferentes permissões
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animação dos elementos
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+    
+    // Redirecionamento automático após 3 segundos para usuários com tipo definido
+    {% if user.user_type == 'coach' %}
+        setTimeout(() => {
+            window.location.href = "{% url 'core:coach_dashboard' %}";
+        }, 3000);
+    {% elif user.user_type == 'player' %}
+        setTimeout(() => {
+            window.location.href = "{% url 'core:player_dashboard' %}";
+        }, 3000);
+    {% endif %}
+});
+</script>
+{% endblock %}

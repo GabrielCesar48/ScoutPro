@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Dashboard - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .player-header {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .player-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .player-info h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .player-info p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .player-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: inline-block;
+    }
+    
+    .performance-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        height: 100%;
+    }
+    
+    .performance-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .performance-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .performance-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    
+    .evolution-chart {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .games-history {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .game-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .game-item:last-child {
+        border-bottom: none;
+    }
+    
+    .game-info {
+        flex: 1;
+    }
+    
+    .game-date {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+    }
+    
+    .game-title {
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .game-score {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .score-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    .next-games {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .next-game-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .next-game-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .next-game-date {
+        text-align: center;
+        min-width: 80px;
+    }
+    
+    .next-game-day {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #007bff;
+        line-height: 1;
+    }
+    
+    .next-game-month {
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-transform: uppercase;
+    }
+    
+    .next-game-info {
+        flex: 1;
+    }
+    
+    .next-game-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    
+    .next-game-time {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .player-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        
+        .player-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2.5rem;
+        }
+        
+        .player-info h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Player Header -->
+<div class="player-header fade-in">
+    <div class="player-avatar">
+        {% if player and player.photo %}
+            <img src="{{ player.photo.url }}" alt="Foto" class="w-100 h-100 rounded-circle object-fit-cover">
+        {% else %}
+            <i class="fas fa-user"></i>
+        {% endif %}
+    </div>
+    <div class="player-info">
+        <h1>{{ user.full_name|default:user.username }}</h1>
+        <p>
+            {% if player %}
+                {{ player.get_position_display }}
+                {% if player.shirt_number %}
+                    | Camisa #{{ player.shirt_number }}
+                {% endif %}
+                {% if player.team %}
+                    | {{ player.team.name }}
+                {% endif %}
+            {% else %}
+                Jogador
+            {% endif %}
+        </p>
+        {% if player and player.age %}
+            <span class="player-badge">
+                <i class="fas fa-birthday-cake"></i>
+                {{ player.age }} anos
+            </span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Performance Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="performance-card fade-in">
+            <div class="performance-icon bg-primary">
+                <i class="fas fa-futbol"></i>
+            </div>
+            <div class="performance-value text-primary">0</div>
+            <p class="performance-label">Jogos Disputados</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="performance-card fade-in">
+            <div class="performance-icon bg-success">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="performance-value text-success">0.0</div>
+            <p class="performance-label">Avaliação Média</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="performance-card fade-in">
+            <div class="performance-icon bg-warning">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="performance-value text-warning">0h</div>
+            <p class="performance-label">Tempo Jogado</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="performance-card fade-in">
+            <div class="performance-icon bg-info">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="performance-value text-info">0</div>
+            <p class="performance-label">Pontos Positivos</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Evolution Chart -->
+    <div class="col-lg-8 mb-4">
+        <div class="evolution-chart fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-chart-line text-primary"></i>
+                Evolução das Avaliações
+            </h5>
+            <div class="text-center py-5">
+                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Gráfico de evolução será exibido aqui após suas primeiras avaliações</p>
+                <small class="text-muted">Participe de jogos para ver sua evolução!</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Next Games -->
+    <div class="col-lg-4 mb-4">
+        <div class="next-games fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-calendar-alt text-success"></i>
+                Próximos Jogos
+            </h5>
+            
+            <div class="text-center py-4">
+                <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
+                <p class="text-muted mb-0">Nenhum jogo agendado</p>
+                <small class="text-muted">A comissão técnica organizará os próximos jogos</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Games History -->
+<div class="row">
+    <div class="col-12">
+        <div class="games-history fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-history text-info"></i>
+                Histórico de Jogos
+            </h5>
+            
+            <div class="text-center py-5">
+                <i class="fas fa-futbol fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Nenhum jogo registrado ainda</p>
+                <small class="text-muted">Seu histórico aparecerá aqui após participar de jogos</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Player Tips -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-success fade-in" role="alert">
+            <h5 class="alert-heading">
+                <i class="fas fa-lightbulb"></i>
+                Dicas para Melhorar sua Performance
+            </h5>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Seja consistente</strong> em treinos e jogos
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Comunique-se</strong> bem com seus companheiros
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Mantenha-se</strong> sempre atento às instruções
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Acompanhe</strong> suas estatísticas regularmente
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animação sequencial dos elementos
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+    
+    // Simular dados para demonstração (remover em produção)
+    setTimeout(() => {
+        // Simular carregamento de dados
+        console.log('Dashboard do jogador carregado');
+    }, 1000);
+});
+</script>
+{% endblock %}

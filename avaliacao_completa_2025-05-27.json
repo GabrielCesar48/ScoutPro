@@ -1,0 +1,1798 @@
+{
+  "resumo_jogo": {
+    "data": "27/05/2025, 20:57:16",
+    "tempo_total": "36:25",
+    "jogadores_selecionados": 10,
+    "substituicoes": 12
+  },
+  "jogadores": [
+    {
+      "nome": "Guilherme Bueno",
+      "posicao": "Linha",
+      "tempo_jogado": "36:42",
+      "pontos_positivos": 4,
+      "pontos_especiais": 4,
+      "pontos_negativos": 5,
+      "pontuacao_total": 3,
+      "detalhes": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "assistencia": 2,
+          "jogada_genial": 2
+        },
+        "negativo": {
+          "erro": -5
+        },
+        "timeline": [
+          {
+            "time": 582010,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:02:12.502Z"
+          },
+          {
+            "time": 603010,
+            "criteria": "assistencia",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:02:32.888Z"
+          },
+          {
+            "time": 646179,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:07:11.661Z"
+          },
+          {
+            "time": 1070180,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:14:16.049Z"
+          },
+          {
+            "time": 1124179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:15:09.897Z"
+          },
+          {
+            "time": 1289179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:17:54.133Z"
+          },
+          {
+            "time": 1291180,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:17:56.823Z"
+          },
+          {
+            "time": 1596812,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:27:27.986Z"
+          },
+          {
+            "time": 1616811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:27:47.158Z"
+          },
+          {
+            "time": 1723811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:29:34.166Z"
+          },
+          {
+            "time": 1822811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:31:13.834Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 582010,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:02:12.502Z"
+        },
+        {
+          "time": 603010,
+          "criteria": "assistencia",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:02:32.888Z"
+        },
+        {
+          "time": 646179,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:07:11.661Z"
+        },
+        {
+          "time": 1070180,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:14:16.049Z"
+        },
+        {
+          "time": 1124179,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:15:09.897Z"
+        },
+        {
+          "time": 1289179,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:17:54.133Z"
+        },
+        {
+          "time": 1291180,
+          "criteria": "jogada_genial",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:17:56.823Z"
+        },
+        {
+          "time": 1596812,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:27:27.986Z"
+        },
+        {
+          "time": 1616811,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:27:47.158Z"
+        },
+        {
+          "time": 1723811,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:29:34.166Z"
+        },
+        {
+          "time": 1822811,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:31:13.834Z"
+        }
+      ]
+    },
+    {
+      "nome": "Binho",
+      "posicao": "Linha",
+      "tempo_jogado": "10:53",
+      "pontos_positivos": 4,
+      "pontos_especiais": 2,
+      "pontos_negativos": 2,
+      "pontuacao_total": 4,
+      "detalhes": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "gol": 2
+        },
+        "negativo": {
+          "erro": -2
+        },
+        "timeline": [
+          {
+            "time": 57010,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:53:27.579Z"
+          },
+          {
+            "time": 118011,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:28.683Z"
+          },
+          {
+            "time": 159009,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T22:55:09.437Z"
+          },
+          {
+            "time": 1648811,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:28:19.063Z"
+          },
+          {
+            "time": 1774811,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:30:25.373Z"
+          },
+          {
+            "time": 1911174,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:50:38.015Z"
+          },
+          {
+            "time": 2183174,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:55:09.863Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 57010,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:53:27.579Z"
+        },
+        {
+          "time": 118011,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:54:28.683Z"
+        },
+        {
+          "time": 159009,
+          "criteria": "gol",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T22:55:09.437Z"
+        },
+        {
+          "time": 1648811,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:28:19.063Z"
+        },
+        {
+          "time": 1774811,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:30:25.373Z"
+        },
+        {
+          "time": 1911174,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:50:38.015Z"
+        },
+        {
+          "time": 2183174,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:55:09.863Z"
+        }
+      ]
+    },
+    {
+      "nome": "Joao Antonio",
+      "posicao": "Linha",
+      "tempo_jogado": "23:21",
+      "pontos_positivos": 4,
+      "pontos_especiais": 0,
+      "pontos_negativos": 1,
+      "pontuacao_total": 3,
+      "detalhes": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {},
+        "negativo": {
+          "erro": -1
+        },
+        "timeline": [
+          {
+            "time": 884179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:11:09.618Z"
+          },
+          {
+            "time": 983179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:12:48.292Z"
+          },
+          {
+            "time": 1003179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:13:08.499Z"
+          },
+          {
+            "time": 1179179,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:16:04.266Z"
+          },
+          {
+            "time": 2168174,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:54:55.095Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 884179,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:11:09.618Z"
+        },
+        {
+          "time": 983179,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:12:48.292Z"
+        },
+        {
+          "time": 1003179,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:13:08.499Z"
+        },
+        {
+          "time": 1179179,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:16:04.266Z"
+        },
+        {
+          "time": 2168174,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:54:55.095Z"
+        }
+      ]
+    },
+    {
+      "nome": "Engrigo Tome",
+      "posicao": "Linha",
+      "tempo_jogado": "27:12",
+      "pontos_positivos": 4,
+      "pontos_especiais": 10,
+      "pontos_negativos": 0,
+      "pontuacao_total": 14,
+      "detalhes": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "gol": 6,
+          "jogada_genial": 4
+        },
+        "negativo": {},
+        "timeline": [
+          {
+            "time": 93010,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:03.183Z"
+          },
+          {
+            "time": 299009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:57:29.320Z"
+          },
+          {
+            "time": 354009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:58:24.351Z"
+          },
+          {
+            "time": 540010,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:01:29.964Z"
+          },
+          {
+            "time": 705180,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:08:10.742Z"
+          },
+          {
+            "time": 706179,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:08:11.424Z"
+          },
+          {
+            "time": 860179,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:10:46.035Z"
+          },
+          {
+            "time": 862179,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:10:47.240Z"
+          },
+          {
+            "time": 932179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:11:57.355Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 93010,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:54:03.183Z"
+        },
+        {
+          "time": 299009,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:57:29.320Z"
+        },
+        {
+          "time": 354009,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:58:24.351Z"
+        },
+        {
+          "time": 540010,
+          "criteria": "gol",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:01:29.964Z"
+        },
+        {
+          "time": 705180,
+          "criteria": "jogada_genial",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:08:10.742Z"
+        },
+        {
+          "time": 706179,
+          "criteria": "gol",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:08:11.424Z"
+        },
+        {
+          "time": 860179,
+          "criteria": "jogada_genial",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:10:46.035Z"
+        },
+        {
+          "time": 862179,
+          "criteria": "gol",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:10:47.240Z"
+        },
+        {
+          "time": 932179,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:11:57.355Z"
+        }
+      ]
+    },
+    {
+      "nome": "Pedro",
+      "posicao": "Linha",
+      "tempo_jogado": "12:17",
+      "pontos_positivos": 4,
+      "pontos_especiais": 6,
+      "pontos_negativos": 0,
+      "pontuacao_total": 10,
+      "detalhes": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "jogada_genial": 4,
+          "gol": 2
+        },
+        "negativo": {},
+        "timeline": [
+          {
+            "time": 132009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:42.243Z"
+          },
+          {
+            "time": 148009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:58.510Z"
+          },
+          {
+            "time": 255011,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T22:56:45.638Z"
+          },
+          {
+            "time": 578009,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:02:08.388Z"
+          },
+          {
+            "time": 606009,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:02:36.771Z"
+          },
+          {
+            "time": 2000174,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:52:07.028Z"
+          },
+          {
+            "time": 2150174,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:54:37.431Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 132009,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:54:42.243Z"
+        },
+        {
+          "time": 148009,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:54:58.510Z"
+        },
+        {
+          "time": 255011,
+          "criteria": "jogada_genial",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T22:56:45.638Z"
+        },
+        {
+          "time": 578009,
+          "criteria": "jogada_genial",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:02:08.388Z"
+        },
+        {
+          "time": 606009,
+          "criteria": "gol",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:02:36.771Z"
+        },
+        {
+          "time": 2000174,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:52:07.028Z"
+        },
+        {
+          "time": 2150174,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:54:37.431Z"
+        }
+      ]
+    },
+    {
+      "nome": "Pablo",
+      "posicao": "Linha",
+      "tempo_jogado": "31:18",
+      "pontos_positivos": 2,
+      "pontos_especiais": 0,
+      "pontos_negativos": 2,
+      "pontuacao_total": 0,
+      "detalhes": {
+        "positivo": {
+          "acao_boa": 2
+        },
+        "especial": {},
+        "negativo": {
+          "erro": -2
+        },
+        "timeline": [
+          {
+            "time": 12010,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T22:52:42.794Z"
+          },
+          {
+            "time": 203009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:55:53.356Z"
+          },
+          {
+            "time": 1444811,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:24:55.654Z"
+          },
+          {
+            "time": 1827811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:31:18.546Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 12010,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T22:52:42.794Z"
+        },
+        {
+          "time": 203009,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:55:53.356Z"
+        },
+        {
+          "time": 1444811,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:24:55.654Z"
+        },
+        {
+          "time": 1827811,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:31:18.546Z"
+        }
+      ]
+    },
+    {
+      "nome": "Vitinho",
+      "posicao": "Linha",
+      "tempo_jogado": "00:00",
+      "pontos_positivos": 0,
+      "pontos_especiais": 0,
+      "pontos_negativos": 0,
+      "pontuacao_total": 0,
+      "detalhes": {
+        "positivo": {},
+        "especial": {},
+        "negativo": {}
+      },
+      "timeline": []
+    },
+    {
+      "nome": "Leonardo",
+      "posicao": "Linha",
+      "tempo_jogado": "27:57",
+      "pontos_positivos": 2,
+      "pontos_especiais": 0,
+      "pontos_negativos": 4,
+      "pontuacao_total": -2,
+      "detalhes": {
+        "positivo": {
+          "acao_boa": 2
+        },
+        "especial": {},
+        "negativo": {
+          "erro": -4
+        },
+        "timeline": [
+          {
+            "time": 224010,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T22:56:14.497Z"
+          },
+          {
+            "time": 287009,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T22:57:17.335Z"
+          },
+          {
+            "time": 337011,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:58:07.191Z"
+          },
+          {
+            "time": 1045180,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:13:51.011Z"
+          },
+          {
+            "time": 1150179,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:15:35.589Z"
+          },
+          {
+            "time": 1158179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:15:43.167Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 224010,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T22:56:14.497Z"
+        },
+        {
+          "time": 287009,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T22:57:17.335Z"
+        },
+        {
+          "time": 337011,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T22:58:07.191Z"
+        },
+        {
+          "time": 1045180,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:13:51.011Z"
+        },
+        {
+          "time": 1150179,
+          "criteria": "erro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:15:35.589Z"
+        },
+        {
+          "time": 1158179,
+          "criteria": "acao_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:15:43.167Z"
+        }
+      ]
+    },
+    {
+      "nome": "Clauber",
+      "posicao": "goleiro",
+      "tempo_jogado": "23:08",
+      "pontos_positivos": 1,
+      "pontos_especiais": 0,
+      "pontos_negativos": 0,
+      "pontuacao_total": 1,
+      "detalhes": {
+        "positivo": {
+          "defesa_boa": 1
+        },
+        "especial": {},
+        "negativo": {},
+        "timeline": [
+          {
+            "time": 1675812,
+            "criteria": "defesa_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:28:46.519Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 1675812,
+          "criteria": "defesa_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:28:46.519Z"
+        }
+      ]
+    },
+    {
+      "nome": "Diogo",
+      "posicao": "goleiro",
+      "tempo_jogado": "16:08",
+      "pontos_positivos": 2,
+      "pontos_especiais": 2,
+      "pontos_negativos": 3,
+      "pontuacao_total": 1,
+      "detalhes": {
+        "positivo": {
+          "defesa_boa": 2
+        },
+        "especial": {
+          "defesa_salvadora": 2
+        },
+        "negativo": {
+          "falha_goleiro": -3
+        },
+        "timeline": [
+          {
+            "time": 626180,
+            "criteria": "falha_goleiro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:06:51.268Z"
+          },
+          {
+            "time": 651179,
+            "criteria": "defesa_salvadora",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:07:16.190Z"
+          },
+          {
+            "time": 953179,
+            "criteria": "defesa_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:12:19.031Z"
+          },
+          {
+            "time": 1153179,
+            "criteria": "defesa_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:15:38.122Z"
+          },
+          {
+            "time": 1330179,
+            "criteria": "falha_goleiro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:18:35.891Z"
+          },
+          {
+            "time": 1855174,
+            "criteria": "falha_goleiro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:49:41.963Z"
+          }
+        ]
+      },
+      "timeline": [
+        {
+          "time": 626180,
+          "criteria": "falha_goleiro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:06:51.268Z"
+        },
+        {
+          "time": 651179,
+          "criteria": "defesa_salvadora",
+          "category": "especial",
+          "points": 2,
+          "timestamp": "2025-05-27T23:07:16.190Z"
+        },
+        {
+          "time": 953179,
+          "criteria": "defesa_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:12:19.031Z"
+        },
+        {
+          "time": 1153179,
+          "criteria": "defesa_boa",
+          "category": "positivo",
+          "points": 1,
+          "timestamp": "2025-05-27T23:15:38.122Z"
+        },
+        {
+          "time": 1330179,
+          "criteria": "falha_goleiro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:18:35.891Z"
+        },
+        {
+          "time": 1855174,
+          "criteria": "falha_goleiro",
+          "category": "negativo",
+          "points": -1,
+          "timestamp": "2025-05-27T23:49:41.963Z"
+        }
+      ]
+    }
+  ],
+  "substituicoes": [
+    {
+      "time": 500010,
+      "playerOut": "Leonardo",
+      "playerIn": "Joao Antonio",
+      "timestamp": "2025-05-27T23:00:50.068Z"
+    },
+    {
+      "time": 552011,
+      "playerOut": "Pablo",
+      "playerIn": "Guilherme Bueno",
+      "timestamp": "2025-05-27T23:01:41.970Z"
+    },
+    {
+      "time": 617172,
+      "playerOut": "Binho",
+      "playerIn": "Diogo",
+      "timestamp": "2025-05-27T23:03:21.052Z"
+    },
+    {
+      "time": 617172,
+      "playerOut": "Pedro",
+      "playerIn": "Leonardo",
+      "timestamp": "2025-05-27T23:04:45.145Z"
+    },
+    {
+      "time": 1384179,
+      "playerOut": "Diogo",
+      "playerIn": "Clauber",
+      "timestamp": "2025-05-27T23:19:29.744Z"
+    },
+    {
+      "time": 1394183,
+      "playerOut": "Engrigo Tome",
+      "playerIn": "Binho",
+      "timestamp": "2025-05-27T23:19:39.850Z"
+    },
+    {
+      "time": 1429180,
+      "playerOut": "Guilherme Bueno",
+      "playerIn": "Pablo",
+      "timestamp": "2025-05-27T23:20:14.492Z"
+    },
+    {
+      "time": 1443810,
+      "playerOut": "Joao Antonio",
+      "playerIn": "Pedro",
+      "timestamp": "2025-05-27T23:24:11.231Z"
+    },
+    {
+      "time": 1443810,
+      "playerOut": "Leonardo",
+      "playerIn": "Guilherme Bueno",
+      "timestamp": "2025-05-27T23:24:20.370Z"
+    },
+    {
+      "time": 1854173,
+      "playerOut": "Pablo",
+      "playerIn": "Joao Antonio",
+      "timestamp": "2025-05-27T23:42:19.282Z"
+    },
+    {
+      "time": 1854173,
+      "playerOut": "Guilherme Bueno",
+      "playerIn": "Leonardo",
+      "timestamp": "2025-05-27T23:42:30.019Z"
+    },
+    {
+      "time": 1854173,
+      "playerOut": "Clauber",
+      "playerIn": "Diogo",
+      "timestamp": "2025-05-27T23:42:38.300Z"
+    }
+  ],
+  "criterios_avaliacao": {
+    "jogadores_linha": {
+      "acao_boa": "Jogada ofensiva, passe decisivo, recuperação importante (+1)",
+      "gol": "Gol marcado (+2)",
+      "assistencia": "Passe para gol (+2)",
+      "jogada_genial": "Drible espetacular, jogada brilhante (+2)",
+      "erro": "Perda de bola perigosa, falta boba, chance perdida (-1)"
+    },
+    "goleiros": {
+      "defesa_boa": "Salvou chute, saída no tempo, reposição rápida (+1)",
+      "defesa_salvadora": "Defesa espetacular, salvou gol certo (+2)",
+      "falha_goleiro": "Saída errada, passe errado, gol por falha (-1)"
+    }
+  },
+  "dados_brutos": {
+    "evaluationData": {
+      "1": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "gol": 6,
+          "jogada_genial": 4
+        },
+        "negativo": {},
+        "timeline": [
+          {
+            "time": 93010,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:03.183Z"
+          },
+          {
+            "time": 299009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:57:29.320Z"
+          },
+          {
+            "time": 354009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:58:24.351Z"
+          },
+          {
+            "time": 540010,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:01:29.964Z"
+          },
+          {
+            "time": 705180,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:08:10.742Z"
+          },
+          {
+            "time": 706179,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:08:11.424Z"
+          },
+          {
+            "time": 860179,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:10:46.035Z"
+          },
+          {
+            "time": 862179,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:10:47.240Z"
+          },
+          {
+            "time": 932179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:11:57.355Z"
+          }
+        ]
+      },
+      "2": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "assistencia": 2,
+          "jogada_genial": 2
+        },
+        "negativo": {
+          "erro": -5
+        },
+        "timeline": [
+          {
+            "time": 582010,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:02:12.502Z"
+          },
+          {
+            "time": 603010,
+            "criteria": "assistencia",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:02:32.888Z"
+          },
+          {
+            "time": 646179,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:07:11.661Z"
+          },
+          {
+            "time": 1070180,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:14:16.049Z"
+          },
+          {
+            "time": 1124179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:15:09.897Z"
+          },
+          {
+            "time": 1289179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:17:54.133Z"
+          },
+          {
+            "time": 1291180,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:17:56.823Z"
+          },
+          {
+            "time": 1596812,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:27:27.986Z"
+          },
+          {
+            "time": 1616811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:27:47.158Z"
+          },
+          {
+            "time": 1723811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:29:34.166Z"
+          },
+          {
+            "time": 1822811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:31:13.834Z"
+          }
+        ]
+      },
+      "3": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "gol": 2
+        },
+        "negativo": {
+          "erro": -2
+        },
+        "timeline": [
+          {
+            "time": 57010,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:53:27.579Z"
+          },
+          {
+            "time": 118011,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:28.683Z"
+          },
+          {
+            "time": 159009,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T22:55:09.437Z"
+          },
+          {
+            "time": 1648811,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:28:19.063Z"
+          },
+          {
+            "time": 1774811,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:30:25.373Z"
+          },
+          {
+            "time": 1911174,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:50:38.015Z"
+          },
+          {
+            "time": 2183174,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:55:09.863Z"
+          }
+        ]
+      },
+      "4": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {},
+        "negativo": {
+          "erro": -1
+        },
+        "timeline": [
+          {
+            "time": 884179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:11:09.618Z"
+          },
+          {
+            "time": 983179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:12:48.292Z"
+          },
+          {
+            "time": 1003179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:13:08.499Z"
+          },
+          {
+            "time": 1179179,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:16:04.266Z"
+          },
+          {
+            "time": 2168174,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:54:55.095Z"
+          }
+        ]
+      },
+      "5": {
+        "positivo": {
+          "acao_boa": 4
+        },
+        "especial": {
+          "jogada_genial": 4,
+          "gol": 2
+        },
+        "negativo": {},
+        "timeline": [
+          {
+            "time": 132009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:42.243Z"
+          },
+          {
+            "time": 148009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:54:58.510Z"
+          },
+          {
+            "time": 255011,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T22:56:45.638Z"
+          },
+          {
+            "time": 578009,
+            "criteria": "jogada_genial",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:02:08.388Z"
+          },
+          {
+            "time": 606009,
+            "criteria": "gol",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:02:36.771Z"
+          },
+          {
+            "time": 2000174,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:52:07.028Z"
+          },
+          {
+            "time": 2150174,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:54:37.431Z"
+          }
+        ]
+      },
+      "6": {
+        "positivo": {
+          "acao_boa": 2
+        },
+        "especial": {},
+        "negativo": {
+          "erro": -2
+        },
+        "timeline": [
+          {
+            "time": 12010,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T22:52:42.794Z"
+          },
+          {
+            "time": 203009,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:55:53.356Z"
+          },
+          {
+            "time": 1444811,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:24:55.654Z"
+          },
+          {
+            "time": 1827811,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:31:18.546Z"
+          }
+        ]
+      },
+      "7": {
+        "positivo": {},
+        "especial": {},
+        "negativo": {}
+      },
+      "8": {
+        "positivo": {
+          "acao_boa": 2
+        },
+        "especial": {},
+        "negativo": {
+          "erro": -4
+        },
+        "timeline": [
+          {
+            "time": 224010,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T22:56:14.497Z"
+          },
+          {
+            "time": 287009,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T22:57:17.335Z"
+          },
+          {
+            "time": 337011,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T22:58:07.191Z"
+          },
+          {
+            "time": 1045180,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:13:51.011Z"
+          },
+          {
+            "time": 1150179,
+            "criteria": "erro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:15:35.589Z"
+          },
+          {
+            "time": 1158179,
+            "criteria": "acao_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:15:43.167Z"
+          }
+        ]
+      },
+      "9": {
+        "positivo": {
+          "defesa_boa": 1
+        },
+        "especial": {},
+        "negativo": {},
+        "timeline": [
+          {
+            "time": 1675812,
+            "criteria": "defesa_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:28:46.519Z"
+          }
+        ]
+      },
+      "10": {
+        "positivo": {
+          "defesa_boa": 2
+        },
+        "especial": {
+          "defesa_salvadora": 2
+        },
+        "negativo": {
+          "falha_goleiro": -3
+        },
+        "timeline": [
+          {
+            "time": 626180,
+            "criteria": "falha_goleiro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:06:51.268Z"
+          },
+          {
+            "time": 651179,
+            "criteria": "defesa_salvadora",
+            "category": "especial",
+            "points": 2,
+            "timestamp": "2025-05-27T23:07:16.190Z"
+          },
+          {
+            "time": 953179,
+            "criteria": "defesa_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:12:19.031Z"
+          },
+          {
+            "time": 1153179,
+            "criteria": "defesa_boa",
+            "category": "positivo",
+            "points": 1,
+            "timestamp": "2025-05-27T23:15:38.122Z"
+          },
+          {
+            "time": 1330179,
+            "criteria": "falha_goleiro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:18:35.891Z"
+          },
+          {
+            "time": 1855174,
+            "criteria": "falha_goleiro",
+            "category": "negativo",
+            "points": -1,
+            "timestamp": "2025-05-27T23:49:41.963Z"
+          }
+        ]
+      }
+    },
+    "playerTimes": {
+      "1": {
+        "totalTime": 1632061,
+        "sessions": [
+          {
+            "start": 1748386347789,
+            "end": 1748387979850
+          }
+        ]
+      },
+      "2": {
+        "totalTime": 2202171,
+        "sessions": [
+          {
+            "start": 1748386901970,
+            "end": 1748388014492
+          },
+          {
+            "start": 1748388260370,
+            "end": 1748389350019
+          }
+        ]
+      },
+      "3": {
+        "totalTime": 653263,
+        "sessions": [
+          {
+            "start": 1748386347789,
+            "end": 1748387001052
+          },
+          {
+            "start": 1748387979850,
+            "end": null
+          }
+        ]
+      },
+      "4": {
+        "totalTime": 1401163,
+        "sessions": [
+          {
+            "start": 1748386850068,
+            "end": 1748388251231
+          },
+          {
+            "start": 1748389339282,
+            "end": null
+          }
+        ]
+      },
+      "5": {
+        "totalTime": 737359,
+        "sessions": [
+          {
+            "start": 1748386347786,
+            "end": 1748387085145
+          },
+          {
+            "start": 1748388251231,
+            "end": null
+          }
+        ]
+      },
+      "6": {
+        "totalTime": 1878972,
+        "sessions": [
+          {
+            "start": 1748386347788,
+            "end": 1748386901970
+          },
+          {
+            "start": 1748388014492,
+            "end": 1748389339282
+          }
+        ]
+      },
+      "8": {
+        "totalTime": 1677505,
+        "sessions": [
+          {
+            "start": 1748386347788,
+            "end": 1748386850068
+          },
+          {
+            "start": 1748387085145,
+            "end": 1748388260370
+          },
+          {
+            "start": 1748389350019,
+            "end": null
+          }
+        ]
+      },
+      "9": {
+        "totalTime": 1388555,
+        "sessions": [
+          {
+            "start": 1748387969744,
+            "end": 1748389358299
+          }
+        ]
+      },
+      "10": {
+        "totalTime": 968692,
+        "sessions": [
+          {
+            "start": 1748387001052,
+            "end": 1748387969744
+          },
+          {
+            "start": 1748389358299,
+            "end": null
+          }
+        ]
+      }
+    },
+    "substitutionData": [
+      {
+        "time": 500010,
+        "playerOut": "Leonardo",
+        "playerIn": "Joao Antonio",
+        "timestamp": "2025-05-27T23:00:50.068Z"
+      },
+      {
+        "time": 552011,
+        "playerOut": "Pablo",
+        "playerIn": "Guilherme Bueno",
+        "timestamp": "2025-05-27T23:01:41.970Z"
+      },
+      {
+        "time": 617172,
+        "playerOut": "Binho",
+        "playerIn": "Diogo",
+        "timestamp": "2025-05-27T23:03:21.052Z"
+      },
+      {
+        "time": 617172,
+        "playerOut": "Pedro",
+        "playerIn": "Leonardo",
+        "timestamp": "2025-05-27T23:04:45.145Z"
+      },
+      {
+        "time": 1384179,
+        "playerOut": "Diogo",
+        "playerIn": "Clauber",
+        "timestamp": "2025-05-27T23:19:29.744Z"
+      },
+      {
+        "time": 1394183,
+        "playerOut": "Engrigo Tome",
+        "playerIn": "Binho",
+        "timestamp": "2025-05-27T23:19:39.850Z"
+      },
+      {
+        "time": 1429180,
+        "playerOut": "Guilherme Bueno",
+        "playerIn": "Pablo",
+        "timestamp": "2025-05-27T23:20:14.492Z"
+      },
+      {
+        "time": 1443810,
+        "playerOut": "Joao Antonio",
+        "playerIn": "Pedro",
+        "timestamp": "2025-05-27T23:24:11.231Z"
+      },
+      {
+        "time": 1443810,
+        "playerOut": "Leonardo",
+        "playerIn": "Guilherme Bueno",
+        "timestamp": "2025-05-27T23:24:20.370Z"
+      },
+      {
+        "time": 1854173,
+        "playerOut": "Pablo",
+        "playerIn": "Joao Antonio",
+        "timestamp": "2025-05-27T23:42:19.282Z"
+      },
+      {
+        "time": 1854173,
+        "playerOut": "Guilherme Bueno",
+        "playerIn": "Leonardo",
+        "timestamp": "2025-05-27T23:42:30.019Z"
+      },
+      {
+        "time": 1854173,
+        "playerOut": "Clauber",
+        "playerIn": "Diogo",
+        "timestamp": "2025-05-27T23:42:38.300Z"
+      }
+    ]
+  }
+}

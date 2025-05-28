@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação de Jogadores Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .player-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .player-card.active {
+            border: 2px solid #28a745;
+            background-color: #f8f9fa;
+        }
+        .player-card.playing {
+            border: 3px solid #007bff;
+            background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+        }
+        .player-card.benched {
+            opacity: 0.6;
+            border: 2px solid #6c757d;
+        }
+        .criteria-btn {
+            margin: 2px;
+            min-height: 50px;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .criteria-btn.positive {
+            border-color: #28a745;
+        }
+        .criteria-btn.negative {
+            border-color: #dc3545;
+        }
+        .criteria-btn.special {
+            border-color: #ffc107;
+            background: linear-gradient(45deg, #fff3cd, #ffffff);
+        }
+        
+        /* Efeito de clique incrível */
+        .criteria-btn.clicked {
+            transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
+            background: linear-gradient(45deg, #28a745, #20c997) !important;
+            color: white !important;
+            border-color: #28a745 !important;
+        }
+        
+        .criteria-btn.clicked.special {
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.8);
+            background: linear-gradient(45deg, #ffc107, #ffca2c) !important;
+            color: #000 !important;
+        }
+        
+        .criteria-btn.clicked.negative {
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+            background: linear-gradient(45deg, #dc3545, #e74c3c) !important;
+            color: white !important;
+        }
+        
+        /* Animação de pulso */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .criteria-btn.pulse {
+            animation: pulse 0.3s ease-in-out;
+        }
+        
+        /* Efeito de confetti */
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-50px) rotate(360deg); opacity: 0; }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffc107;
+            animation: confetti 0.6s ease-out;
+            pointer-events: none;
+        }
+        .score-display {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            border-radius: 10px;
+        }
+        .category-header {
+            background: linear-gradient(45deg, #28a745, #1e7e34);
+            color: white;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .category-header.negative {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+        .category-header.special {
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: #000;
+        }
+        .game-timer {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .timer-display {
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .substitution-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .playing-time {
+            font-size: 0.8rem;
+            color: #28a745;
+            font-weight: bold;
+        }
+        .quick-actions {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .player-stats {
+            font-size: 0.8rem;
+            background: rgba(0,123,255,0.1);
+            border-radius: 5px;
+            padding: 5px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Seleção de Jogadores -->
+    <div id="playerSelection" class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-4">
+                    <i class="fas fa-users text-primary"></i>
+                    Selecionar Jogadores Disponíveis
+                </h2>
+                <p class="text-center text-muted mb-4">Selecione os jogadores que participarão do treino (mínimo 5)</p>
+                
+                <div class="row" id="playerGrid">
+                    <!-- Jogadores serão inseridos aqui via JavaScript -->
+                </div>
+                
+                <div class="text-center mt-4">
+                    <div class="alert alert-info">
+                        <strong>Selecionados: <span id="selectedCount">0</span></strong>
+                    </div>
+                    <button id="startEvaluation" class="btn btn-success btn-lg" disabled>
+                        <i class="fas fa-play"></i> Continuar para Escalação
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Escalação Inicial -->
+    <div id="lineupScreen" class="container-fluid py-3" style="display: none;">
+        <div class="row mb-3">
+            <div class="col-6">
+                <button id="backToSelectionFromLineup" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+            </div>
+        </div>
+
+        <h3 class="text-center mb-4">
+            <i class="fas fa-clipboard-list text-success"></i>
+            Escalação Inicial (5 jogadores)
+        </h3>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5>Jogadores Titulares:</h5>
+                <div class="row" id="startingLineupGrid">
+                    <!-- Jogadores titulares -->
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5>Jogadores no Banco:</h5>
+                <div class="row" id="benchGrid">
+                    <!-- Jogadores reservas -->
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button id="startGame" class="btn btn-primary btn-lg">
+                <i class="fas fa-play-circle"></i> Iniciar Jogo
+            </button>
+        </div>
+    </div>
+
+            <!-- Tela Principal de Avaliação -->
+    <div id="evaluationScreen" class="container-fluid py-3" style="display: none;">
+        <!-- Header com navegação -->
+        <div class="row mb-3">
+            <div class="col-4">
+                <button id="backToStart" class="btn btn-outline-secondary">
+                    <i class="fas fa-home"></i> Início
+                </button>
+            </div>
+            <div class="col-4 text-center">
+                <button id="newGame" class="btn btn-outline-warning btn-sm" title="Novo Jogo">
+                    <i class="fas fa-plus"></i> Novo
+                </button>
+            </div>
+            <div class="col-4 text-end">
+                <button id="viewResults" class="btn btn-outline-info">
+                    <i class="fas fa-chart-bar"></i> Resultados
+                </button>
+            </div>
+        </div>
+
+        <!-- Timer do Jogo -->
+        <div class="game-timer">
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <button id="playPauseBtn" class="btn btn-light btn-lg">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                <div class="col-6 text-center">
+                    <div class="timer-display" id="gameTimer">00:00</div>
+                    <div><small id="gameStatus">Parado</small></div>
+                </div>
+                <div class="col-3 text-end">
+                    <button id="resetTimer" class="btn btn-secondary btn-sm mb-1" title="Reiniciar Cronômetro">
+                        <i class="fas fa-redo"></i>
+                    </button><br>
+                    <button id="endGame" class="btn btn-danger btn-sm">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Painel de Substituições -->
+        <div class="substitution-panel">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <h6><i class="fas fa-exchange-alt"></i> Substituições</h6>
+                </div>
+                <div class="col-4 text-end">
+                    <button id="makeSubstitution" class="btn btn-warning btn-sm">
+                        <i class="fas fa-people-arrows"></i> Substituir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jogadores em Campo -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5><i class="fas fa-running text-success"></i> Jogadores em Campo</h5>
+                <div class="row" id="playingPlayersRow">
+                    <!-- Jogadores em campo -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Critérios de Avaliação -->
+        <div id="criteriaSection" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="text-center mb-3">
+                        Avaliar: <span id="selectedPlayerName" class="text-primary"></span>
+                        <span id="playerPosition" class="badge bg-secondary"></span>
+                    </h5>
+                </div>
+            </div>
+
+            <!-- Critérios para Jogadores de Linha -->
+            <div id="fieldPlayerCriteria" style="display: none;">
+                <div class="category-header">
+                    <h6><i class="fas fa-thumbs-up"></i> AÇÃO BOA (+1)</h6>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-success criteria-btn w-100 mb-2" data-criteria="acao_boa" data-category="positivo" data-points="1" style="min-height: 80px; font-size: 1.2rem;">
+                            <i class="fas fa-check-circle fa-2x"></i><br>
+                            <strong>AÇÃO BOA</strong><br>
+                            <small>Jogada ofensiva, passe decisivo, recuperação importante</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="category-header special">
+                    <h6><i class="fas fa-star"></i> IMPACTO NO JOGO (+2)</h6>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <button class="btn btn-warning criteria-btn w-100 mb-2" data-criteria="gol" data-category="especial" data-points="2" style="min-height: 80px; font-size: 1.1rem;">
+                            <i class="fas fa-futbol fa-2x"></i><br>
+                            <strong>GOL!</strong>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-warning criteria-btn w-100 mb-2" data-criteria="assistencia" data-category="especial" data-points="2" style="min-height: 80px; font-size: 1.1rem;">
+                            <i class="fas fa-hands-helping fa-2x"></i><br>
+                            <strong>ASSISTÊNCIA</strong>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-warning criteria-btn w-100 mb-2" data-criteria="jogada_genial" data-category="especial" data-points="2" style="min-height: 80px; font-size: 1.1rem;">
+                            <i class="fas fa-brain fa-2x"></i><br>
+                            <strong>JOGADA GENIAL</strong><br>
+                            <small>Drible espetacular, passe impossível, decisão brilhante</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="category-header negative">
+                    <h6><i class="fas fa-thumbs-down"></i> ERRO (-1)</h6>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-danger criteria-btn w-100 mb-2" data-criteria="erro" data-category="negativo" data-points="-1" style="min-height: 80px; font-size: 1.2rem;">
+                            <i class="fas fa-times-circle fa-2x"></i><br>
+                            <strong>ERRO</strong><br>
+                            <small>Perda de bola perigosa, falta boba, chance perdida</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critérios Específicos para Goleiros -->
+            <div id="goalkeeperCriteria" style="display: none;">
+                <div class="category-header">
+                    <h6><i class="fas fa-shield-alt"></i> DEFESA BOA (+1)</h6>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-success criteria-btn w-100 mb-2" data-criteria="defesa_boa" data-category="positivo" data-points="1" style="min-height: 80px; font-size: 1.2rem;">
+                            <i class="fas fa-hand-paper fa-2x"></i><br>
+                            <strong>DEFESA BOA</strong><br>
+                            <small>Salvou o chute, saída no tempo certo, reposição rápida</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="category-header special">
+                    <h6><i class="fas fa-star"></i> DEFESA SALVADORA (+2)</h6>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-warning criteria-btn w-100 mb-2" data-criteria="defesa_salvadora" data-category="especial" data-points="2" style="min-height: 80px; font-size: 1.2rem;">
+                            <i class="fas fa-medal fa-2x"></i><br>
+                            <strong>DEFESA SALVADORA</strong><br>
+                            <small>Defesa espetacular, salvou gol certo</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="category-header negative">
+                    <h6><i class="fas fa-exclamation-triangle"></i> FALHA (-1)</h6>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-danger criteria-btn w-100 mb-2" data-criteria="falha_goleiro" data-category="negativo" data-points="-1" style="min-height: 80px; font-size: 1.2rem;">
+                            <i class="fas fa-times-circle fa-2x"></i><br>
+                            <strong>FALHA</strong><br>
+                            <small>Saída errada, passe errado, gol por falha</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Substituição -->
+    <div class="modal fade" id="substitutionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exchange-alt"></i> Fazer Substituição
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Sai de Campo:</h6>
+                            <div id="playersToSubOut">
+                                <!-- Jogadores em campo -->
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6>Entra no Jogo:</h6>
+                            <div id="playersToSubIn">
+                                <!-- Jogadores no banco -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmSubstitution" disabled>
+                        <i class="fas fa-check"></i> Confirmar Substituição
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Resultados -->
+    <div id="resultsScreen" class="container-fluid py-4" style="display: none;">
+        <div class="row mb-3">
+            <div class="col-4">
+                <button id="backToEvaluation" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+            </div>
+            <div class="col-4 text-center">
+                <button id="backToStartFromResults" class="btn btn-outline-primary">
+                    <i class="fas fa-home"></i> Início
+                </button>
+            </div>
+            <div class="col-4 text-end">
+                <button id="clearData" class="btn btn-outline-danger">
+                    <i class="fas fa-trash"></i> Limpar
+                </button>
+            </div>
+        </div>
+
+        <h2 class="text-center mb-4">
+            <i class="fas fa-trophy text-warning"></i>
+            Resultados Finais
+        </h2>
+
+        <div id="resultsContent">
+            <!-- Resultados serão inseridos aqui -->
+        </div>
+
+        <div class="text-center mt-4">
+            <button id="exportData" class="btn btn-primary btn-lg">
+                <i class="fas fa-download"></i> Exportar Dados Completos
+            </button>
+        </div>
+    </div>
+
+    <!-- Botões Flutuantes -->
+    <div class="quick-actions">
+        <button id="quickResults" class="btn btn-info floating-btn" title="Ver Resultados" style="display: none;">
+            <i class="fas fa-chart-bar"></i>
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Base de dados dos jogadores
+        const allPlayers = [
+            {id: 1, name: 'Engrigo Tome', position: 'Linha', type: 'field'},
+            {id: 2, name: 'Guilherme Bueno', position: 'Linha', type: 'field'},
+            {id: 3, name: 'Binho', position: 'Linha', type: 'field'},
+            {id: 4, name: 'Joao Antonio', position: 'Linha', type: 'field'},
+            {id: 5, name: 'Pedro', position: 'Linha', type: 'field'},
+            {id: 6, name: 'Pablo', position: 'Linha', type: 'field'},
+            {id: 7, name: 'Vitinho', position: 'Linha', type: 'field'},
+            {id: 8, name: 'Leonardo', position: 'Linha', type: 'field'},
+            {id: 9, name: 'Clauber', position: 'goleiro', type: 'goalkeeper'},
+            {id: 10, name: 'Diogo', position: 'goleiro', type: 'goalkeeper'}
+        ];
+
+        // Estado da aplicação
+        let selectedPlayers = [];
+        let playingPlayers = [];
+        let benchPlayers = [];
+        let currentPlayer = null;
+        let evaluationData = {};
+        let playerTimes = {};
+        let gameTimer = {
+            startTime: null,
+            elapsed: 0,
+            isRunning: false,
+            interval: null
+        };
+        let substitutionData = [];
+        let selectedPlayerOut = null;
+        let selectedPlayerIn = null;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
+            renderPlayerSelection();
+            setupEventListeners();
+            
+            // Auto-save a cada 10 segundos durante o jogo
+            setInterval(function() {
+                if (gameTimer.isRunning) {
+                    saveData();
+                }
+            }, 10000);
+            
+            // Salvar antes de sair da página
+            window.addEventListener('beforeunload', function() {
+                saveData();
+            });
+            
+            // Salvar quando a página fica invisível
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    saveData();
+                }
+            });
+        });
+
+        // Renderizar seleção de jogadores
+        function renderPlayerSelection() {
+            const grid = document.getElementById('playerGrid');
+            grid.innerHTML = '';
+
+            allPlayers.forEach(player => {
+                const isSelected = selectedPlayers.some(p => p.id === player.id);
+                const card = document.createElement('div');
+                card.className = 'col-6 col-md-4 col-lg-3 mb-3';
+                card.innerHTML = `
+                    <div class="card player-card h-100 ${isSelected ? 'active' : ''}" data-player-id="${player.id}">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-circle fa-2x mb-2 text-primary"></i>
+                            <h6 class="card-title">${player.name}</h6>
+                            <p class="card-text small text-muted">${player.position}</p>
+                            ${player.type === 'goalkeeper' ? '<span class="badge bg-warning">Goleiro</span>' : ''}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            updateSelectedCount();
+        }
+
+        // Renderizar escalação inicial
+        function renderLineupSelection() {
+            const startingGrid = document.getElementById('startingLineupGrid');
+            const benchGrid = document.getElementById('benchGrid');
+            
+            startingGrid.innerHTML = '';
+            benchGrid.innerHTML = '';
+
+            selectedPlayers.forEach((player, index) => {
+                const isPlaying = playingPlayers.some(p => p.id === player.id);
+                const card = document.createElement('div');
+                card.className = 'col-6 col-md-4 mb-3';
+                card.innerHTML = `
+                    <div class="card player-card h-100 ${isPlaying ? 'playing' : 'benched'}" data-player-id="${player.id}">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-circle fa-2x mb-2 ${isPlaying ? 'text-primary' : 'text-secondary'}"></i>
+                            <h6 class="card-title">${player.name}</h6>
+                            <p class="card-text small">${player.position}</p>
+                        </div>
+                    </div>
+                `;
+                
+                if (isPlaying) {
+                    startingGrid.appendChild(card);
+                } else {
+                    benchGrid.appendChild(card);
+                }
+            });
+        }
+
+        // Renderizar jogadores em campo
+        function renderPlayingPlayers() {
+            const row = document.getElementById('playingPlayersRow');
+            row.innerHTML = '';
+
+            playingPlayers.forEach(player => {
+                const playerTime = calculatePlayerTime(player.id);
+                const playerStats = getPlayerStats(player.id);
+                
+                const col = document.createElement('div');
+                col.className = 'col-6 col-md-4 mb-2';
+                col.innerHTML = `
+                    <button class="btn btn-outline-primary w-100 player-select-btn" data-player-id="${player.id}">
+                        <div><strong>${player.name}</strong></div>
+                        <div><small class="text-muted">${player.position}</small></div>
+                        <div class="playing-time">⏱️ ${playerTime}</div>
+                        <div class="player-stats">
+                            <span class="text-success">${playerStats.positive}</span> |
+                            <span class="text-warning">★${playerStats.special}</span> |
+                            <span class="text-danger">${playerStats.negative}</span>
+                        </div>
+                    </button>
+                `;
+                row.appendChild(col);
+            });
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Seleção de jogadores
+            document.getElementById('playerGrid').addEventListener('click', function(e) {
+                const card = e.target.closest('.player-card');
+                if (!card) return;
+
+                const playerId = parseInt(card.dataset.playerId);
+                const player = allPlayers.find(p => p.id === playerId);
+                
+                if (selectedPlayers.some(p => p.id === playerId)) {
+                    selectedPlayers = selectedPlayers.filter(p => p.id !== playerId);
+                    card.classList.remove('active');
+                } else {
+                    selectedPlayers.push(player);
+                    card.classList.add('active');
+                }
+
+                updateSelectedCount();
+            });
+
+            // Escalação inicial
+            document.getElementById('startingLineupGrid').addEventListener('click', function(e) {
+                const card = e.target.closest('.player-card');
+                if (!card) return;
+
+                const playerId = parseInt(card.dataset.playerId);
+                const player = selectedPlayers.find(p => p.id === playerId);
+                
+                if (playingPlayers.some(p => p.id === playerId)) {
+                    playingPlayers = playingPlayers.filter(p => p.id !== playerId);
+                    benchPlayers.push(player);
+                } else if (playingPlayers.length < 5) {
+                    playingPlayers.push(player);
+                    benchPlayers = benchPlayers.filter(p => p.id !== playerId);
+                }
+
+                renderLineupSelection();
+            });
+
+            document.getElementById('benchGrid').addEventListener('click', function(e) {
+                const card = e.target.closest('.player-card');
+                if (!card) return;
+
+                const playerId = parseInt(card.dataset.playerId);
+                const player = selectedPlayers.find(p => p.id === playerId);
+                
+                if (playingPlayers.length < 5) {
+                    playingPlayers.push(player);
+                    benchPlayers = benchPlayers.filter(p => p.id !== playerId);
+                    renderLineupSelection();
+                }
+            });
+
+            // Iniciar jogo
+            document.getElementById('startGame').addEventListener('click', function() {
+                if (playingPlayers.length === 5) {
+                    initializeGame();
+                    showEvaluationScreen();
+                } else {
+                    alert('Selecione exatamente 5 jogadores para iniciar!');
+                }
+            });
+
+            // Controles do jogo
+            document.getElementById('playPauseBtn').addEventListener('click', toggleGameTimer);
+            document.getElementById('resetTimer').addEventListener('click', function() {
+                if (confirm('Reiniciar cronômetro? (Os dados dos jogadores não serão perdidos)')) {
+                    resetGameTimer();
+                }
+            });
+            document.getElementById('endGame').addEventListener('click', endGame);
+
+            // Seleção de jogador para avaliar
+            document.getElementById('playingPlayersRow').addEventListener('click', function(e) {
+                const btn = e.target.closest('.player-select-btn');
+                if (!btn) return;
+
+                const playerId = parseInt(btn.dataset.playerId);
+                currentPlayer = playingPlayers.find(p => p.id === playerId);
+                
+                // Atualizar interface
+                document.querySelectorAll('.player-select-btn').forEach(b => {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-outline-primary');
+                });
+                btn.classList.add('btn-primary');
+                btn.classList.remove('btn-outline-primary');
+                
+                showCriteriaForPlayer(currentPlayer);
+            });
+
+            // Clique nos critérios
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.criteria-btn')) {
+                    const btn = e.target.closest('.criteria-btn');
+                    const criteria = btn.dataset.criteria;
+                    const category = btn.dataset.category;
+                    const points = parseInt(btn.dataset.points);
+                    
+                    if (currentPlayer && gameTimer.isRunning) {
+                        addEvaluation(currentPlayer.id, criteria, category, points);
+                        
+                        // Efeito visual INCRÍVEL
+                        showClickEffect(btn, points);
+                        
+                        // Atualizar stats em tempo real
+                        renderPlayingPlayers();
+                        
+                        // Salvar imediatamente
+                        saveData();
+                    } else if (!gameTimer.isRunning) {
+                        alert('⏰ Aperte PLAY no cronômetro para começar a avaliar!');
+                    }
+                }
+            });
+
+            // Substituições
+            document.getElementById('makeSubstitution').addEventListener('click', openSubstitutionModal);
+            document.getElementById('confirmSubstitution').addEventListener('click', confirmSubstitution);
+
+            // Navegação
+            document.getElementById('startEvaluation').addEventListener('click', () => {
+                if (selectedPlayers.length >= 5) {
+                    // Definir escalação inicial (primeiros 5)
+                    playingPlayers = selectedPlayers.slice(0, 5);
+                    benchPlayers = selectedPlayers.slice(5);
+                    showLineupScreen();
+                }
+            });
+            
+            document.getElementById('backToSelectionFromLineup').addEventListener('click', () => showPlayerSelection());
+            document.getElementById('backToStart').addEventListener('click', () => showPlayerSelection());
+            document.getElementById('backToStartFromResults').addEventListener('click', () => showPlayerSelection());
+            document.getElementById('backToEvaluation').addEventListener('click', () => showEvaluationScreen());
+            document.getElementById('viewResults').addEventListener('click', () => showResultsScreen());
+            document.getElementById('quickResults').addEventListener('click', () => showResultsScreen());
+            
+            // Novo jogo
+            document.getElementById('newGame').addEventListener('click', function() {
+                if (confirm('Iniciar novo jogo? (Todos os dados atuais serão perdidos)')) {
+                    // Limpar todos os dados
+                    selectedPlayers = [];
+                    playingPlayers = [];
+                    benchPlayers = [];
+                    evaluationData = {};
+                    playerTimes = {};
+                    substitutionData = [];
+                    currentPlayer = null;
+                    
+                    // Reset timer
+                    resetGameTimer();
+                    
+                    // Limpar localStorage
+                    localStorage.removeItem('footballEvaluationPro');
+                    
+                    // Voltar para seleção
+                    showPlayerSelection();
+                    renderPlayerSelection();
+                }
+            });
+
+            // Limpar dados
+            document.getElementById('clearData').addEventListener('click', function() {
+                if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+                    evaluationData = {};
+                    playerTimes = {};
+                    substitutionData = [];
+                    localStorage.removeItem('footballEvaluationPro');
+                    showResultsScreen();
+                }
+            });
+
+            // Exportar dados
+            document.getElementById('exportData').addEventListener('click', exportData);
+        }
+
+        // Timer do jogo
+        function toggleGameTimer() {
+            const btn = document.getElementById('playPauseBtn');
+            const statusEl = document.getElementById('gameStatus');
+            
+            if (gameTimer.isRunning) {
+                pauseGameTimer();
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+                statusEl.textContent = 'Pausado';
+            } else {
+                startGameTimer();
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+                statusEl.textContent = 'Em andamento';
+            }
+        }
+
+        function startGameTimer() {
+            gameTimer.startTime = Date.now() - gameTimer.elapsed;
+            gameTimer.isRunning = true;
+            gameTimer.interval = setInterval(updateTimerDisplay, 1000);
+        }
+
+        function pauseGameTimer() {
+            gameTimer.isRunning = false;
+            if (gameTimer.interval) {
+                clearInterval(gameTimer.interval);
+            }
+            // Atualizar elapsed time ao pausar
+            if (gameTimer.startTime) {
+                gameTimer.elapsed = Date.now() - gameTimer.startTime;
+            }
+        }
+
+        function updateTimerDisplay() {
+            if (gameTimer.isRunning && gameTimer.startTime) {
+                gameTimer.elapsed = Date.now() - gameTimer.startTime;
+            }
+            
+            const totalSeconds = Math.floor(gameTimer.elapsed / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            
+            document.getElementById('gameTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function endGame() {
+            if (confirm('Finalizar o jogo?')) {
+                pauseGameTimer();
+                document.getElementById('gameStatus').textContent = 'Finalizado';
+                document.getElementById('playPauseBtn').disabled = true;
+                showResultsScreen();
+            }
+        }
+
+        function resetGameTimer() {
+            pauseGameTimer();
+            gameTimer.elapsed = 0;
+            gameTimer.startTime = null;
+            updateTimerDisplay();
+            document.getElementById('gameStatus').textContent = 'Parado';
+            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+            document.getElementById('playPauseBtn').disabled = false;
+            
+            // Salvar estado resetado
+            saveData();
+        }
+
+        // Inicializar jogo
+        function initializeGame() {
+            // Reset do timer
+            resetGameTimer();
+            
+            // Inicializar tempos dos jogadores
+            playingPlayers.forEach(player => {
+                if (!playerTimes[player.id]) {
+                    playerTimes[player.id] = {
+                        totalTime: 0,
+                        sessions: []
+                    };
+                }
+                playerTimes[player.id].sessions.push({
+                    start: Date.now(),
+                    end: null
+                });
+            });
+
+            // Inicializar dados de avaliação
+            selectedPlayers.forEach(player => {
+                if (!evaluationData[player.id]) {
+                    evaluationData[player.id] = {
+                        positivo: {},
+                        especial: {},
+                        negativo: {}
+                    };
+                }
+            });
+        }
+
+        // Efeito visual incrível ao clicar
+        function showClickEffect(btn, points) {
+            // Salvar classes originais
+            const originalClasses = btn.className;
+            
+            // Adicionar efeito de clique
+            btn.classList.add('clicked');
+            btn.classList.add('pulse');
+            
+            // Criar confetti se for pontos especiais
+            if (points === 2) {
+                createConfetti(btn);
+            }
+            
+            // Vibração no celular se suportado
+            if (navigator.vibrate) {
+                if (points === 2) {
+                    navigator.vibrate([100, 50, 100]); // Vibração dupla para ações especiais
+                } else {
+                    navigator.vibrate(50); // Vibração simples
+                }
+            }
+            
+            // Som de feedback (se quiser adicionar depois)
+            // playClickSound(points);
+            
+            // Remover efeitos após animação
+            setTimeout(() => {
+                btn.className = originalClasses;
+            }, 500);
+        }
+
+        // Criar efeito confetti para ações especiais
+        function createConfetti(btn) {
+            const rect = btn.getBoundingClientRect();
+            const colors = ['#ffc107', '#28a745', '#dc3545', '#007bff', '#fd7e14'];
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = (rect.left + Math.random() * rect.width) + 'px';
+                    confetti.style.top = rect.top + 'px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.position = 'fixed';
+                    confetti.style.zIndex = '9999';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Remover após animação
+                    setTimeout(() => {
+                        document.body.removeChild(confetti);
+                    }, 600);
+                }, i * 50);
+            }
+        }
+        function showCriteriaForPlayer(player) {
+            document.getElementById('selectedPlayerName').textContent = player.name;
+            document.getElementById('playerPosition').textContent = player.position;
+            document.getElementById('criteriaSection').style.display = 'block';
+            
+            // Mostrar critérios específicos baseado no tipo do jogador
+            if (player.type === 'goalkeeper') {
+                document.getElementById('fieldPlayerCriteria').style.display = 'none';
+                document.getElementById('goalkeeperCriteria').style.display = 'block';
+            } else {
+                document.getElementById('fieldPlayerCriteria').style.display = 'block';
+                document.getElementById('goalkeeperCriteria').style.display = 'none';
+            }
+        }
+
+        // Adicionar avaliação (melhorada)
+        function addEvaluation(playerId, criteria, category, points) {
+            if (!evaluationData[playerId]) {
+                evaluationData[playerId] = {
+                    positivo: {},
+                    especial: {},
+                    negativo: {}
+                };
+            }
+
+            if (!evaluationData[playerId][category][criteria]) {
+                evaluationData[playerId][category][criteria] = 0;
+            }
+
+            evaluationData[playerId][category][criteria] += points;
+            
+            // Registrar timestamp da avaliação
+            if (!evaluationData[playerId].timeline) {
+                evaluationData[playerId].timeline = [];
+            }
+            
+            evaluationData[playerId].timeline.push({
+                time: gameTimer.elapsed,
+                criteria: criteria,
+                category: category,
+                points: points,
+                timestamp: new Date().toISOString(),
+                gameTime: document.getElementById('gameTimer').textContent
+            });
+
+            // Salvar automaticamente após cada avaliação
+            saveData();
+        }
+
+        // Calcular tempo de jogo do jogador
+        function calculatePlayerTime(playerId) {
+            if (!playerTimes[playerId]) return '00:00';
+            
+            let totalMs = playerTimes[playerId].totalTime;
+            
+            // Adicionar sessão atual se estiver jogando
+            if (playingPlayers.some(p => p.id === playerId)) {
+                const currentSession = playerTimes[playerId].sessions.find(s => !s.end);
+                if (currentSession && gameTimer.isRunning) {
+                    totalMs += Date.now() - currentSession.start;
+                }
+            }
+
+            const minutes = Math.floor(totalMs / 60000);
+            const seconds = Math.floor((totalMs % 60000) / 1000);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Obter estatísticas do jogador
+        function getPlayerStats(playerId) {
+            const playerData = evaluationData[playerId] || {positivo: {}, especial: {}, negativo: {}};
+            
+            return {
+                positive: Object.values(playerData.positivo).reduce((sum, val) => sum + val, 0),
+                special: Object.values(playerData.especial).reduce((sum, val) => sum + val, 0),
+                negative: Math.abs(Object.values(playerData.negativo).reduce((sum, val) => sum + val, 0))
+            };
+        }
+
+        // Modal de substituição
+        function openSubstitutionModal() {
+            const modal = new bootstrap.Modal(document.getElementById('substitutionModal'));
+            
+            // Preencher jogadores em campo
+            const playersOutDiv = document.getElementById('playersToSubOut');
+            playersOutDiv.innerHTML = '';
+            playingPlayers.forEach(player => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div class="form-check mb-2">
+                        <input class="form-check-input player-out-radio" type="radio" name="playerOut" value="${player.id}" id="out${player.id}">
+                        <label class="form-check-label" for="out${player.id}">
+                            ${player.name} (${player.position})
+                        </label>
+                    </div>
+                `;
+                playersOutDiv.appendChild(div);
+            });
+
+            // Preencher jogadores no banco
+            const playersInDiv = document.getElementById('playersToSubIn');
+            playersInDiv.innerHTML = '';
+            benchPlayers.forEach(player => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div class="form-check mb-2">
+                        <input class="form-check-input player-in-radio" type="radio" name="playerIn" value="${player.id}" id="in${player.id}">
+                        <label class="form-check-label" for="in${player.id}">
+                            ${player.name} (${player.position})
+                        </label>
+                    </div>
+                `;
+                playersInDiv.appendChild(div);
+            });
+
+            // Event listeners para os radios
+            document.querySelectorAll('.player-out-radio').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    selectedPlayerOut = parseInt(this.value);
+                    checkSubstitutionReady();
+                });
+            });
+
+            document.querySelectorAll('.player-in-radio').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    selectedPlayerIn = parseInt(this.value);
+                    checkSubstitutionReady();
+                });
+            });
+
+            modal.show();
+        }
+
+        function checkSubstitutionReady() {
+            const confirmBtn = document.getElementById('confirmSubstitution');
+            confirmBtn.disabled = !(selectedPlayerOut && selectedPlayerIn);
+        }
+
+        function confirmSubstitution() {
+            if (selectedPlayerOut && selectedPlayerIn) {
+                // Finalizar tempo do jogador que sai
+                const currentTime = Date.now();
+                if (playerTimes[selectedPlayerOut]) {
+                    const currentSession = playerTimes[selectedPlayerOut].sessions.find(s => !s.end);
+                    if (currentSession) {
+                        currentSession.end = currentTime;
+                        playerTimes[selectedPlayerOut].totalTime += currentTime - currentSession.start;
+                    }
+                }
+
+                // Iniciar tempo do jogador que entra
+                if (!playerTimes[selectedPlayerIn]) {
+                    playerTimes[selectedPlayerIn] = {
+                        totalTime: 0,
+                        sessions: []
+                    };
+                }
+                playerTimes[selectedPlayerIn].sessions.push({
+                    start: currentTime,
+                    end: null
+                });
+
+                // Fazer a substituição
+                const playerOut = playingPlayers.find(p => p.id === selectedPlayerOut);
+                const playerIn = benchPlayers.find(p => p.id === selectedPlayerIn);
+
+                playingPlayers = playingPlayers.filter(p => p.id !== selectedPlayerOut);
+                benchPlayers = benchPlayers.filter(p => p.id !== selectedPlayerIn);
+                
+                playingPlayers.push(playerIn);
+                benchPlayers.push(playerOut);
+
+                // Registrar substituição
+                substitutionData.push({
+                    time: gameTimer.elapsed,
+                    playerOut: playerOut.name,
+                    playerIn: playerIn.name,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Atualizar interface
+                renderPlayingPlayers();
+                
+                // Fechar modal
+                bootstrap.Modal.getInstance(document.getElementById('substitutionModal')).hide();
+                
+                // Reset seleções
+                selectedPlayerOut = null;
+                selectedPlayerIn = null;
+
+                saveData();
+            }
+        }
+
+        // Atualizar contador
+        function updateSelectedCount() {
+            document.getElementById('selectedCount').textContent = selectedPlayers.length;
+            document.getElementById('startEvaluation').disabled = selectedPlayers.length < 5;
+        }
+
+        // Navegação entre telas
+        function showPlayerSelection() {
+            // Reset da interface quando volta ao início
+            resetGameTimer();
+            currentPlayer = null;
+            document.getElementById('criteriaSection').style.display = 'none';
+            
+            document.getElementById('playerSelection').style.display = 'block';
+            document.getElementById('lineupScreen').style.display = 'none';
+            document.getElementById('evaluationScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'none';
+            document.getElementById('quickResults').style.display = 'none';
+        }
+
+        function showLineupScreen() {
+            document.getElementById('playerSelection').style.display = 'none';
+            document.getElementById('lineupScreen').style.display = 'block';
+            document.getElementById('evaluationScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'none';
+            document.getElementById('quickResults').style.display = 'none';
+            
+            renderLineupSelection();
+        }
+
+        function showEvaluationScreen() {
+            document.getElementById('playerSelection').style.display = 'none';
+            document.getElementById('lineupScreen').style.display = 'none';
+            document.getElementById('evaluationScreen').style.display = 'block';
+            document.getElementById('resultsScreen').style.display = 'none';
+            document.getElementById('quickResults').style.display = 'block';
+            
+            renderPlayingPlayers();
+        }
+
+        function showResultsScreen() {
+            document.getElementById('playerSelection').style.display = 'none';
+            document.getElementById('lineupScreen').style.display = 'none';
+            document.getElementById('evaluationScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'block';
+            document.getElementById('quickResults').style.display = 'none';
+            
+            renderResults();
+        }
+
+        // Renderizar resultados
+        function renderResults() {
+            const container = document.getElementById('resultsContent');
+            container.innerHTML = '';
+
+            if (selectedPlayers.length === 0) {
+                container.innerHTML = '<div class="alert alert-warning text-center">Nenhum dado de avaliação encontrado.</div>';
+                return;
+            }
+
+            // Calcular ranking com tempo de jogo
+            const playersWithScores = selectedPlayers.map(player => {
+                const playerData = evaluationData[player.id] || {positivo: {}, especial: {}, negativo: {}};
+                const stats = getPlayerStats(player.id);
+                const playTime = calculatePlayerTime(player.id);
+                
+                const totalScore = stats.positive + stats.special - stats.negative;
+
+                return {
+                    ...player,
+                    scores: {
+                        positive: stats.positive,
+                        special: stats.special,
+                        negative: stats.negative,
+                        total: totalScore
+                    },
+                    playTime: playTime,
+                    playTimeMs: playerTimes[player.id] ? playerTimes[player.id].totalTime : 0
+                };
+            }).sort((a, b) => {
+                // Ordenar por pontuação total, depois por tempo de jogo
+                if (b.scores.total !== a.scores.total) {
+                    return b.scores.total - a.scores.total;
+                }
+                return b.playTimeMs - a.playTimeMs;
+            });
+
+            // Renderizar ranking
+            playersWithScores.forEach((player, index) => {
+                const card = document.createElement('div');
+                card.className = 'card mb-3';
+                
+                let rankBadge = '';
+                if (index === 0) rankBadge = '<span class="badge bg-warning fs-6">🥇 1º</span>';
+                else if (index === 1) rankBadge = '<span class="badge bg-secondary fs-6">🥈 2º</span>';
+                else if (index === 2) rankBadge = '<span class="badge bg-success fs-6">🥉 3º</span>';
+                else rankBadge = `<span class="badge bg-light text-dark fs-6">${index + 1}º</span>`;
+
+                const isPlaying = playingPlayers.some(p => p.id === player.id);
+
+                card.innerHTML = `
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                ${rankBadge}
+                                <h5 class="mb-1">${player.name}</h5>
+                                <small class="text-muted">${player.position}</small>
+                                ${isPlaying ? '<span class="badge bg-success ms-2">Em Campo</span>' : '<span class="badge bg-secondary ms-2">No Banco</span>'}
+                                <div class="mt-1">
+                                    <small class="text-info">⏱️ ${player.playTime}</small>
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="score-display p-2 bg-success">
+                                            <small>Boas</small><br>
+                                            <strong>+${player.scores.positive}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="score-display p-2 bg-warning text-dark">
+                                            <small>Impacto</small><br>
+                                            <strong>★${player.scores.special}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="score-display p-2 bg-danger">
+                                            <small>Erros</small><br>
+                                            <strong>-${player.scores.negative}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-center">
+                                    <div class="score-display p-2">
+                                        <small>TOTAL</small><br>
+                                        <strong style="font-size: 1.5rem;">${player.scores.total}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Mostrar substituições se houver
+            if (substitutionData.length > 0) {
+                const subsCard = document.createElement('div');
+                subsCard.className = 'card mt-4';
+                subsCard.innerHTML = `
+                    <div class="card-header">
+                        <h6><i class="fas fa-exchange-alt"></i> Substituições Realizadas</h6>
+                    </div>
+                    <div class="card-body">
+                        ${substitutionData.map(sub => `
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>${Math.floor(sub.time / 60000)}:${Math.floor((sub.time % 60000) / 1000).toString().padStart(2, '0')}</span>
+                                <span><strong>${sub.playerOut}</strong> ⇄ <strong>${sub.playerIn}</strong></span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(subsCard);
+            }
+        }
+
+        // Salvar dados (versão melhorada)
+        function saveData() {
+            try {
+                const dataToSave = {
+                    selectedPlayers,
+                    playingPlayers,
+                    benchPlayers,
+                    evaluationData,
+                    playerTimes,
+                    substitutionData,
+                    currentGameState: {
+                        timerElapsed: gameTimer.elapsed,
+                        timerRunning: gameTimer.isRunning,
+                        currentPlayer: currentPlayer ? currentPlayer.id : null,
+                        gameStarted: playingPlayers.length > 0
+                    },
+                    version: '2.0',
+                    lastSave: new Date().toISOString()
+                };
+                
+                localStorage.setItem('footballEvaluationPro', JSON.stringify(dataToSave));
+                
+                // Feedback visual discreto de salvamento
+                showSaveIndicator();
+                
+            } catch (error) {
+                console.error('Erro ao salvar dados:', error);
+                alert('Erro ao salvar dados. Tente novamente.');
+            }
+        }
+
+        // Indicador visual de salvamento
+        function showSaveIndicator() {
+            // Criar elemento de feedback se não existir
+            let saveIndicator = document.getElementById('saveIndicator');
+            if (!saveIndicator) {
+                saveIndicator = document.createElement('div');
+                saveIndicator.id = 'saveIndicator';
+                saveIndicator.style.cssText = `
+                    position: fixed;
+                    top: 10px;
+                    right: 10px;
+                    background: #28a745;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    z-index: 9999;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                `;
+                saveIndicator.innerHTML = '<i class="fas fa-save"></i> Salvo';
+                document.body.appendChild(saveIndicator);
+            }
+            
+            // Mostrar e esconder
+            saveIndicator.style.opacity = '1';
+            setTimeout(() => {
+                saveIndicator.style.opacity = '0';
+            }, 1500);
+        }
+
+        // Carregar dados salvos (versão melhorada)
+        function loadSavedData() {
+            try {
+                const saved = localStorage.getItem('footballEvaluationPro');
+                if (!saved) return;
+
+                const data = JSON.parse(saved);
+                
+                // Restaurar dados básicos
+                selectedPlayers = data.selectedPlayers || [];
+                playingPlayers = data.playingPlayers || [];
+                benchPlayers = data.benchPlayers || [];
+                evaluationData = data.evaluationData || {};
+                playerTimes = data.playerTimes || {};
+                substitutionData = data.substitutionData || [];
+                
+                // Restaurar estado do jogo se existir
+                if (data.currentGameState) {
+                    gameTimer.elapsed = data.currentGameState.timerElapsed || 0;
+                    
+                    // Restaurar jogador selecionado
+                    if (data.currentGameState.currentPlayer) {
+                        const playerId = data.currentGameState.currentPlayer;
+                        currentPlayer = playingPlayers.find(p => p.id === playerId);
+                    }
+                    
+                    // Se havia um jogo em andamento, mostrar opção de continuar
+                    if (data.currentGameState.gameStarted && playingPlayers.length > 0) {
+                        setTimeout(() => {
+                            if (confirm('Dados de jogo anterior encontrados! Deseja continuar de onde parou?')) {
+                                showEvaluationScreen();
+                                
+                                // Restaurar timer se estava rodando (mas pausado por segurança)
+                                updateTimerDisplay();
+                                
+                                if (currentPlayer) {
+                                    // Mostrar critérios do jogador selecionado
+                                    const playerBtn = document.querySelector(`[data-player-id="${currentPlayer.id}"]`);
+                                    if (playerBtn) {
+                                        playerBtn.classList.add('btn-primary');
+                                        playerBtn.classList.remove('btn-outline-primary');
+                                        showCriteriaForPlayer(currentPlayer);
+                                    }
+                                }
+                            }
+                        }, 500);
+                    }
+                }
+                
+                console.log('Dados carregados com sucesso!', {
+                    jogadores: selectedPlayers.length,
+                    emCampo: playingPlayers.length,
+                    avaliacoes: Object.keys(evaluationData).length
+                });
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados salvos:', error);
+                // Não mostrar erro para o usuário, apenas continuar normalmente
+            }
+        }
+
+        // Exportar dados
+        function exportData() {
+            const playersWithStats = selectedPlayers.map(player => {
+                const stats = getPlayerStats(player.id);
+                const timeline = evaluationData[player.id]?.timeline || [];
+                
+                return {
+                    nome: player.name,
+                    posicao: player.position,
+                    tempo_jogado: calculatePlayerTime(player.id),
+                    pontos_positivos: stats.positive,
+                    pontos_especiais: stats.special,
+                    pontos_negativos: stats.negative,
+                    pontuacao_total: stats.positive + stats.special - stats.negative,
+                    detalhes: evaluationData[player.id] || {},
+                    timeline: timeline
+                };
+            });
+
+            const dataToExport = {
+                resumo_jogo: {
+                    data: new Date().toLocaleString('pt-BR'),
+                    tempo_total: document.getElementById('gameTimer').textContent,
+                    jogadores_selecionados: selectedPlayers.length,
+                    jogadores_em_campo: playingPlayers.length,
+                    jogadores_no_banco: benchPlayers.length,
+                    substituicoes: substitutionData.length,
+                    total_avaliacoes: Object.values(evaluationData).reduce((total, player) => {
+                        return total + (player.timeline ? player.timeline.length : 0);
+                    }, 0)
+                },
+                jogadores: playersWithStats,
+                substituicoes: substitutionData,
+                criterios_avaliacao: {
+                    jogadores_linha: {
+                        acao_boa: 'Jogada ofensiva, passe decisivo, recuperação importante (+1)',
+                        gol: 'Gol marcado (+2)',
+                        assistencia: 'Passe para gol (+2)', 
+                        jogada_genial: 'Drible espetacular, jogada brilhante (+2)',
+                        erro: 'Perda de bola perigosa, falta boba, chance perdida (-1)'
+                    },
+                    goleiros: {
+                        defesa_boa: 'Salvou chute, saída no tempo, reposição rápida (+1)',
+                        defesa_salvadora: 'Defesa espetacular, salvou gol certo (+2)',
+                        falha_goleiro: 'Saída errada, passe errado, gol por falha (-1)'
+                    }
+                },
+                dados_brutos: {
+                    evaluationData,
+                    playerTimes,
+                    substitutionData
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `avaliacao_completa_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Inicializar display do timer na carga
+        document.addEventListener('DOMContentLoaded', function() {
+            // Aguardar um pouco para garantir que o DOM está pronto
+            setTimeout(() => {
+                updateTimerDisplay();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

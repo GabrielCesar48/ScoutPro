@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+
+{% block title %}Novo Jogo/Treino - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .create-header {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-floating {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    }
+    
+    .game-type-card {
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+    }
+    
+    .game-type-card:hover {
+        border-color: #28a745;
+        transform: translateY(-2px);
+    }
+    
+    .game-type-card.selected {
+        border-color: #28a745;
+        background: rgba(40, 167, 69, 0.1);
+    }
+    
+    .game-type-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .datetime-helper {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="create-header fade-in">
+    <h1>
+        <i class="fas fa-plus-circle"></i>
+        Novo Jogo/Treino
+    </h1>
+    <p class="lead">Configure um novo jogo ou sessão de treinamento</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-card fade-in">
+            <form method="post" id="gameForm">
+                {% csrf_token %}
+                
+                <!-- Game Type Selection -->
+                <div class="mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-tag text-primary"></i>
+                        Tipo de Atividade
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="game-type-card" data-type="training">
+                                <div class="game-type-icon text-info">
+                                    <i class="fas fa-dumbbell"></i>
+                                </div>
+                                <h6>Treino</h6>
+                                <small class="text-muted">Sessão de treinamento</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="game-type-card" data-type="friendly">
+                                <div class="game-type-icon text-warning">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                                <h6>Amistoso</h6>
+                                <small class="text-muted">Jogo amistoso</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="game-type-card selected" data-type="official">
+                                <div class="game-type-icon text-success">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <h6>Oficial</h6>
+                                <small class="text-muted">Jogo oficial</small>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="game_type" value="official" id="gameTypeInput">
+                </div>
+                
+                <!-- Basic Information -->
+                <h5 class="mb-3">
+                    <i class="fas fa-info-circle text-primary"></i>
+                    Informações Básicas
+                </h5>
+                
+                <div class="form-floating">
+                    <input type="text" 
+                           class="form-control" 
+                           id="id_title" 
+                           name="title" 
+                           placeholder="Título do jogo"
+                           required
+                           maxlength="200">
+                    <label for="id_title">
+                        <i class="fas fa-edit me-2"></i>
+                        Título do Jogo/Treino *
+                    </label>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="datetime-local" 
+                                   class="form-control" 
+                                   id="id_date" 
+                                   name="date" 
+                                   required>
+                            <label for="id_date">
+                                <i class="fas fa-calendar me-2"></i>
+                                Data e Hora *
+                            </label>
+                        </div>
+                        <div class="datetime-helper">
+                            <i class="fas fa-info-circle"></i>
+                            Defina quando o jogo/treino acontecerá
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="id_location" 
+                                   name="location" 
+                                   placeholder="Local do jogo"
+                                   maxlength="200">
+                            <label for="id_location">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Local
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Opponent (conditional) -->
+                <div class="form-floating" id="opponentField" style="display: none;">
+                    <input type="text" 
+                           class="form-control" 
+                           id="id_opponent" 
+                           name="opponent" 
+                           placeholder="Nome do adversário"
+                           maxlength="100">
+                    <label for="id_opponent">
+                        <i class="fas fa-users me-2"></i>
+                        Adversário
+                    </label>
+                </div>
+                
+                <!-- Actions -->
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn btn-success btn-create flex-grow-1">
+                        <i class="fas fa-check"></i>
+                        Criar Jogo/Treino
+                    </button>
+                    <a href="{% url 'core:game_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tips Card -->
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="alert alert-info">
+            <h6 class="alert-heading">
+                <i class="fas fa-lightbulb"></i>
+                Dicas para criar um jogo
+            </h6>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Use nomes descritivos (ex: "Treino Tático - Finalizações")
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Configure data e hora corretas
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Informe o local para facilitar organização
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Para jogos, sempre informe o adversário
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const gameTypeCards = document.querySelectorAll('.game-type-card');
+    const gameTypeInput = document.getElementById('gameTypeInput');
+    const opponentField = document.getElementById('opponentField');
+    const opponentInput = document.getElementById('id_opponent');
+    const form = document.getElementById('gameForm');
+    
+    // Game type selection
+    gameTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove selected from all cards
+            gameTypeCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected to clicked card
+            this.classList.add('selected');
+            
+            // Update hidden input
+            const gameType = this.dataset.type;
+            gameTypeInput.value = gameType;
+            
+            // Show/hide opponent field
+            if (gameType === 'friendly' || gameType === 'official') {
+                opponentField.style.display = 'block';
+                opponentInput.required = true;
+            } else {
+                opponentField.style.display = 'none';
+                opponentInput.required = false;
+                opponentInput.value = '';
+            }
+        });
+    });
+    
+    // Set default datetime (now + 1 hour)
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    now.setMinutes(0);
+    const dateInput = document.getElementById('id_date');
+    dateInput.value = now.toISOString().slice(0, 16);
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const selectedType = document.querySelector('.game-type-card.selected');
+        if (!selectedType) {
+            e.preventDefault();
+            alert('Selecione o tipo de atividade.');
+            return;
+        }
+        
+        const title = document.getElementById('id_title').value.trim();
+        if (!title) {
+            e.preventDefault();
+            alert('Digite um título para o jogo/treino.');
+            return;
+        }
+        
+        const date = document.getElementById('id_date').value;
+        if (!date) {
+            e.preventDefault();
+            alert('Selecione data e hora.');
+            return;
+        }
+        
+        // Check if date is in the future (optional warning)
+        const selectedDate = new Date(date);
+        const now = new Date();
+        if (selectedDate < now) {
+            if (!confirm('A data selecionada é no passado. Deseja continuar?')) {
+                e.preventDefault();
+                return;
+            }
+        }
+        
+        // Show loading
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando...';
+        submitBtn.disabled = true;
+    });
+    
+    // Animation
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+});
+</script>
+{% endblock %}

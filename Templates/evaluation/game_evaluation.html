@@ -1,0 +1,774 @@
+{% extends 'base.html' %}
+
+{% block title %}Avaliação - {{ game.title }} - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    
+    .evaluation-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .game-timer {
+        background: linear-gradient(45deg, #17a2b8, #138496);
+        color: white;
+        border-radius: 15px;
+        padding: 15px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .timer-display {
+        font-size: 2rem;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .player-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .player-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .player-card.active {
+        border: 2px solid #28a745;
+        background-color: #f8f9fa;
+    }
+    
+    .criteria-btn {
+        margin: 2px;
+        min-height: 80px;
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .criteria-btn.clicked {
+        transform: scale(0.95);
+        box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
+        background: linear-gradient(45deg, #28a745, #20c997) !important;
+        color: white !important;
+        border-color: #28a745 !important;
+    }
+    
+    .criteria-btn.clicked.special {
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.8);
+        background: linear-gradient(45deg, #ffc107, #ffca2c) !important;
+        color: #000 !important;
+    }
+    
+    .criteria-btn.clicked.negative {
+        box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+        background: linear-gradient(45deg, #dc3545, #e74c3c) !important;
+        color: white !important;
+    }
+    
+    /* Animação de pulso */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .criteria-btn.pulse {
+        animation: pulse 0.3s ease-in-out;
+    }
+    
+    /* Efeito de confetti */
+    @keyframes confetti {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(-50px) rotate(360deg); opacity: 0; }
+    }
+    
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #ffc107;
+        animation: confetti 0.6s ease-out;
+        pointer-events: none;
+    }
+    
+    .substitution-panel {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .playing-time {
+        font-size: 0.8rem;
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    .player-stats {
+        font-size: 0.8rem;
+        background: rgba(0,123,255,0.1);
+        border-radius: 5px;
+        padding: 5px;
+        margin-top: 5px;
+    }
+    
+    .category-header {
+        background: linear-gradient(45deg, #28a745, #1e7e34);
+        color: white;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    .category-header.negative {
+        background: linear-gradient(45deg, #dc3545, #c82333);
+    }
+    
+    .category-header.special {
+        background: linear-gradient(45deg, #ffc107, #e0a800);
+        color: #000;
+    }
+    
+    .quick-actions {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    
+    .floating-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin: 5px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    @media (max-width: 768px) {
+        .evaluation-header {
+            padding: 1rem;
+        }
+        
+        .timer-display {
+            font-size: 1.5rem;
+        }
+        
+        .criteria-btn {
+            min-height: 60px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Evaluation Header -->
+<div class="evaluation-header fade-in">
+    <div class="row align-items-center">
+        <div class="col-6">
+            <h4 class="mb-1">{{ game.title }}</h4>
+            <small>Avaliação em Tempo Real</small>
+        </div>
+        <div class="col-6 text-end">
+            <div class="btn-group btn-group-sm">
+                <a href="{% url 'core:game_detail' game.pk %}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <button class="btn btn-warning btn-sm" onclick="viewResults()">
+                    <i class="fas fa-chart-bar"></i> Resultados
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="endGame()">
+                    <i class="fas fa-stop"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Timer do Jogo -->
+<div class="game-timer fade-in">
+    <div class="row align-items-center">
+        <div class="col-3">
+            <button id="playPauseBtn" class="btn btn-light btn-lg">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+        <div class="col-6 text-center">
+            <div class="timer-display" id="gameTimer">00:00</div>
+            <div><small id="gameStatus">Parado</small></div>
+        </div>
+        <div class="col-3 text-end">
+            <button id="resetTimer" class="btn btn-secondary btn-sm mb-1" title="Reiniciar Cronômetro">
+                <i class="fas fa-redo"></i>
+            </button><br>
+            <button id="makeSubstitution" class="btn btn-warning btn-sm" title="Substituição">
+                <i class="fas fa-exchange-alt"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Jogadores em Campo -->
+<div class="row mb-4 fade-in">
+    <div class="col-12">
+        <h5><i class="fas fa-running text-success"></i> Jogadores em Campo</h5>
+        <div class="row" id="playingPlayersRow">
+            {% for player in playing_players %}
+            <div class="col-6 col-md-4 mb-2">
+                <button class="btn btn-outline-primary w-100 player-select-btn" 
+                        data-player-id="{{ player.player.id }}"
+                        data-player-type="{{ player.player.position }}">
+                    <div><strong>{{ player.player.user.full_name|default:player.player.user.username }}</strong></div>
+                    <div><small class="text-muted">{{ player.player.get_position_display }}</small></div>
+                    <div class="playing-time">⏱️ 00:00</div>
+                    <div class="player-stats">
+                        <span class="text-success">0</span> |
+                        <span class="text-warning">★0</span> |
+                        <span class="text-danger">0</span>
+                    </div>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Critérios de Avaliação -->
+<div id="criteriaSection" style="display: none;" class="fade-in">
+    <div class="row">
+        <div class="col-12">
+            <h5 class="text-center mb-3">
+                Avaliar: <span id="selectedPlayerName" class="text-primary"></span>
+                <span id="playerPosition" class="badge bg-secondary"></span>
+            </h5>
+        </div>
+    </div>
+
+    <!-- Critérios para Jogadores de Linha -->
+    <div id="fieldPlayerCriteria" style="display: none;">
+        {% for criteria in field_criteria %}
+            {% if criteria.criteria_type == 'positive' and forloop.first %}
+                <div class="category-header">
+                    <h6><i class="fas fa-thumbs-up"></i> AÇÕES POSITIVAS</h6>
+                </div>
+            {% elif criteria.criteria_type == 'special' and forloop.first or criteria.criteria_type == 'special' and field_criteria|slice:":forloop.counter0"|last.criteria_type != 'special' %}
+                <div class="category-header special">
+                    <h6><i class="fas fa-star"></i> AÇÕES ESPECIAIS</h6>
+                </div>
+            {% elif criteria.criteria_type == 'negative' and forloop.first or criteria.criteria_type == 'negative' and field_criteria|slice:":forloop.counter0"|last.criteria_type != 'negative' %}
+                <div class="category-header negative">
+                    <h6><i class="fas fa-thumbs-down"></i> ERROS</h6>
+                </div>
+            {% endif %}
+            
+            <div class="row mb-2">
+                <div class="col-12">
+                    <button class="btn btn-{% if criteria.criteria_type == 'positive' %}success{% elif criteria.criteria_type == 'special' %}warning{% else %}danger{% endif %} criteria-btn w-100" 
+                            data-criteria-id="{{ criteria.id }}"
+                            data-criteria-code="{{ criteria.code }}"
+                            data-category="{{ criteria.criteria_type }}"
+                            data-points="{{ criteria.points }}">
+                        <i class="{{ criteria.icon }} fa-2x"></i><br>
+                        <strong>{{ criteria.name|upper }}</strong>
+                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Critérios Específicos para Goleiros -->
+    <div id="goalkeeperCriteria" style="display: none;">
+        {% for criteria in goalkeeper_criteria %}
+            {% if criteria.criteria_type == 'positive' and forloop.first %}
+                <div class="category-header">
+                    <h6><i class="fas fa-shield-alt"></i> DEFESAS BOAS</h6>
+                </div>
+            {% elif criteria.criteria_type == 'special' and forloop.first or criteria.criteria_type == 'special' and goalkeeper_criteria|slice:":forloop.counter0"|last.criteria_type != 'special' %}
+                <div class="category-header special">
+                    <h6><i class="fas fa-star"></i> DEFESAS SALVADORAS</h6>
+                </div>
+            {% elif criteria.criteria_type == 'negative' and forloop.first or criteria.criteria_type == 'negative' and goalkeeper_criteria|slice:":forloop.counter0"|last.criteria_type != 'negative' %}
+                <div class="category-header negative">
+                    <h6><i class="fas fa-exclamation-triangle"></i> FALHAS</h6>
+                </div>
+            {% endif %}
+            
+            <div class="row mb-2">
+                <div class="col-12">
+                    <button class="btn btn-{% if criteria.criteria_type == 'positive' %}success{% elif criteria.criteria_type == 'special' %}warning{% else %}danger{% endif %} criteria-btn w-100" 
+                            data-criteria-id="{{ criteria.id }}"
+                            data-criteria-code="{{ criteria.code }}"
+                            data-category="{{ criteria.criteria_type }}"
+                            data-points="{{ criteria.points }}">
+                        <i class="{{ criteria.icon }} fa-2x"></i><br>
+                        <strong>{{ criteria.name|upper }}</strong>
+                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal de Substituição -->
+<div class="modal fade" id="substitutionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exchange-alt"></i> Fazer Substituição
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Sai de Campo:</h6>
+                        <div id="playersToSubOut">
+                            {% for player in playing_players %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input player-out-radio" type="radio" name="playerOut" value="{{ player.player.id }}" id="out{{ player.player.id }}">
+                                <label class="form-check-label" for="out{{ player.player.id }}">
+                                    {{ player.player.user.full_name|default:player.player.user.username }} ({{ player.player.get_position_display }})
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h6>Entra no Jogo:</h6>
+                        <div id="playersToSubIn">
+                            {% for player in bench_players %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input player-in-radio" type="radio" name="playerIn" value="{{ player.player.id }}" id="in{{ player.player.id }}">
+                                <label class="form-check-label" for="in{{ player.player.id }}">
+                                    {{ player.player.user.full_name|default:player.player.user.username }} ({{ player.player.get_position_display }})
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmSubstitution" disabled>
+                    <i class="fas fa-check"></i> Confirmar Substituição
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botões Flutuantes -->
+<div class="quick-actions">
+    <button class="btn btn-info floating-btn" title="Ver Resultados" onclick="viewResults()">
+        <i class="fas fa-chart-bar"></i>
+    </button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Estado da aplicação
+let currentPlayer = null;
+let gameTimer = {
+    startTime: null,
+    elapsed: 0,
+    isRunning: false,
+    interval: null
+};
+let selectedPlayerOut = null;
+let selectedPlayerIn = null;
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    setupEventListeners();
+    updateTimerDisplay();
+    
+    // Auto-save a cada 10 segundos durante o jogo
+    setInterval(function() {
+        if (gameTimer.isRunning) {
+            updateGameTime();
+        }
+    }, 10000);
+    
+    // Animation
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+
+// Event Listeners
+function setupEventListeners() {
+    // Controles do timer
+    document.getElementById('playPauseBtn').addEventListener('click', toggleGameTimer);
+    document.getElementById('resetTimer').addEventListener('click', function() {
+        if (confirm('Reiniciar cronômetro?')) {
+            resetGameTimer();
+        }
+    });
+    
+    // Seleção de jogador para avaliar
+    document.querySelectorAll('.player-select-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const playerId = parseInt(this.dataset.playerId);
+            const playerType = this.dataset.playerType;
+            const playerName = this.querySelector('strong').textContent;
+            
+            currentPlayer = {
+                id: playerId,
+                type: playerType,
+                name: playerName
+            };
+            
+            // Atualizar interface
+            document.querySelectorAll('.player-select-btn').forEach(b => {
+                b.classList.remove('btn-primary');
+                b.classList.add('btn-outline-primary');
+            });
+            this.classList.add('btn-primary');
+            this.classList.remove('btn-outline-primary');
+            
+            showCriteriaForPlayer(currentPlayer);
+        });
+    });
+    
+    // Clique nos critérios
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.criteria-btn')) {
+            const btn = e.target.closest('.criteria-btn');
+            const criteriaId = parseInt(btn.dataset.criteriaId);
+            const criteriaCode = btn.dataset.criteriaCode;
+            const category = btn.dataset.category;
+            const points = parseInt(btn.dataset.points);
+            
+            if (currentPlayer && gameTimer.isRunning) {
+                addEvaluation(currentPlayer.id, criteriaId, criteriaCode, category, points);
+                showClickEffect(btn, points);
+            } else if (!gameTimer.isRunning) {
+                alert('⏰ Aperte PLAY no cronômetro para começar a avaliar!');
+            } else {
+                alert('Selecione um jogador primeiro!');
+            }
+        }
+    });
+    
+    // Substituições
+    document.getElementById('makeSubstitution').addEventListener('click', openSubstitutionModal);
+    document.getElementById('confirmSubstitution').addEventListener('click', confirmSubstitution);
+    
+    // Modal de substituição
+    document.querySelectorAll('.player-out-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            selectedPlayerOut = parseInt(this.value);
+            checkSubstitutionReady();
+        });
+    });
+    
+    document.querySelectorAll('.player-in-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            selectedPlayerIn = parseInt(this.value);
+            checkSubstitutionReady();
+        });
+    });
+}
+
+// Timer functions
+function toggleGameTimer() {
+    const btn = document.getElementById('playPauseBtn');
+    const statusEl = document.getElementById('gameStatus');
+    
+    if (gameTimer.isRunning) {
+        pauseGameTimer();
+        btn.innerHTML = '<i class="fas fa-play"></i>';
+        statusEl.textContent = 'Pausado';
+    } else {
+        startGameTimer();
+        btn.innerHTML = '<i class="fas fa-pause"></i>';
+        statusEl.textContent = 'Em andamento';
+    }
+}
+
+function startGameTimer() {
+    gameTimer.startTime = Date.now() - gameTimer.elapsed;
+    gameTimer.isRunning = true;
+    gameTimer.interval = setInterval(updateTimerDisplay, 1000);
+    
+    // Update game status
+    updateGameTime();
+}
+
+function pauseGameTimer() {
+    gameTimer.isRunning = false;
+    if (gameTimer.interval) {
+        clearInterval(gameTimer.interval);
+    }
+    if (gameTimer.startTime) {
+        gameTimer.elapsed = Date.now() - gameTimer.startTime;
+    }
+    
+    // Update game status
+    updateGameTime();
+}
+
+function resetGameTimer() {
+    pauseGameTimer();
+    gameTimer.elapsed = 0;
+    gameTimer.startTime = null;
+    updateTimerDisplay();
+    document.getElementById('gameStatus').textContent = 'Parado';
+    document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+    
+    updateGameTime();
+}
+
+function updateTimerDisplay() {
+    if (gameTimer.isRunning && gameTimer.startTime) {
+        gameTimer.elapsed = Date.now() - gameTimer.startTime;
+    }
+    
+    const totalSeconds = Math.floor(gameTimer.elapsed / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    
+    document.getElementById('gameTimer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function updateGameTime() {
+    const status = gameTimer.isRunning ? 'in_progress' : 'paused';
+    
+    fetch(`{% url 'core:api_update_game_time' game.id %}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            duration: Math.floor(gameTimer.elapsed / 1000),
+            status: status
+        })
+    }).catch(error => console.error('Error updating game time:', error));
+}
+
+// Player evaluation
+function showCriteriaForPlayer(player) {
+    document.getElementById('selectedPlayerName').textContent = player.name;
+    document.getElementById('playerPosition').textContent = player.type === 'goalkeeper' ? 'Goleiro' : 'Linha';
+    document.getElementById('criteriaSection').style.display = 'block';
+    
+    // Show appropriate criteria
+    if (player.type === 'goalkeeper') {
+        document.getElementById('fieldPlayerCriteria').style.display = 'none';
+        document.getElementById('goalkeeperCriteria').style.display = 'block';
+    } else {
+        document.getElementById('fieldPlayerCriteria').style.display = 'block';
+        document.getElementById('goalkeeperCriteria').style.display = 'none';
+    }
+}
+
+function addEvaluation(playerId, criteriaId, criteriaCode, category, points) {
+    const gamePlayerQuery = {% url 'core:api_add_evaluation' %};
+    
+    // Find the game_player_id
+    // This is a simplified approach - in production, you'd pass this data from the template
+    const gamePlayerId = playerId; // Assuming player ID equals game_player ID for simplicity
+    
+    fetch('{% url 'core:api_add_evaluation' %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            game_player_id: gamePlayerId,
+            criteria_id: criteriaId,
+            game_time: Math.floor(gameTimer.elapsed / 1000),
+            notes: ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update player stats in real time
+            updatePlayerStats(playerId, data.stats);
+            console.log('Evaluation added:', data.message);
+        } else {
+            alert('Erro ao adicionar avaliação: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Erro ao adicionar avaliação.');
+    });
+}
+
+function updatePlayerStats(playerId, stats) {
+    const playerBtn = document.querySelector(`[data-player-id="${playerId}"]`);
+    if (playerBtn) {
+        const statsDiv = playerBtn.querySelector('.player-stats');
+        if (statsDiv) {
+            statsDiv.innerHTML = `
+                <span class="text-success">${stats.positive.count || 0}</span> |
+                <span class="text-warning">★${stats.special.count || 0}</span> |
+                <span class="text-danger">${stats.negative.count || 0}</span>
+            `;
+        }
+    }
+}
+
+function showClickEffect(btn, points) {
+    const originalClasses = btn.className;
+    
+    btn.classList.add('clicked');
+    btn.classList.add('pulse');
+    
+    if (points === 2) {
+        createConfetti(btn);
+    }
+    
+    if (navigator.vibrate) {
+        if (points === 2) {
+            navigator.vibrate([100, 50, 100]);
+        } else {
+            navigator.vibrate(50);
+        }
+    }
+    
+    setTimeout(() => {
+        btn.className = originalClasses;
+    }, 500);
+}
+
+function createConfetti(btn) {
+    const rect = btn.getBoundingClientRect();
+    const colors = ['#ffc107', '#28a745', '#dc3545', '#007bff', '#fd7e14'];
+    
+    for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = (rect.left + Math.random() * rect.width) + 'px';
+            confetti.style.top = rect.top + 'px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.position = 'fixed';
+            confetti.style.zIndex = '9999';
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                if (document.body.contains(confetti)) {
+                    document.body.removeChild(confetti);
+                }
+            }, 600);
+        }, i * 50);
+    }
+}
+
+// Substitution functions
+function openSubstitutionModal() {
+    const modal = new bootstrap.Modal(document.getElementById('substitutionModal'));
+    modal.show();
+}
+
+function checkSubstitutionReady() {
+    const confirmBtn = document.getElementById('confirmSubstitution');
+    confirmBtn.disabled = !(selectedPlayerOut && selectedPlayerIn);
+}
+
+function confirmSubstitution() {
+    if (selectedPlayerOut && selectedPlayerIn) {
+        fetch('{% url 'core:api_make_substitution' %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                game_id: {{ game.id }},
+                player_out_id: selectedPlayerOut,
+                player_in_id: selectedPlayerIn,
+                game_time: Math.floor(gameTimer.elapsed / 1000)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Substituição realizada: ' + data.message);
+                location.reload(); // Refresh to update player lists
+            } else {
+                alert('Erro ao fazer substituição: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao fazer substituição.');
+        });
+    }
+}
+
+// Utility functions
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function viewResults() {
+    window.open(`{% url 'core:api_game_stats' game.id %}`, '_blank');
+}
+
+function endGame() {
+    if (confirm('Finalizar o jogo?')) {
+        pauseGameTimer();
+        fetch(`{% url 'core:api_update_game_time' game.id %}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                duration: Math.floor(gameTimer.elapsed / 1000),
+                status: 'finished'
+            })
+        })
+        .then(() => {
+            alert('Jogo finalizado!');
+            window.location.href = '{% url 'core:game_detail' game.id %}';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao finalizar jogo.');
+        });
+    }
+}
+</script>
+{% endblock %}

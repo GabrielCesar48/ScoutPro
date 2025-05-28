@@ -1,0 +1,571 @@
+{% extends 'base.html' %}
+
+{% block title %}Escalação - {{ game.title }} - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .lineup-header {
+        background: linear-gradient(135deg, #fd7e14, #e55a4f);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .lineup-section {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        min-height: 400px;
+    }
+    
+    .player-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 15px;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+    
+    .player-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .player-card.starting {
+        border: 2px solid #28a745;
+        background: linear-gradient(135deg, #e8f5e8, #f8f9fa);
+    }
+    
+    .player-card.bench {
+        border: 2px solid #6c757d;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        opacity: 0.8;
+    }
+    
+    .player-card.dragging {
+        opacity: 0.5;
+        transform: rotate(5deg);
+    }
+    
+    .drop-zone {
+        min-height: 200px;
+        border: 2px dashed #dee2e6;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+    }
+    
+    .drop-zone.drag-over {
+        border-color: #28a745;
+        background: rgba(40, 167, 69, 0.1);
+    }
+    
+    .drop-zone.has-players {
+        border-style: solid;
+        border-color: transparent;
+        background: transparent;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+    
+    .drop-zone-placeholder {
+        text-align: center;
+        color: #6c757d;
+        pointer-events: none;
+    }
+    
+    .lineup-counter {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    
+    .lineup-counter.full {
+        background: #28a745;
+    }
+    
+    .lineup-counter.over {
+        background: #dc3545;
+        animation: shake 0.5s ease-in-out infinite;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    
+    .player-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        color: #6c757d;
+    }
+    
+    .position-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+    }
+    
+    .formation-tips {
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .btn-start-game {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-start-game:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    }
+    
+    .btn-start-game:disabled {
+        background: #6c757d;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    @media (max-width: 768px) {
+        .lineup-section {
+            padding: 1rem;
+        }
+        
+        .player-card {
+            margin-bottom: 0.5rem;
+        }
+        
+        .drop-zone {
+            min-height: 150px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Lineup Header -->
+<div class="lineup-header fade-in">
+    <h1>
+        <i class="fas fa-clipboard-list"></i>
+        Definir Escalação
+    </h1>
+    <p class="lead">{{ game.title }}</p>
+    <div class="row justify-content-center mt-3">
+        <div class="col-auto">
+            <span class="badge bg-light text-dark fs-6">
+                <i class="fas fa-calendar"></i>
+                {{ game.date|date:"d/m/Y H:i" }}
+            </span>
+        </div>
+        <div class="col-auto">
+            <span class="badge bg-light text-dark fs-6">
+                <i class="fas fa-users"></i>
+                {{ game_players.count }} jogadores selecionados
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Formation Tips -->
+<div class="formation-tips fade-in">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h6><i class="fas fa-lightbulb text-warning"></i> Como funciona</h6>
+            <p class="mb-0">
+                Arraste os jogadores para a área "Titulares" (máximo 5) ou deixe na área "Reservas". 
+                Você pode clicar nos jogadores para alternar entre as áreas.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="d-flex gap-2 justify-content-md-end">
+                <span class="badge bg-success">Titular</span>
+                <span class="badge bg-secondary">Reserva</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Starting Lineup -->
+    <div class="col-lg-6 mb-4">
+        <div class="lineup-section fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-running text-success"></i>
+                    Jogadores Titulares
+                </h5>
+                <div class="lineup-counter" id="startingCounter">0/5</div>
+            </div>
+            
+            <div class="drop-zone" id="startingLineup" data-zone="starting">
+                <div class="drop-zone-placeholder">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <p>Arraste jogadores aqui para escalação inicial</p>
+                    <small class="text-muted">Máximo 5 jogadores</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bench -->
+    <div class="col-lg-6 mb-4">
+        <div class="lineup-section fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-chair text-secondary"></i>
+                    Jogadores Reservas
+                </h5>
+                <div class="lineup-counter" id="benchCounter">0</div>
+            </div>
+            
+            <div class="drop-zone" id="benchArea" data-zone="bench">
+                <div class="drop-zone-placeholder">
+                    <i class="fas fa-chair fa-2x mb-2"></i>
+                    <p>Jogadores que começam no banco</p>
+                    <small class="text-muted">Disponíveis para substituição</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Players (draggable source) -->
+<div class="row">
+    <div class="col-12">
+        <div class="lineup-section fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-users text-primary"></i>
+                Todos os Jogadores Selecionados
+            </h5>
+            
+            <div class="row" id="allPlayersContainer">
+                {% for game_player in game_players %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card player-card {% if game_player.status == 'starting' %}starting{% elif game_player.status == 'bench' %}bench{% endif %}" 
+                         data-player-id="{{ game_player.player.id }}"
+                         data-current-zone="{{ game_player.status }}"
+                         draggable="true">
+                        
+                        <div class="position-indicator bg-primary text-white">
+                            {{ game_player.player.get_position_display }}
+                        </div>
+                        
+                        <div class="card-body d-flex align-items-center">
+                            <div class="player-avatar">
+                                {% if game_player.player.photo %}
+                                    <img src="{{ game_player.player.photo.url }}" alt="{{ game_player.player.user.full_name }}" 
+                                         class="w-100 h-100 rounded-circle object-fit-cover">
+                                {% else %}
+                                    <i class="fas fa-user"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="card-title mb-1">
+                                    {{ game_player.player.user.full_name|default:game_player.player.user.username }}
+                                </h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if game_player.player.shirt_number %}
+                                    <span class="badge bg-dark">#{{ game_player.player.shirt_number }}</span>
+                                    {% endif %}
+                                    {% if game_player.player.position == 'goalkeeper' %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-hands"></i> Goleiro
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                {% if game_player.player.team %}
+                                <small class="text-muted">{{ game_player.player.team.name }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="row">
+    <div class="col-12 text-center">
+        <form method="post" id="lineupForm">
+            {% csrf_token %}
+            <div id="hiddenInputs">
+                <!-- Hidden inputs will be populated by JavaScript -->
+            </div>
+            
+            <button type="submit" class="btn btn-success btn-start-game me-3" id="startGameBtn" disabled>
+                <i class="fas fa-play-circle"></i>
+                Iniciar Jogo (0/5 titulares)
+            </button>
+            
+            <a href="{% url 'core:player_selection' game.id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Voltar à Seleção
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const playerCards = document.querySelectorAll('.player-card');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    const startingLineup = document.getElementById('startingLineup');
+    const benchArea = document.getElementById('benchArea');
+    const startingCounter = document.getElementById('startingCounter');
+    const benchCounter = document.getElementById('benchCounter');
+    const startGameBtn = document.getElementById('startGameBtn');
+    const hiddenInputs = document.getElementById('hiddenInputs');
+    
+    let startingPlayers = [];
+    let benchPlayers = [];
+    
+    // Initialize from existing data
+    playerCards.forEach(card => {
+        const playerId = parseInt(card.dataset.playerId);
+        const currentZone = card.dataset.currentZone;
+        
+        if (currentZone === 'starting') {
+            startingPlayers.push(playerId);
+        } else {
+            benchPlayers.push(playerId);
+        }
+    });
+    
+    // Set up drag and drop
+    playerCards.forEach(card => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+        card.addEventListener('click', handleCardClick);
+    });
+    
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+        zone.addEventListener('dragenter', handleDragEnter);
+        zone.addEventListener('dragleave', handleDragLeave);
+    });
+    
+    function handleDragStart(e) {
+        e.dataTransfer.setData('text/plain', this.dataset.playerId);
+        this.classList.add('dragging');
+    }
+    
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+    }
+    
+    function handleDragOver(e) {
+        e.preventDefault();
+    }
+    
+    function handleDragEnter(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    }
+    
+    function handleDragLeave(e) {
+        if (!this.contains(e.relatedTarget)) {
+            this.classList.remove('drag-over');
+        }
+    }
+    
+    function handleDrop(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        const playerId = parseInt(e.dataTransfer.getData('text/plain'));
+        const targetZone = this.dataset.zone;
+        
+        movePlayer(playerId, targetZone);
+    }
+    
+    function handleCardClick(e) {
+        const playerId = parseInt(this.dataset.playerId);
+        const currentZone = this.dataset.currentZone;
+        
+        // Toggle between starting and bench
+        const newZone = currentZone === 'starting' ? 'bench' : 'starting';
+        movePlayer(playerId, newZone);
+    }
+    
+    function movePlayer(playerId, targetZone) {
+        const playerCard = document.querySelector(`[data-player-id="${playerId}"]`);
+        
+        // Remove from current arrays
+        startingPlayers = startingPlayers.filter(id => id !== playerId);
+        benchPlayers = benchPlayers.filter(id => id !== playerId);
+        
+        // Check limits
+        if (targetZone === 'starting' && startingPlayers.length >= 5) {
+            alert('Máximo de 5 jogadores titulares!');
+            return;
+        }
+        
+        // Add to new array
+        if (targetZone === 'starting') {
+            startingPlayers.push(playerId);
+            playerCard.classList.remove('bench');
+            playerCard.classList.add('starting');
+        } else {
+            benchPlayers.push(playerId);
+            playerCard.classList.remove('starting');
+            playerCard.classList.add('bench');
+        }
+        
+        playerCard.dataset.currentZone = targetZone;
+        
+        updateUI();
+    }
+    
+    function updateUI() {
+        // Update counters
+        startingCounter.textContent = `${startingPlayers.length}/5`;
+        benchCounter.textContent = benchPlayers.length;
+        
+        // Update counter styles
+        if (startingPlayers.length === 5) {
+            startingCounter.classList.add('full');
+            startingCounter.classList.remove('over');
+        } else if (startingPlayers.length > 5) {
+            startingCounter.classList.add('over');
+            startingCounter.classList.remove('full');
+        } else {
+            startingCounter.classList.remove('full', 'over');
+        }
+        
+        // Update button
+        const canStart = startingPlayers.length === 5;
+        startGameBtn.disabled = !canStart;
+        startGameBtn.innerHTML = canStart 
+            ? '<i class="fas fa-play-circle"></i> Iniciar Jogo (5/5 titulares)'
+            : `<i class="fas fa-play-circle"></i> Iniciar Jogo (${startingPlayers.length}/5 titulares)`;
+        
+        // Update drop zones
+        updateDropZones();
+        
+        // Update hidden inputs
+        updateHiddenInputs();
+    }
+    
+    function updateDropZones() {
+        // Starting lineup zone
+        const startingCards = Array.from(document.querySelectorAll('.player-card.starting'));
+        if (startingCards.length > 0) {
+            startingLineup.classList.add('has-players');
+            startingLineup.innerHTML = '';
+            startingCards.forEach(card => {
+                startingLineup.appendChild(card.cloneNode(true));
+            });
+        } else {
+            startingLineup.classList.remove('has-players');
+            startingLineup.innerHTML = `
+                <div class="drop-zone-placeholder">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <p>Arraste jogadores aqui para escalação inicial</p>
+                    <small class="text-muted">Máximo 5 jogadores</small>
+                </div>
+            `;
+        }
+        
+        // Bench zone
+        const benchCards = Array.from(document.querySelectorAll('.player-card.bench'));
+        if (benchCards.length > 0) {
+            benchArea.classList.add('has-players');
+            benchArea.innerHTML = '';
+            benchCards.forEach(card => {
+                benchArea.appendChild(card.cloneNode(true));
+            });
+        } else {
+            benchArea.classList.remove('has-players');
+            benchArea.innerHTML = `
+                <div class="drop-zone-placeholder">
+                    <i class="fas fa-chair fa-2x mb-2"></i>
+                    <p>Jogadores que começam no banco</p>
+                    <small class="text-muted">Disponíveis para substituição</small>
+                </div>
+            `;
+        }
+    }
+    
+    function updateHiddenInputs() {
+        hiddenInputs.innerHTML = '';
+        
+        startingPlayers.forEach(playerId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'starting_players';
+            input.value = playerId;
+            hiddenInputs.appendChild(input);
+        });
+    }
+    
+    // Form submission
+    document.getElementById('lineupForm').addEventListener('submit', function(e) {
+        if (startingPlayers.length !== 5) {
+            e.preventDefault();
+            alert('Selecione exatamente 5 jogadores titulares para iniciar o jogo.');
+            return;
+        }
+        
+        // Show loading
+        startGameBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando jogo...';
+        startGameBtn.disabled = true;
+    });
+    
+    // Initialize UI
+    updateUI();
+    
+    // Animation
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+</script>
+{% endblock %}

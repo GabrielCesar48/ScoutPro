@@ -198,29 +198,29 @@
                 Ações Rápidas
             </h5>
             
-            <a href="#" class="action-button bg-primary text-white">
+            <a href="{% url 'core:game_create' %}" class="action-button bg-primary text-white">
                 <i class="fas fa-plus"></i>
                 Novo Jogo/Treino
             </a>
             
-            <a href="#" class="action-button bg-success text-white">
-                <i class="fas fa-star"></i>
-                Avaliar Jogadores
+            <a href="{% url 'core:game_list' %}" class="action-button bg-success text-white">
+                <i class="fas fa-list"></i>
+                Ver Jogos
             </a>
             
-            <a href="#" class="action-button bg-info text-white">
+            <a href="{% url 'admin:core_player_add' %}" class="action-button bg-info text-white">
                 <i class="fas fa-user-plus"></i>
                 Cadastrar Jogador
             </a>
             
-            <a href="#" class="action-button bg-warning text-white">
-                <i class="fas fa-chart-bar"></i>
-                Ver Relatórios
+            <a href="{% url 'admin:core_player_changelist' %}" class="action-button bg-warning text-white">
+                <i class="fas fa-users"></i>
+                Gerenciar Jogadores
             </a>
             
-            <a href="#" class="action-button bg-secondary text-white">
+            <a href="{% url 'admin:index' %}" class="action-button bg-secondary text-white">
                 <i class="fas fa-cog"></i>
-                Configurações
+                Painel Admin
             </a>
         </div>
     </div>

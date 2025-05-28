@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+
+{% block title %}Selecionar Jogadores - {{ game.title }} - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .game-header {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .player-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 15px;
+        margin-bottom: 1rem;
+    }
+    
+    .player-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .player-card.selected {
+        border: 2px solid #28a745;
+        background-color: #f8f9fa;
+        transform: translateY(-2px);
+    }
+    
+    .player-card.selected .card-body {
+        background: linear-gradient(135deg, #e8f5e8, #f8f9fa);
+    }
+    
+    .position-badge {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 10px;
+    }
+    
+    .selection-summary {
+        position: sticky;
+        top: 100px;
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .player-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #6c757d;
+        margin-right: 1rem;
+    }
+    
+    .selected-counter {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #28a745;
+    }
+    
+    .btn-continue {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-continue:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    }
+    
+    .btn-continue:disabled {
+        background: #6c757d;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .filter-buttons {
+        margin-bottom: 2rem;
+    }
+    
+    .filter-btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .game-header {
+            padding: 1.5rem;
+        }
+        
+        .selection-summary {
+            position: static;
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Game Header -->
+<div class="game-header fade-in">
+    <h1>
+        <i class="fas fa-users"></i>
+        Selecionar Jogadores
+    </h1>
+    <p class="lead">{{ game.title }}</p>
+    <div class="row justify-content-center mt-3">
+        <div class="col-auto">
+            <span class="badge bg-light text-dark fs-6">
+                <i class="fas fa-calendar"></i>
+                {{ game.date|date:"d/m/Y H:i" }}
+            </span>
+        </div>
+        <div class="col-auto">
+            <span class="badge bg-light text-dark fs-6">
+                <i class="fas fa-tag"></i>
+                {{ game.get_game_type_display }}
+            </span>
+        </div>
+        {% if game.location %}
+        <div class="col-auto">
+            <span class="badge bg-light text-dark fs-6">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ game.location }}
+            </span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <!-- Players Grid -->
+    <div class="col-lg-8">
+        <!-- Filter Buttons -->
+        <div class="filter-buttons fade-in">
+            <button class="btn btn-outline-primary filter-btn active" data-filter="all">
+                <i class="fas fa-users"></i> Todos
+            </button>
+            <button class="btn btn-outline-success filter-btn" data-filter="line">
+                <i class="fas fa-running"></i> Linha
+            </button>
+            <button class="btn btn-outline-warning filter-btn" data-filter="goalkeeper">
+                <i class="fas fa-hands"></i> Goleiros
+            </button>
+            <button class="btn btn-outline-info filter-btn" data-filter="selected">
+                <i class="fas fa-check"></i> Selecionados
+            </button>
+        </div>
+        
+        <!-- Players Grid -->
+        <div class="row" id="playersGrid">
+            {% for player in all_players %}
+            <div class="col-md-6 col-lg-4 player-item" 
+                 data-position="{{ player.position }}" 
+                 data-selected="{% if player.id in selected_players %}true{% else %}false{% endif %}">
+                <div class="card player-card h-100 {% if player.id in selected_players %}selected{% endif %}" 
+                     data-player-id="{{ player.id }}">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="player-avatar">
+                            {% if player.photo %}
+                                <img src="{{ player.photo.url }}" alt="{{ player.user.full_name }}" 
+                                     class="w-100 h-100 rounded-circle object-fit-cover">
+                            {% else %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">
+                                {{ player.user.full_name|default:player.user.username }}
+                            </h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="position-badge bg-primary text-white">
+                                    {{ player.get_position_display }}
+                                </span>
+                                {% if player.shirt_number %}
+                                <span class="badge bg-secondary">
+                                    #{{ player.shirt_number }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% if player.team %}
+                            <small class="text-muted">{{ player.team.name }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="selection-indicator">
+                            <i class="fas fa-check-circle text-success" style="display: none;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                    <h5>Nenhum jogador cadastrado</h5>
+                    <p>Cadastre jogadores no sistema para poder selecioná-los para jogos.</p>
+                    <a href="{% url 'admin:core_player_add' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Cadastrar Jogador
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Selection Summary -->
+    <div class="col-lg-4">
+        <div class="selection-summary fade-in">
+            <div class="text-center mb-3">
+                <div class="selected-counter" id="selectedCount">
+                    {{ selected_players|length }}
+                </div>
+                <p class="text-muted">Jogadores Selecionados</p>
+            </div>
+            
+            <div class="progress mb-3">
+                <div class="progress-bar bg-success" 
+                     id="selectionProgress" 
+                     style="width: {% widthratio selected_players|length 5 100 %}%">
+                </div>
+            </div>
+            
+            <div class="alert alert-info" id="selectionInfo">
+                <i class="fas fa-info-circle"></i>
+                <span id="selectionMessage">
+                    {% if selected_players|length < 5 %}
+                        Selecione pelo menos 5 jogadores para continuar
+                    {% else %}
+                        Pronto para definir escalação!
+                    {% endif %}
+                </span>
+            </div>
+            
+            <!-- Selected Players List -->
+            <div id="selectedPlayersList" class="mb-3">
+                <h6>Jogadores Selecionados:</h6>
+                <div id="selectedPlayersContainer">
+                    {% for player in all_players %}
+                        {% if player.id in selected_players %}
+                        <div class="selected-player-item d-flex align-items-center mb-2" data-player-id="{{ player.id }}">
+                            <small class="flex-grow-1">{{ player.user.full_name|default:player.user.username }}</small>
+                            <span class="badge bg-primary">{{ player.get_position_display }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Form -->
+            <form method="post" id="selectionForm">
+                {% csrf_token %}
+                <div id="hiddenInputs">
+                    {% for player_id in selected_players %}
+                    <input type="hidden" name="selected_players" value="{{ player_id }}">
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" 
+                        class="btn btn-success btn-continue w-100" 
+                        id="continueBtn"
+                        {% if selected_players|length < 5 %}disabled{% endif %}>
+                    <i class="fas fa-arrow-right"></i>
+                    Continuar para Escalação
+                </button>
+            </form>
+            
+            <div class="mt-3">
+                <a href="{% url 'core:game_detail' game.pk %}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-arrow-left"></i>
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let selectedPlayers = new Set({{ selected_players|safe }});
+    
+    // Elements
+    const playerCards = document.querySelectorAll('.player-card');
+    const selectedCount = document.getElementById('selectedCount');
+    const selectionProgress = document.getElementById('selectionProgress');
+    const selectionMessage = document.getElementById('selectionMessage');
+    const continueBtn = document.getElementById('continueBtn');
+    const hiddenInputs = document.getElementById('hiddenInputs');
+    const selectedPlayersContainer = document.getElementById('selectedPlayersContainer');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    // Player card click handler
+    playerCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const playerId = parseInt(this.dataset.playerId);
+            const indicator = this.querySelector('.selection-indicator i');
+            
+            if (selectedPlayers.has(playerId)) {
+                // Deselect
+                selectedPlayers.delete(playerId);
+                this.classList.remove('selected');
+                indicator.style.display = 'none';
+            } else {
+                // Select
+                selectedPlayers.add(playerId);
+                this.classList.add('selected');
+                indicator.style.display = 'block';
+            }
+            
+            updateSelection();
+        });
+    });
+    
+    // Filter buttons
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Update active button
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter players
+            const playerItems = document.querySelectorAll('.player-item');
+            playerItems.forEach(item => {
+                let show = true;
+                
+                if (filter === 'selected') {
+                    show = item.dataset.selected === 'true' || selectedPlayers.has(parseInt(item.querySelector('.player-card').dataset.playerId));
+                } else if (filter !== 'all') {
+                    show = item.dataset.position === filter;
+                }
+                
+                item.style.display = show ? 'block' : 'none';
+            });
+        });
+    });
+    
+    function updateSelection() {
+        const count = selectedPlayers.size;
+        
+        // Update counter
+        selectedCount.textContent = count;
+        
+        // Update progress bar
+        const percentage = Math.min((count / 5) * 100, 100);
+        selectionProgress.style.width = percentage + '%';
+        
+        // Update message
+        if (count < 5) {
+            selectionMessage.innerHTML = `Selecione pelo menos 5 jogadores para continuar (faltam ${5 - count})`;
+            continueBtn.disabled = true;
+        } else {
+            selectionMessage.innerHTML = 'Pronto para definir escalação!';
+            continueBtn.disabled = false;
+        }
+        
+        // Update hidden inputs
+        hiddenInputs.innerHTML = '';
+        selectedPlayers.forEach(playerId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_players';
+            input.value = playerId;
+            hiddenInputs.appendChild(input);
+        });
+        
+        // Update selected players list
+        updateSelectedPlayersList();
+        
+        // Update player items data
+        document.querySelectorAll('.player-item').forEach(item => {
+            const playerId = parseInt(item.querySelector('.player-card').dataset.playerId);
+            item.dataset.selected = selectedPlayers.has(playerId) ? 'true' : 'false';
+        });
+    }
+    
+    function updateSelectedPlayersList() {
+        selectedPlayersContainer.innerHTML = '';
+        
+        selectedPlayers.forEach(playerId => {
+            const playerCard = document.querySelector(`[data-player-id="${playerId}"]`);
+            if (playerCard) {
+                const playerName = playerCard.querySelector('.card-title').textContent.trim();
+                const playerPosition = playerCard.querySelector('.position-badge').textContent.trim();
+                
+                const item = document.createElement('div');
+                item.className = 'selected-player-item d-flex align-items-center mb-2';
+                item.innerHTML = `
+                    <small class="flex-grow-1">${playerName}</small>
+                    <span class="badge bg-primary">${playerPosition}</span>
+                `;
+                selectedPlayersContainer.appendChild(item);
+            }
+        });
+    }
+    
+    // Initialize
+    updateSelection();
+    
+    // Form submission
+    document.getElementById('selectionForm').addEventListener('submit', function(e) {
+        if (selectedPlayers.size < 5) {
+            e.preventDefault();
+            alert('Selecione pelo menos 5 jogadores para continuar.');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ game.title }} - ScoutPro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .game-detail-header {
+        background: linear-gradient(135deg, #6f42c1, #5a32a3);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        height: 100%;
+    }
+    
+    .status-indicator {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+    
+    .player-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .player-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: background-color 0.3s ease;
+    }
+    
+    .player-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .player-item:last-child {
+        border-bottom: none;
+    }
+    
+    .player-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1rem;
+        color: #6c757d;
+    }
+    
+    .action-buttons {
+        gap: 1rem;
+    }
+    
+    .action-buttons .btn {
+        min-width: 150px;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+    
+    .timeline-item {
+        padding: 1rem 0;
+        border-left: 3px solid #e9ecef;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -6px;
+        top: 1.5rem;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #007bff;
+    }
+    
+    .timeline-item:last-child {
+        border-left-color: transparent;
+    }
+    
+    .substitution-arrow {
+        font-size: 1.2rem;
+        color: #007bff;
+        margin: 0 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Game Header -->
+<div class="game-detail-header fade-in">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="mb-2">{{ game.title }}</h1>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <span class="badge bg-light text-dark fs-6">
+                    <i class="fas fa-calendar"></i>
+                    {{ game.date|date:"d/m/Y H:i" }}
+                </span>
+                <span class="badge bg-light text-dark fs-6">
+                    <i class="fas fa-tag"></i>
+                    {{ game.get_game_type_display }}
+                </span>
+                {% if game.location %}
+                <span class="badge bg-light text-dark fs-6">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ game.location }}
+                </span>
+                {% endif %}
+                {% if game.opponent %}
+                <span class="badge bg-light text-dark fs-6">
+                    <i class="fas fa-users"></i>
+                    vs {{ game.opponent }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="d-flex align-items-center justify-content-md-end">
+                <span class="status-indicator 
+                    {% if game.status == 'scheduled' %}bg-info
+                    {% elif game.status == 'in_progress' %}bg-success
+                    {% elif game.status == 'finished' %}bg-warning
+                    {% elif game.status == 'paused' %}bg-secondary
+                    {% else %}bg-danger{% endif %}">
+                </span>
+                <span class="fs-5 fw-bold">
+                    {{ game.get_status_display }}
+                </span>
+            </div>
+            <div class="mt-2">
+                <small>Duração: {{ game.duration_formatted }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex action-buttons flex-wrap">
+            {% if game.status == 'scheduled' %}
+                <a href="{% url 'core:player_selection' game.id %}" class="btn btn-success">
+                    <i class="fas fa-play"></i>
+                    Iniciar Jogo
+                </a>
+            {% elif game.status == 'in_progress' or game.status == 'paused' %}
+                <a href="{% url 'core:game_evaluation' game.id %}" class="btn btn-warning">
+                    <i class="fas fa-star"></i>
+                    Continuar Avaliação
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'core:game_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Voltar à Lista
+            </a>
+            
+            <button class="btn btn-outline-info" onclick="viewGameStats()">
+                <i class="fas fa-chart-bar"></i>
+                Ver Estatísticas
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Game Information -->
+    <div class="col-lg-4 mb-4">
+        <div class="info-card fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-info-circle text-primary"></i>
+                Informações do Jogo
+            </h5>
+            
+            <div class="mb-3">
+                <strong>Criado por:</strong><br>
+                <small class="text-muted">{{ game.created_by.full_name|default:game.created_by.username }}</small>
+            </div>
+            
+            <div class="mb-3">
+                <strong>Criado em:</strong><br>
+                <small class="text-muted">{{ game.created_at|date:"d/m/Y H:i" }}</small>
+            </div>
+            
+            {% if game.updated_at != game.created_at %}
+            <div class="mb-3">
+                <strong>Última atualização:</strong><br>
+                <small class="text-muted">{{ game.updated_at|date:"d/m/Y H:i" }}</small>
+            </div>
+            {% endif %}
+            
+            <div class="progress mb-2">
+                <div class="progress-bar 
+                    {% if game.status == 'scheduled' %}bg-info
+                    {% elif game.status == 'in_progress' %}bg-success
+                    {% elif game.status == 'finished' %}bg-warning
+                    {% else %}bg-secondary{% endif %}" 
+                     style="width: {% if game.status == 'scheduled' %}25{% elif game.status == 'in_progress' %}75{% elif game.status == 'finished' %}100{% else %}50{% endif %}%">
+                </div>
+            </div>
+            <small class="text-muted">Progresso do jogo</small>
+        </div>
+    </div>
+    
+    <!-- Players -->
+    <div class="col-lg-8">
+        <div class="row">
+            <!-- Starting Players -->
+            {% if starting_players %}
+            <div class="col-md-6 mb-4">
+                <div class="info-card fade-in">
+                    <h5 class="mb-3">
+                        <i class="fas fa-running text-success"></i>
+                        Jogadores Titulares
+                        <span class="badge bg-success">{{ starting_players.count }}</span>
+                    </h5>
+                    
+                    <div class="player-list">
+                        {% for game_player in starting_players %}
+                        <div class="player-item">
+                            <div class="player-avatar">
+                                {% if game_player.player.photo %}
+                                    <img src="{{ game_player.player.photo.url }}" alt="{{ game_player.player.user.full_name }}" 
+                                         class="w-100 h-100 rounded-circle object-fit-cover">
+                                {% else %}
+                                    <i class="fas fa-user"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">{{ game_player.player.user.full_name|default:game_player.player.user.username }}</div>
+                                <small class="text-muted">
+                                    {{ game_player.player.get_position_display }}
+                                    {% if game_player.player.shirt_number %}
+                                        | #{{ game_player.player.shirt_number }}
+                                    {% endif %}
+                                </small>
+                                {% if game_player.total_time > 0 %}
+                                <div class="mt-1">
+                                    <small class="text-success">⏱️ {{ game_player.time_formatted }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="badge bg-success">
+                                    {{ game_player.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Bench Players -->
+            {% if bench_players %}
+            <div class="col-md-6 mb-4">
+                <div class="info-card fade-in">
+                    <h5 class="mb-3">
+                        <i class="fas fa-chair text-secondary"></i>
+                        Jogadores Reservas
+                        <span class="badge bg-secondary">{{ bench_players.count }}</span>
+                    </h5>
+                    
+                    <div class="player-list">
+                        {% for game_player in bench_players %}
+                        <div class="player-item">
+                            <div class="player-avatar">
+                                {% if game_player.player.photo %}
+                                    <img src="{{ game_player.player.photo.url }}" alt="{{ game_player.player.user.full_name }}" 
+                                         class="w-100 h-100 rounded-circle object-fit-cover">
+                                {% else %}
+                                    <i class="fas fa-user"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">{{ game_player.player.user.full_name|default:game_player.player.user.username }}</div>
+                                <small class="text-muted">
+                                    {{ game_player.player.get_position_display }}
+                                    {% if game_player.player.shirt_number %}
+                                        | #{{ game_player.player.shirt_number }}
+                                    {% endif %}
+                                </small>
+                                {% if game_player.total_time > 0 %}
+                                <div class="mt-1">
+                                    <small class="text-info">⏱️ {{ game_player.time_formatted }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="badge bg-secondary">
+                                    {{ game_player.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- No Players Selected -->
+            {% if not starting_players and not bench_players %}
+            <div class="col-12 mb-4">
+                <div class="info-card fade-in text-center">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5>Nenhum jogador selecionado</h5>
+                    <p class="text-muted">Selecione os jogadores para este jogo e defina a escalação inicial.</p>
+                    {% if game.status == 'scheduled' %}
+                    <a href="{% url 'core:player_selection' game.id %}" class="btn btn-primary">
+                        <i class="fas fa-users"></i>
+                        Selecionar Jogadores
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Substitutions -->
+{% if substitutions %}
+<div class="row">
+    <div class="col-12">
+        <div class="info-card fade-in">
+            <h5 class="mb-3">
+                <i class="fas fa-exchange-alt text-info"></i>
+                Substituições Realizadas
+                <span class="badge bg-info">{{ substitutions.count }}</span>
+            </h5>
+            
+            <div class="timeline">
+                {% for substitution in substitutions %}
+                <div class="timeline-item">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-light text-dark me-2">{{ substitution.game_time_formatted }}</span>
+                            <span>{{ substitution.player_out.user.full_name|default:substitution.player_out.user.username }}</span>
+                            <span class="substitution-arrow">⇄</span>
+                            <span>{{ substitution.player_in.user.full_name|default:substitution.player_in.user.username }}</span>
+                        </div>
+                        <small class="text-muted">
+                            por {{ substitution.made_by.full_name|default:substitution.made_by.username }}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+
+function viewGameStats() {
+    // Implementar visualização de estatísticas detalhadas
+    fetch(`/api/games/{{ game.id }}/stats/`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Game stats:', data);
+            alert('Estatísticas detalhadas serão implementadas na próxima fase!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao carregar estatísticas.');
+        });
+}
+</script>
+{% endblock %}

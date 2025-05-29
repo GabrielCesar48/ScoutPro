@@ -52,37 +52,6 @@
         transform: rotate(5deg);
     }
     
-    .drop-zone {
-        min-height: 200px;
-        border: 2px dashed #dee2e6;
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
-        margin-bottom: 1rem;
-    }
-    
-    .drop-zone.drag-over {
-        border-color: #28a745;
-        background: rgba(40, 167, 69, 0.1);
-    }
-    
-    .drop-zone.has-players {
-        border-style: solid;
-        border-color: transparent;
-        background: transparent;
-        justify-content: flex-start;
-        align-items: flex-start;
-        padding: 1rem;
-    }
-    
-    .drop-zone-placeholder {
-        text-align: center;
-        color: #6c757d;
-        pointer-events: none;
-    }
-    
     .lineup-counter {
         position: absolute;
         top: -10px;
@@ -172,10 +141,6 @@
         .player-card {
             margin-bottom: 0.5rem;
         }
-        
-        .drop-zone {
-            min-height: 150px;
-        }
     }
 </style>
 {% endblock %}
@@ -210,8 +175,8 @@
         <div class="col-md-8">
             <h6><i class="fas fa-lightbulb text-warning"></i> Como funciona</h6>
             <p class="mb-0">
-                Arraste os jogadores para a área "Titulares" (máximo 5) ou deixe na área "Reservas". 
-                Você pode clicar nos jogadores para alternar entre as áreas.
+                Clique nos jogadores para alternar entre "Titulares" (máximo 5) e "Reservas". 
+                Os jogadores começam todos como reservas.
             </p>
         </div>
         <div class="col-md-4 text-md-end">
@@ -235,12 +200,8 @@
                 <div class="lineup-counter" id="startingCounter">0/5</div>
             </div>
             
-            <div class="drop-zone" id="startingLineup" data-zone="starting">
-                <div class="drop-zone-placeholder">
-                    <i class="fas fa-users fa-2x mb-2"></i>
-                    <p>Arraste jogadores aqui para escalação inicial</p>
-                    <small class="text-muted">Máximo 5 jogadores</small>
-                </div>
+            <div id="startingLineup">
+                <!-- Jogadores titulares aparecerão aqui -->
             </div>
         </div>
     </div>
@@ -253,36 +214,15 @@
                     <i class="fas fa-chair text-secondary"></i>
                     Jogadores Reservas
                 </h5>
-                <div class="lineup-counter" id="benchCounter">0</div>
+                <div class="lineup-counter" id="benchCounter">{{ game_players.count }}</div>
             </div>
             
-            <div class="drop-zone" id="benchArea" data-zone="bench">
-                <div class="drop-zone-placeholder">
-                    <i class="fas fa-chair fa-2x mb-2"></i>
-                    <p>Jogadores que começam no banco</p>
-                    <small class="text-muted">Disponíveis para substituição</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- All Players (draggable source) -->
-<div class="row">
-    <div class="col-12">
-        <div class="lineup-section fade-in">
-            <h5 class="mb-3">
-                <i class="fas fa-users text-primary"></i>
-                Todos os Jogadores Selecionados
-            </h5>
-            
-            <div class="row" id="allPlayersContainer">
+            <div id="benchArea">
                 {% for game_player in game_players %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card player-card {% if game_player.status == 'starting' %}starting{% elif game_player.status == 'bench' %}bench{% endif %}" 
+                <div class="col-12 mb-2">
+                    <div class="card player-card bench" 
                          data-player-id="{{ game_player.player.id }}"
-                         data-current-zone="{{ game_player.status }}"
-                         draggable="true">
+                         data-current-zone="bench">
                         
                         <div class="position-indicator bg-primary text-white">
                             {{ game_player.player.get_position_display }}
@@ -351,7 +291,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const playerCards = document.querySelectorAll('.player-card');
-    const dropZones = document.querySelectorAll('.drop-zone');
     const startingLineup = document.getElementById('startingLineup');
     const benchArea = document.getElementById('benchArea');
     const startingCounter = document.getElementById('startingCounter');
@@ -374,94 +313,68 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Set up drag and drop
+    // Click handler for player cards
     playerCards.forEach(card => {
-        card.addEventListener('dragstart', handleDragStart);
-        card.addEventListener('dragend', handleDragEnd);
-        card.addEventListener('click', handleCardClick);
+        card.addEventListener('click', function() {
+            const playerId = parseInt(this.dataset.playerId);
+            const currentZone = this.dataset.currentZone;
+            
+            // Toggle between starting and bench
+            if (currentZone === 'starting') {
+                // Move to bench
+                movePlayerToBench(playerId);
+            } else {
+                // Move to starting (if not full)
+                if (startingPlayers.length < 5) {
+                    movePlayerToStarting(playerId);
+                } else {
+                    alert('⚠️ Máximo de 5 jogadores titulares!');
+                }
+            }
+        });
     });
     
-    dropZones.forEach(zone => {
-        zone.addEventListener('dragover', handleDragOver);
-        zone.addEventListener('drop', handleDrop);
-        zone.addEventListener('dragenter', handleDragEnter);
-        zone.addEventListener('dragleave', handleDragLeave);
-    });
-    
-    function handleDragStart(e) {
-        e.dataTransfer.setData('text/plain', this.dataset.playerId);
-        this.classList.add('dragging');
-    }
-    
-    function handleDragEnd(e) {
-        this.classList.remove('dragging');
-    }
-    
-    function handleDragOver(e) {
-        e.preventDefault();
-    }
-    
-    function handleDragEnter(e) {
-        e.preventDefault();
-        this.classList.add('drag-over');
-    }
-    
-    function handleDragLeave(e) {
-        if (!this.contains(e.relatedTarget)) {
-            this.classList.remove('drag-over');
-        }
-    }
-    
-    function handleDrop(e) {
-        e.preventDefault();
-        this.classList.remove('drag-over');
-        
-        const playerId = parseInt(e.dataTransfer.getData('text/plain'));
-        const targetZone = this.dataset.zone;
-        
-        movePlayer(playerId, targetZone);
-    }
-    
-    function handleCardClick(e) {
-        const playerId = parseInt(this.dataset.playerId);
-        const currentZone = this.dataset.currentZone;
-        
-        // Toggle between starting and bench
-        const newZone = currentZone === 'starting' ? 'bench' : 'starting';
-        movePlayer(playerId, newZone);
-    }
-    
-    function movePlayer(playerId, targetZone) {
+    function movePlayerToStarting(playerId) {
         const playerCard = document.querySelector(`[data-player-id="${playerId}"]`);
         
-        // Remove from current arrays
-        startingPlayers = startingPlayers.filter(id => id !== playerId);
+        // Remove from bench arrays
         benchPlayers = benchPlayers.filter(id => id !== playerId);
+        startingPlayers.push(playerId);
         
-        // Check limits
-        if (targetZone === 'starting' && startingPlayers.length >= 5) {
-            alert('Máximo de 5 jogadores titulares!');
-            return;
-        }
+        // Update card
+        playerCard.classList.remove('bench');
+        playerCard.classList.add('starting');
+        playerCard.dataset.currentZone = 'starting';
         
-        // Add to new array
-        if (targetZone === 'starting') {
-            startingPlayers.push(playerId);
-            playerCard.classList.remove('bench');
-            playerCard.classList.add('starting');
-        } else {
-            benchPlayers.push(playerId);
-            playerCard.classList.remove('starting');
-            playerCard.classList.add('bench');
-        }
+        // Move card to starting area
+        startingLineup.appendChild(playerCard);
         
-        playerCard.dataset.currentZone = targetZone;
-        
-        updateUI();
+        updateCounters();
+        updateButton();
+        updateHiddenInputs();
     }
     
-    function updateUI() {
-        // Update counters
+    function movePlayerToBench(playerId) {
+        const playerCard = document.querySelector(`[data-player-id="${playerId}"]`);
+        
+        // Remove from starting arrays
+        startingPlayers = startingPlayers.filter(id => id !== playerId);
+        benchPlayers.push(playerId);
+        
+        // Update card
+        playerCard.classList.remove('starting');
+        playerCard.classList.add('bench');
+        playerCard.dataset.currentZone = 'bench';
+        
+        // Move card to bench area
+        benchArea.appendChild(playerCard);
+        
+        updateCounters();
+        updateButton();
+        updateHiddenInputs();
+    }
+    
+    function updateCounters() {
         startingCounter.textContent = `${startingPlayers.length}/5`;
         benchCounter.textContent = benchPlayers.length;
         
@@ -475,58 +388,18 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             startingCounter.classList.remove('full', 'over');
         }
-        
-        // Update button
-        const canStart = startingPlayers.length === 5;
-        startGameBtn.disabled = !canStart;
-        startGameBtn.innerHTML = canStart 
-            ? '<i class="fas fa-play-circle"></i> Iniciar Jogo (5/5 titulares)'
-            : `<i class="fas fa-play-circle"></i> Iniciar Jogo (${startingPlayers.length}/5 titulares)`;
-        
-        // Update drop zones
-        updateDropZones();
-        
-        // Update hidden inputs
-        updateHiddenInputs();
     }
     
-    function updateDropZones() {
-        // Starting lineup zone
-        const startingCards = Array.from(document.querySelectorAll('.player-card.starting'));
-        if (startingCards.length > 0) {
-            startingLineup.classList.add('has-players');
-            startingLineup.innerHTML = '';
-            startingCards.forEach(card => {
-                startingLineup.appendChild(card.cloneNode(true));
-            });
-        } else {
-            startingLineup.classList.remove('has-players');
-            startingLineup.innerHTML = `
-                <div class="drop-zone-placeholder">
-                    <i class="fas fa-users fa-2x mb-2"></i>
-                    <p>Arraste jogadores aqui para escalação inicial</p>
-                    <small class="text-muted">Máximo 5 jogadores</small>
-                </div>
-            `;
-        }
+    function updateButton() {
+        const canStart = startingPlayers.length === 5;
+        startGameBtn.disabled = !canStart;
         
-        // Bench zone
-        const benchCards = Array.from(document.querySelectorAll('.player-card.bench'));
-        if (benchCards.length > 0) {
-            benchArea.classList.add('has-players');
-            benchArea.innerHTML = '';
-            benchCards.forEach(card => {
-                benchArea.appendChild(card.cloneNode(true));
-            });
+        if (canStart) {
+            startGameBtn.className = 'btn btn-success btn-start-game me-3';
+            startGameBtn.innerHTML = '<i class="fas fa-play-circle"></i> Iniciar Jogo ✓ (5/5 titulares)';
         } else {
-            benchArea.classList.remove('has-players');
-            benchArea.innerHTML = `
-                <div class="drop-zone-placeholder">
-                    <i class="fas fa-chair fa-2x mb-2"></i>
-                    <p>Jogadores que começam no banco</p>
-                    <small class="text-muted">Disponíveis para substituição</small>
-                </div>
-            `;
+            startGameBtn.className = 'btn btn-outline-secondary btn-start-game me-3';
+            startGameBtn.innerHTML = `<i class="fas fa-play-circle"></i> Iniciar Jogo (${startingPlayers.length}/5 titulares)`;
         }
     }
     
@@ -546,17 +419,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('lineupForm').addEventListener('submit', function(e) {
         if (startingPlayers.length !== 5) {
             e.preventDefault();
-            alert('Selecione exatamente 5 jogadores titulares para iniciar o jogo.');
+            alert('⚠️ Selecione exatamente 5 jogadores titulares para iniciar o jogo.');
             return;
         }
+        
+        console.log('🚀 Iniciando jogo com escalação:', {
+            titulares: startingPlayers,
+            reservas: benchPlayers
+        });
         
         // Show loading
         startGameBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando jogo...';
         startGameBtn.disabled = true;
     });
     
-    // Initialize UI
-    updateUI();
+    // Initialize counters and button
+    updateCounters();
+    updateButton();
+    updateHiddenInputs();
     
     // Animation
     const elements = document.querySelectorAll('.fade-in');

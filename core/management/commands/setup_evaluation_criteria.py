@@ -38,17 +38,18 @@ class Command(BaseCommand):
 
     def reset_criteria(self):
         """Remove critérios existentes"""
+        count = EvaluationCriteria.objects.count()
         EvaluationCriteria.objects.all().delete()
         self.stdout.write(
-            self.style.WARNING('⚠️  Critérios existentes removidos')
+            self.style.WARNING(f'⚠️  {count} critérios existentes removidos')
         )
 
     def create_field_player_criteria(self):
-        """Cria critérios para jogadores de linha"""
+        """Cria critérios para jogadores de linha - IGUAIS AO SISTEMA ORIGINAL"""
         self.stdout.write('⚽ Criando critérios para jogadores de linha...')
         
         field_criteria = [
-            # Critérios Positivos (+1)
+            # AÇÃO BOA (+1) - IGUAL AO ORIGINAL
             {
                 'name': 'Ação Boa',
                 'code': 'acao_boa',
@@ -60,7 +61,7 @@ class Command(BaseCommand):
                 'color': 'success'
             },
             
-            # Critérios Especiais (+2)
+            # IMPACTO NO JOGO (+2) - IGUAL AO ORIGINAL
             {
                 'name': 'Gol',
                 'code': 'gol',
@@ -92,7 +93,7 @@ class Command(BaseCommand):
                 'color': 'warning'
             },
             
-            # Critérios Negativos (-1)
+            # ERRO (-1) - IGUAL AO ORIGINAL
             {
                 'name': 'Erro',
                 'code': 'erro',
@@ -112,13 +113,15 @@ class Command(BaseCommand):
             )
             if created:
                 self.stdout.write(f'  ✅ {criteria.name} ({criteria.points:+d})')
+            else:
+                self.stdout.write(f'  ⚠️  {criteria.name} já existe')
 
     def create_goalkeeper_criteria(self):
-        """Cria critérios específicos para goleiros"""
+        """Cria critérios específicos para goleiros - IGUAIS AO ORIGINAL"""
         self.stdout.write('🥅 Criando critérios para goleiros...')
         
         goalkeeper_criteria = [
-            # Critérios Positivos (+1)
+            # DEFESA BOA (+1)
             {
                 'name': 'Defesa Boa',
                 'code': 'defesa_boa',
@@ -130,7 +133,7 @@ class Command(BaseCommand):
                 'color': 'success'
             },
             
-            # Critérios Especiais (+2)
+            # DEFESA SALVADORA (+2)
             {
                 'name': 'Defesa Salvadora',
                 'code': 'defesa_salvadora',
@@ -142,7 +145,7 @@ class Command(BaseCommand):
                 'color': 'warning'
             },
             
-            # Critérios Negativos (-1)
+            # FALHA (-1)
             {
                 'name': 'Falha do Goleiro',
                 'code': 'falha_goleiro',
@@ -162,6 +165,8 @@ class Command(BaseCommand):
             )
             if created:
                 self.stdout.write(f'  ✅ {criteria.name} ({criteria.points:+d})')
+            else:
+                self.stdout.write(f'  ⚠️  {criteria.name} já existe')
 
     def print_summary(self):
         """Imprime resumo dos critérios criados"""
@@ -170,11 +175,11 @@ class Command(BaseCommand):
         special = EvaluationCriteria.objects.filter(criteria_type='special').count()
         negative = EvaluationCriteria.objects.filter(criteria_type='negative').count()
         
-        self.stdout.write('\n' + '='*50)
+        self.stdout.write('\n' + '='*60)
         self.stdout.write(
-            self.style.SUCCESS('📊 RESUMO DOS CRITÉRIOS')
+            self.style.SUCCESS('📊 RESUMO DOS CRITÉRIOS DE AVALIAÇÃO')
         )
-        self.stdout.write('='*50)
+        self.stdout.write('='*60)
         
         self.stdout.write(f'📈 Critérios Positivos: {positive}')
         self.stdout.write(f'⭐ Critérios Especiais: {special}') 
@@ -187,7 +192,8 @@ class Command(BaseCommand):
         ).order_by('criteria_type', '-points')
         
         for criteria in field_criteria:
-            self.stdout.write(f'  • {criteria.name}: {criteria.points:+d} pontos')
+            icon = '📈' if criteria.criteria_type == 'positive' else '⭐' if criteria.criteria_type == 'special' else '📉'
+            self.stdout.write(f'  {icon} {criteria.name}: {criteria.points:+d} pontos')
         
         self.stdout.write('\n🥅 CRITÉRIOS PARA GOLEIROS:')
         gk_criteria = EvaluationCriteria.objects.filter(
@@ -195,12 +201,23 @@ class Command(BaseCommand):
         ).order_by('criteria_type', '-points')
         
         for criteria in gk_criteria:
-            self.stdout.write(f'  • {criteria.name}: {criteria.points:+d} pontos')
+            icon = '📈' if criteria.criteria_type == 'positive' else '⭐' if criteria.criteria_type == 'special' else '📉'
+            self.stdout.write(f'  {icon} {criteria.name}: {criteria.points:+d} pontos')
         
-        self.stdout.write('\n💡 Para usar os critérios:')
-        self.stdout.write('1. Crie um jogo: /games/create/')
-        self.stdout.write('2. Selecione jogadores')
-        self.stdout.write('3. Defina escalação')
-        self.stdout.write('4. Inicie avaliação em tempo real')
+        self.stdout.write('\n' + '='*60)
+        self.stdout.write(
+            self.style.SUCCESS('🚀 SISTEMA PRONTO PARA USO!')
+        )
+        self.stdout.write('='*60)
         
-        self.stdout.write('\n' + '='*50)
+        self.stdout.write('\n💡 COMO USAR:')
+        self.stdout.write('1. Acesse: /games/create/ para criar um jogo')
+        self.stdout.write('2. Selecione jogadores e defina escalação')
+        self.stdout.write('3. Inicie avaliação em tempo real')
+        self.stdout.write('4. Finalize e salve no final do jogo')
+        
+        self.stdout.write('\n📝 COMANDOS ÚTEIS:')
+        self.stdout.write('• python manage.py setup_initial_data  # Criar dados demo')
+        self.stdout.write('• python manage.py setup_evaluation_criteria --reset  # Recriar critérios')
+        
+        self.stdout.write('\n' + '='*60)

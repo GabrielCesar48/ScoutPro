@@ -97,9 +97,9 @@ class Player(models.Model):
     """
     POSITION_CHOICES = [
         ('goalkeeper', 'Goleiro'),
-        ('defender', 'Defensor'),
-        ('midfielder', 'Meio-campo'),
-        ('forward', 'Atacante'),
+        ('defender', 'Fixo'),
+        ('winger', 'Ala'),
+        ('Pivot', 'Pivo'),
         ('line', 'Linha'),  # Para futsal
     ]
     

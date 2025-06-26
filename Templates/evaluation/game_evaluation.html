@@ -35,7 +35,7 @@
         transition: all 0.3s ease;
         cursor: pointer;
         border-radius: 10px;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
     
     .player-card:hover {
@@ -51,13 +51,14 @@
     .criteria-btn {
         margin: 2px;
         min-height: 80px;
-        font-size: 1rem;
+        font-size: 1.1rem;
         position: relative;
         overflow: hidden;
         border-radius: 10px;
         transition: all 0.3s ease;
     }
     
+    /* Efeito de clique incrível - IGUAL AO ORIGINAL */
     .criteria-btn.clicked {
         transform: scale(0.95);
         box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
@@ -104,27 +105,6 @@
         pointer-events: none;
     }
     
-    .substitution-panel {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
-    }
-    
-    .playing-time {
-        font-size: 0.8rem;
-        color: #28a745;
-        font-weight: bold;
-    }
-    
-    .player-stats {
-        font-size: 0.8rem;
-        background: rgba(0,123,255,0.1);
-        border-radius: 5px;
-        padding: 5px;
-        margin-top: 5px;
-    }
-    
     .category-header {
         background: linear-gradient(45deg, #28a745, #1e7e34);
         color: white;
@@ -142,19 +122,45 @@
         color: #000;
     }
     
-    .quick-actions {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
+    .playing-time {
+        font-size: 0.8rem;
+        color: #28a745;
+        font-weight: bold;
     }
     
-    .floating-btn {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        margin: 5px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    .player-stats {
+        font-size: 0.8rem;
+        background: rgba(0,123,255,0.1);
+        border-radius: 5px;
+        padding: 5px;
+        margin-top: 5px;
+    }
+    
+    /* Modal de resultados com scroll */
+    .results-modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .save-indicator {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        background: rgba(40, 167, 69, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .substitution-panel {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
     }
     
     @media (max-width: 768px) {
@@ -168,13 +174,18 @@
         
         .criteria-btn {
             min-height: 60px;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Save Indicator -->
+<div id="saveIndicator" class="save-indicator">
+    <i class="fas fa-save"></i> Dados salvos localmente
+</div>
+
 <!-- Evaluation Header -->
 <div class="evaluation-header fade-in">
     <div class="row align-items-center">
@@ -190,8 +201,8 @@
                 <button class="btn btn-warning btn-sm" onclick="viewResults()">
                     <i class="fas fa-chart-bar"></i> Resultados
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="endGame()">
-                    <i class="fas fa-stop"></i>
+                <button class="btn btn-danger btn-sm" onclick="finishAndSaveGame()">
+                    <i class="fas fa-save"></i> Finalizar
                 </button>
             </div>
         </div>
@@ -221,6 +232,20 @@
     </div>
 </div>
 
+<!-- Painel de Substituições -->
+<div class="substitution-panel fade-in">
+    <div class="row align-items-center">
+        <div class="col-8">
+            <h6><i class="fas fa-exchange-alt"></i> Substituições</h6>
+        </div>
+        <div class="col-4 text-end">
+            <button id="makeSubstitutionBtn" class="btn btn-warning btn-sm">
+                <i class="fas fa-people-arrows"></i> Substituir
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Jogadores em Campo -->
 <div class="row mb-4 fade-in">
     <div class="col-12">
@@ -230,6 +255,7 @@
             <div class="col-6 col-md-4 mb-2">
                 <button class="btn btn-outline-primary w-100 player-select-btn" 
                         data-player-id="{{ player.player.id }}"
+                        data-player-name="{{ player.player.user.full_name|default:player.player.user.username }}"
                         data-player-type="{{ player.player.position }}">
                     <div><strong>{{ player.player.user.full_name|default:player.player.user.username }}</strong></div>
                     <div><small class="text-muted">{{ player.player.get_position_display }}</small></div>
@@ -246,7 +272,7 @@
     </div>
 </div>
 
-<!-- Critérios de Avaliação -->
+<!-- Critérios de Avaliação - LAYOUT ORIGINAL -->
 <div id="criteriaSection" style="display: none;" class="fade-in">
     <div class="row">
         <div class="col-12">
@@ -259,144 +285,136 @@
 
     <!-- Critérios para Jogadores de Linha -->
     <div id="fieldPlayerCriteria" style="display: none;">
-        <!-- Ações Positivas -->
         <div class="category-header">
-            <h6><i class="fas fa-thumbs-up"></i> AÇÕES POSITIVAS (+1)</h6>
+            <h6><i class="fas fa-thumbs-up"></i> AÇÃO BOA (+1)</h6>
         </div>
-        {% for criteria in field_criteria %}
-            {% if criteria.criteria_type == 'positive' %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <button class="btn btn-success criteria-btn w-100" 
-                            data-criteria-id="{{ criteria.id }}"
-                            data-criteria-code="{{ criteria.code }}"
-                            data-category="{{ criteria.criteria_type }}"
-                            data-points="{{ criteria.points }}">
-                        <i class="{{ criteria.icon }} fa-2x"></i><br>
-                        <strong>{{ criteria.name|upper }}</strong>
-                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
-                    </button>
-                </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-success criteria-btn w-100 mb-2" 
+                        data-criteria="acao_boa" 
+                        data-category="positivo" 
+                        data-points="1" 
+                        style="min-height: 80px; font-size: 1.2rem;">
+                    <i class="fas fa-check-circle fa-2x"></i><br>
+                    <strong>AÇÃO BOA</strong><br>
+                    <small>Jogada ofensiva, passe decisivo, recuperação importante</small>
+                </button>
             </div>
-            {% endif %}
-        {% endfor %}
-        
-        <!-- Ações Especiais -->
+        </div>
+
         <div class="category-header special">
-            <h6><i class="fas fa-star"></i> AÇÕES ESPECIAIS (+2)</h6>
+            <h6><i class="fas fa-star"></i> IMPACTO NO JOGO (+2)</h6>
         </div>
-        {% for criteria in field_criteria %}
-            {% if criteria.criteria_type == 'special' %}
-            <div class="row mb-2">
-                <div class="col-6">
-                    <button class="btn btn-warning criteria-btn w-100" 
-                            data-criteria-id="{{ criteria.id }}"
-                            data-criteria-code="{{ criteria.code }}"
-                            data-category="{{ criteria.criteria_type }}"
-                            data-points="{{ criteria.points }}">
-                        <i class="{{ criteria.icon }} fa-2x"></i><br>
-                        <strong>{{ criteria.name|upper }}</strong>
-                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
-                    </button>
-                </div>
+        <div class="row mb-3">
+            <div class="col-6">
+                <button class="btn btn-warning criteria-btn w-100 mb-2" 
+                        data-criteria="gol" 
+                        data-category="especial" 
+                        data-points="2" 
+                        style="min-height: 80px; font-size: 1.1rem;">
+                    <i class="fas fa-futbol fa-2x"></i><br>
+                    <strong>GOL!</strong>
+                </button>
             </div>
-            {% endif %}
-        {% endfor %}
-        
-        <!-- Erros -->
+            <div class="col-6">
+                <button class="btn btn-warning criteria-btn w-100 mb-2" 
+                        data-criteria="assistencia" 
+                        data-category="especial" 
+                        data-points="2" 
+                        style="min-height: 80px; font-size: 1.1rem;">
+                    <i class="fas fa-hands-helping fa-2x"></i><br>
+                    <strong>ASSISTÊNCIA</strong>
+                </button>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-warning criteria-btn w-100 mb-2" 
+                        data-criteria="jogada_genial" 
+                        data-category="especial" 
+                        data-points="2" 
+                        style="min-height: 80px; font-size: 1.1rem;">
+                    <i class="fas fa-brain fa-2x"></i><br>
+                    <strong>JOGADA GENIAL</strong><br>
+                    <small>Drible espetacular, passe impossível, decisão brilhante</small>
+                </button>
+            </div>
+        </div>
+
         <div class="category-header negative">
-            <h6><i class="fas fa-thumbs-down"></i> ERROS (-1)</h6>
+            <h6><i class="fas fa-thumbs-down"></i> ERRO (-1)</h6>
         </div>
-        {% for criteria in field_criteria %}
-            {% if criteria.criteria_type == 'negative' %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <button class="btn btn-danger criteria-btn w-100" 
-                            data-criteria-id="{{ criteria.id }}"
-                            data-criteria-code="{{ criteria.code }}"
-                            data-category="{{ criteria.criteria_type }}"
-                            data-points="{{ criteria.points }}">
-                        <i class="{{ criteria.icon }} fa-2x"></i><br>
-                        <strong>{{ criteria.name|upper }}</strong>
-                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
-                    </button>
-                </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-danger criteria-btn w-100 mb-2" 
+                        data-criteria="erro" 
+                        data-category="negativo" 
+                        data-points="-1" 
+                        style="min-height: 80px; font-size: 1.2rem;">
+                    <i class="fas fa-times-circle fa-2x"></i><br>
+                    <strong>ERRO</strong><br>
+                    <small>Perda de bola perigosa, falta boba, chance perdida</small>
+                </button>
             </div>
-            {% endif %}
-        {% endfor %}
+        </div>
     </div>
 
     <!-- Critérios Específicos para Goleiros -->
     <div id="goalkeeperCriteria" style="display: none;">
-        <!-- Defesas Boas -->
         <div class="category-header">
-            <h6><i class="fas fa-shield-alt"></i> DEFESAS BOAS (+1)</h6>
+            <h6><i class="fas fa-shield-alt"></i> DEFESA BOA (+1)</h6>
         </div>
-        {% for criteria in goalkeeper_criteria %}
-            {% if criteria.criteria_type == 'positive' %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <button class="btn btn-success criteria-btn w-100" 
-                            data-criteria-id="{{ criteria.id }}"
-                            data-criteria-code="{{ criteria.code }}"
-                            data-category="{{ criteria.criteria_type }}"
-                            data-points="{{ criteria.points }}">
-                        <i class="{{ criteria.icon }} fa-2x"></i><br>
-                        <strong>{{ criteria.name|upper }}</strong>
-                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
-                    </button>
-                </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-success criteria-btn w-100 mb-2" 
+                        data-criteria="defesa_boa" 
+                        data-category="positivo" 
+                        data-points="1" 
+                        style="min-height: 80px; font-size: 1.2rem;">
+                    <i class="fas fa-hand-paper fa-2x"></i><br>
+                    <strong>DEFESA BOA</strong><br>
+                    <small>Salvou o chute, saída no tempo certo, reposição rápida</small>
+                </button>
             </div>
-            {% endif %}
-        {% endfor %}
-        
-        <!-- Defesas Salvadoras -->
+        </div>
+
         <div class="category-header special">
-            <h6><i class="fas fa-star"></i> DEFESAS SALVADORAS (+2)</h6>
+            <h6><i class="fas fa-star"></i> DEFESA SALVADORA (+2)</h6>
         </div>
-        {% for criteria in goalkeeper_criteria %}
-            {% if criteria.criteria_type == 'special' %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <button class="btn btn-warning criteria-btn w-100" 
-                            data-criteria-id="{{ criteria.id }}"
-                            data-criteria-code="{{ criteria.code }}"
-                            data-category="{{ criteria.criteria_type }}"
-                            data-points="{{ criteria.points }}">
-                        <i class="{{ criteria.icon }} fa-2x"></i><br>
-                        <strong>{{ criteria.name|upper }}</strong>
-                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
-                    </button>
-                </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-warning criteria-btn w-100 mb-2" 
+                        data-criteria="defesa_salvadora" 
+                        data-category="especial" 
+                        data-points="2" 
+                        style="min-height: 80px; font-size: 1.2rem;">
+                    <i class="fas fa-medal fa-2x"></i><br>
+                    <strong>DEFESA SALVADORA</strong><br>
+                    <small>Defesa espetacular, salvou gol certo</small>
+                </button>
             </div>
-            {% endif %}
-        {% endfor %}
-        
-        <!-- Falhas -->
+        </div>
+
         <div class="category-header negative">
-            <h6><i class="fas fa-exclamation-triangle"></i> FALHAS (-1)</h6>
+            <h6><i class="fas fa-exclamation-triangle"></i> FALHA (-1)</h6>
         </div>
-        {% for criteria in goalkeeper_criteria %}
-            {% if criteria.criteria_type == 'negative' %}
-            <div class="row mb-2">
-                <div class="col-12">
-                    <button class="btn btn-danger criteria-btn w-100" 
-                            data-criteria-id="{{ criteria.id }}"
-                            data-criteria-code="{{ criteria.code }}"
-                            data-category="{{ criteria.criteria_type }}"
-                            data-points="{{ criteria.points }}">
-                        <i class="{{ criteria.icon }} fa-2x"></i><br>
-                        <strong>{{ criteria.name|upper }}</strong>
-                        {% if criteria.description %}<br><small>{{ criteria.description }}</small>{% endif %}
-                    </button>
-                </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-danger criteria-btn w-100 mb-2" 
+                        data-criteria="falha_goleiro" 
+                        data-category="negativo" 
+                        data-points="-1" 
+                        style="min-height: 80px; font-size: 1.2rem;">
+                    <i class="fas fa-times-circle fa-2x"></i><br>
+                    <strong>FALHA</strong><br>
+                    <small>Saída errada, passe errado, gol por falha</small>
+                </button>
             </div>
-            {% endif %}
-        {% endfor %}
+        </div>
     </div>
 </div>
 
-<!-- Modal de Substituição -->
+<!-- Modal de Substituição - SEM RECARREGAR PÁGINA -->
 <div class="modal fade" id="substitutionModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -411,27 +429,13 @@
                     <div class="col-6">
                         <h6>Sai de Campo:</h6>
                         <div id="playersToSubOut">
-                            {% for player in playing_players %}
-                            <div class="form-check mb-2">
-                                <input class="form-check-input player-out-radio" type="radio" name="playerOut" value="{{ player.player.id }}" id="out{{ player.player.id }}">
-                                <label class="form-check-label" for="out{{ player.player.id }}">
-                                    {{ player.player.user.full_name|default:player.player.user.username }} ({{ player.player.get_position_display }})
-                                </label>
-                            </div>
-                            {% endfor %}
+                            <!-- Será preenchido via JavaScript -->
                         </div>
                     </div>
                     <div class="col-6">
                         <h6>Entra no Jogo:</h6>
                         <div id="playersToSubIn">
-                            {% for player in bench_players %}
-                            <div class="form-check mb-2">
-                                <input class="form-check-input player-in-radio" type="radio" name="playerIn" value="{{ player.player.id }}" id="in{{ player.player.id }}">
-                                <label class="form-check-label" for="in{{ player.player.id }}">
-                                    {{ player.player.user.full_name|default:player.player.user.username }} ({{ player.player.get_position_display }})
-                                </label>
-                            </div>
-                            {% endfor %}
+                            <!-- Será preenchido via JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -446,214 +450,219 @@
     </div>
 </div>
 
-<!-- Status Indicator -->
-<div id="statusIndicator" style="
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    z-index: 1000;
-    display: none;
-">
-    <i class="fas fa-circle text-success"></i>
-    <span id="statusText">Sistema ativo</span>
-</div>
-
-<!-- Botões Flutuantes -->
-<div class="quick-actions">
-    <button class="btn btn-info floating-btn" title="Ver Resultados" onclick="viewResults()">
-        <i class="fas fa-chart-bar"></i>
-    </button>
+<!-- Modal de Resultados com SCROLL CORRIGIDO -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-trophy text-warning"></i>
+                    Resultados do Jogo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body results-modal-body">
+                <div id="resultsContent">
+                    <!-- Resultados serão inseridos aqui -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="exportGameData()">
+                    <i class="fas fa-download"></i> Exportar Dados
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Estado da aplicação
+// SISTEMA HÍBRIDO: JavaScript Local + Persistência Django
+// Baseado no sistema original que funcionava perfeitamente
+
+// Estado da aplicação - IGUAL AO ORIGINAL
+let selectedPlayers = [];
+let playingPlayers = [];
+let benchPlayers = [];
 let currentPlayer = null;
+let evaluationData = {};
+let playerTimes = {};
 let gameTimer = {
     startTime: null,
     elapsed: 0,
     isRunning: false,
     interval: null
 };
+let substitutionData = [];
 let selectedPlayerOut = null;
 let selectedPlayerIn = null;
 
+// Dados do jogo Django
+const GAME_ID = {{ game.id }};
+const GAME_TITLE = "{{ game.title }}";
+
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    loadGameData();
     setupEventListeners();
+    renderPlayingPlayers();
     updateTimerDisplay();
     
-    // Auto-save a cada 30 segundos durante o jogo
+    // Auto-save local a cada 10 segundos
     setInterval(function() {
         if (gameTimer.isRunning) {
-            updateGameTime();
-            
-            // Show subtle save indicator
-            const saveIndicator = document.getElementById('saveIndicator');
-            if (!saveIndicator) {
-                const indicator = document.createElement('div');
-                indicator.id = 'saveIndicator';
-                indicator.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    left: 20px;
-                    background: rgba(40, 167, 69, 0.9);
-                    color: white;
-                    padding: 8px 12px;
-                    border-radius: 20px;
-                    font-size: 0.8rem;
-                    z-index: 1000;
-                    opacity: 0;
-                    transition: opacity 0.3s ease;
-                `;
-                indicator.innerHTML = '<i class="fas fa-save"></i> Salvando...';
-                document.body.appendChild(indicator);
-            }
-            
-            const indicator = document.getElementById('saveIndicator');
-            indicator.style.opacity = '1';
-            setTimeout(() => {
-                indicator.style.opacity = '0';
-            }, 1500);
+            saveDataLocally();
         }
-    }, 30000);
+    }, 10000);
     
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Spacebar to play/pause
-        if (e.code === 'Space' && !e.target.matches('input, textarea')) {
+    // Salvar antes de sair da página
+    window.addEventListener('beforeunload', function(e) {
+        saveDataLocally();
+        if (gameTimer.isRunning && Object.keys(evaluationData).length > 0) {
             e.preventDefault();
-            toggleGameTimer();
+            e.returnValue = 'Há avaliações não salvas. Deseja realmente sair?';
         }
-        
-        // ESC to deselect player
-        if (e.code === 'Escape') {
-            currentPlayer = null;
-            document.getElementById('criteriaSection').style.display = 'none';
-            document.querySelectorAll('.player-select-btn').forEach(btn => {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-outline-primary');
+    });
+    
+    console.log('🚀 Sistema carregado! Usando armazenamento local durante o jogo.');
+});
+
+// Carregar dados do Django para JavaScript
+function loadGameData() {
+    // Carregar jogadores do Django
+    playingPlayers = [
+        {% for player in playing_players %}
+        {
+            id: {{ player.player.id }},
+            name: "{{ player.player.user.full_name|default:player.player.user.username }}",
+            position: "{{ player.player.get_position_display }}",
+            type: "{{ player.player.position }}"
+        },
+        {% endfor %}
+    ];
+    
+    benchPlayers = [
+        {% for player in bench_players %}
+        {
+            id: {{ player.player.id }},
+            name: "{{ player.player.user.full_name|default:player.player.user.username }}",
+            position: "{{ player.player.get_position_display }}",
+            type: "{{ player.player.position }}"
+        },
+        {% endfor %}
+    ];
+    
+    // Tentar carregar dados salvos localmente
+    const savedData = localStorage.getItem(`game_${GAME_ID}_data`);
+    if (savedData) {
+        try {
+            const data = JSON.parse(savedData);
+            evaluationData = data.evaluationData || {};
+            playerTimes = data.playerTimes || {};
+            substitutionData = data.substitutionData || [];
+            gameTimer.elapsed = data.gameTimer?.elapsed || 0;
+            
+            console.log('📁 Dados locais carregados:', data);
+        } catch (e) {
+            console.error('Erro ao carregar dados locais:', e);
+        }
+    }
+    
+    // Inicializar dados de avaliação se não existirem
+    [...playingPlayers, ...benchPlayers].forEach(player => {
+        if (!evaluationData[player.id]) {
+            evaluationData[player.id] = {
+                positivo: {},
+                especial: {},
+                negativo: {},
+                timeline: []
+            };
+        }
+        if (!playerTimes[player.id]) {
+            playerTimes[player.id] = {
+                totalTime: 0,
+                sessions: []
+            };
+        }
+    });
+    
+    // Inicializar sessões de tempo para jogadores em campo
+    playingPlayers.forEach(player => {
+        const hasActiveSessions = playerTimes[player.id].sessions.some(s => !s.end);
+        if (!hasActiveSessions) {
+            playerTimes[player.id].sessions.push({
+                start: Date.now(),
+                end: null
             });
         }
     });
-    
-    // Verificar se há critérios de avaliação
-    const fieldCriteriaCount = document.querySelectorAll('#fieldPlayerCriteria .criteria-btn').length;
-    const goalkeeperCriteriaCount = document.querySelectorAll('#goalkeeperCriteria .criteria-btn').length;
-    
-    if (fieldCriteriaCount === 0 && goalkeeperCriteriaCount === 0) {
-        showToast('error', 'Nenhum critério de avaliação encontrado. Execute: python manage.py setup_evaluation_criteria');
-    } else {
-        console.log(`✅ Sistema carregado: ${fieldCriteriaCount} critérios para jogadores de linha, ${goalkeeperCriteriaCount} para goleiros`);
-    }
-    
-    // Welcome message
-    showToast('success', '🚀 Sistema de avaliação carregado! Use ESPAÇO para play/pause.');
-    
-    // Debug function
-    window.debugEvaluation = function() {
-        console.log('🔍 Estado atual da avaliação:');
-        console.log('Timer rodando:', gameTimer.isRunning);
-        console.log('Tempo decorrido:', Math.floor(gameTimer.elapsed / 1000), 'segundos');
-        console.log('Jogador selecionado:', currentPlayer);
-        console.log('Critérios disponíveis:', {
-            jogadores: fieldCriteriaCount,
-            goleiros: goalkeeperCriteriaCount
-        });
-    };
-    
-    // Animation
-    const elements = document.querySelectorAll('.fade-in');
-    elements.forEach((element, index) => {
-        setTimeout(() => {
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-        }, index * 150);
-    });
-});
+}
 
-// Event Listeners
+// Event Listeners - BASEADO NO SISTEMA ORIGINAL
 function setupEventListeners() {
     // Controles do timer
     document.getElementById('playPauseBtn').addEventListener('click', toggleGameTimer);
     document.getElementById('resetTimer').addEventListener('click', function() {
-        if (confirm('Reiniciar cronômetro?')) {
+        if (confirm('Reiniciar cronômetro? (Os dados dos jogadores não serão perdidos)')) {
             resetGameTimer();
         }
     });
     
     // Seleção de jogador para avaliar
-    document.querySelectorAll('.player-select-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const playerId = parseInt(this.dataset.playerId);
-            const playerType = this.dataset.playerType;
-            const playerName = this.querySelector('strong').textContent;
-            
-            currentPlayer = {
-                id: playerId,
-                type: playerType,
-                name: playerName
-            };
-            
-            // Atualizar interface
-            document.querySelectorAll('.player-select-btn').forEach(b => {
-                b.classList.remove('btn-primary');
-                b.classList.add('btn-outline-primary');
-            });
-            this.classList.add('btn-primary');
-            this.classList.remove('btn-outline-primary');
-            
-            showCriteriaForPlayer(currentPlayer);
+    document.getElementById('playingPlayersRow').addEventListener('click', function(e) {
+        const btn = e.target.closest('.player-select-btn');
+        if (!btn) return;
+
+        const playerId = parseInt(btn.dataset.playerId);
+        const playerName = btn.dataset.playerName;
+        const playerType = btn.dataset.playerType;
+        
+        currentPlayer = playingPlayers.find(p => p.id === playerId);
+        
+        // Atualizar interface
+        document.querySelectorAll('.player-select-btn').forEach(b => {
+            b.classList.remove('btn-primary');
+            b.classList.add('btn-outline-primary');
         });
+        btn.classList.add('btn-primary');
+        btn.classList.remove('btn-outline-primary');
+        
+        showCriteriaForPlayer(currentPlayer);
     });
     
-    // Clique nos critérios
+    // Clique nos critérios - EFEITOS ORIGINAIS
     document.addEventListener('click', function(e) {
         if (e.target.closest('.criteria-btn')) {
             const btn = e.target.closest('.criteria-btn');
-            const criteriaId = parseInt(btn.dataset.criteriaId);
-            const criteriaCode = btn.dataset.criteriaCode;
+            const criteria = btn.dataset.criteria;
             const category = btn.dataset.category;
             const points = parseInt(btn.dataset.points);
             
             if (currentPlayer && gameTimer.isRunning) {
-                addEvaluation(currentPlayer.id, criteriaId, criteriaCode, category, points);
+                addEvaluation(currentPlayer.id, criteria, category, points);
+                
+                // Efeito visual INCRÍVEL - IGUAL AO ORIGINAL
                 showClickEffect(btn, points);
+                
+                // Atualizar stats em tempo real
+                renderPlayingPlayers();
+                
+                // Salvar localmente
+                saveDataLocally();
             } else if (!gameTimer.isRunning) {
                 alert('⏰ Aperte PLAY no cronômetro para começar a avaliar!');
-            } else {
-                alert('Selecione um jogador primeiro!');
             }
         }
     });
     
     // Substituições
-    document.getElementById('makeSubstitution').addEventListener('click', openSubstitutionModal);
+    document.getElementById('makeSubstitutionBtn').addEventListener('click', openSubstitutionModal);
     document.getElementById('confirmSubstitution').addEventListener('click', confirmSubstitution);
-    
-    // Modal de substituição
-    document.querySelectorAll('.player-out-radio').forEach(radio => {
-        radio.addEventListener('change', function() {
-            selectedPlayerOut = parseInt(this.value);
-            checkSubstitutionReady();
-        });
-    });
-    
-    document.querySelectorAll('.player-in-radio').forEach(radio => {
-        radio.addEventListener('change', function() {
-            selectedPlayerIn = parseInt(this.value);
-            checkSubstitutionReady();
-        });
-    });
 }
 
-// Timer functions
+// Timer functions - IGUAL AO ORIGINAL
 function toggleGameTimer() {
     const btn = document.getElementById('playPauseBtn');
     const statusEl = document.getElementById('gameStatus');
@@ -673,9 +682,6 @@ function startGameTimer() {
     gameTimer.startTime = Date.now() - gameTimer.elapsed;
     gameTimer.isRunning = true;
     gameTimer.interval = setInterval(updateTimerDisplay, 1000);
-    
-    // Update game status
-    updateGameTime();
 }
 
 function pauseGameTimer() {
@@ -686,9 +692,6 @@ function pauseGameTimer() {
     if (gameTimer.startTime) {
         gameTimer.elapsed = Date.now() - gameTimer.startTime;
     }
-    
-    // Update game status
-    updateGameTime();
 }
 
 function resetGameTimer() {
@@ -699,23 +702,7 @@ function resetGameTimer() {
     document.getElementById('gameStatus').textContent = 'Parado';
     document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
     
-    updateGameTime();
-}
-
-function updatePlayerTimes() {
-    // Update playing time for each player
-    document.querySelectorAll('.player-select-btn').forEach(btn => {
-        const playerId = btn.dataset.playerId;
-        const timeDisplay = btn.querySelector('.playing-time');
-        
-        if (timeDisplay && gameTimer.isRunning) {
-            // For now, show game time for all playing players
-            // In a full implementation, this would track individual session times
-            const gameMinutes = Math.floor(gameTimer.elapsed / 60000);
-            const gameSeconds = Math.floor((gameTimer.elapsed % 60000) / 1000);
-            timeDisplay.textContent = `⏱️ ${gameMinutes.toString().padStart(2, '0')}:${gameSeconds.toString().padStart(2, '0')}`;
-        }
-    });
+    saveDataLocally();
 }
 
 function updateTimerDisplay() {
@@ -729,61 +716,45 @@ function updateTimerDisplay() {
     
     document.getElementById('gameTimer').textContent = 
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
-    // Update player times as well
-    updatePlayerTimes();
 }
 
-function updateGameTime() {
-    const status = gameTimer.isRunning ? 'in_progress' : 'paused';
-    
-    fetch(`{% url 'core:api_update_game_time' game.id %}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            duration: Math.floor(gameTimer.elapsed / 1000),
-            status: status
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Show status indicator briefly
-            const indicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('statusText');
-            indicator.style.display = 'block';
-            statusText.textContent = `Jogo ${status === 'in_progress' ? 'em andamento' : 'pausado'}`;
-            
-            setTimeout(() => {
-                indicator.style.display = 'none';
-            }, 2000);
-        }
-    })
-    .catch(error => {
-        console.error('Error updating game time:', error);
-        const indicator = document.getElementById('statusIndicator');
-        const statusText = document.getElementById('statusText');
-        indicator.style.display = 'block';
-        indicator.style.background = 'rgba(220, 53, 69, 0.9)';
-        statusText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro de conexão';
+// Renderizar jogadores - COM STATS ATUALIZADAS
+function renderPlayingPlayers() {
+    const row = document.getElementById('playingPlayersRow');
+    row.innerHTML = '';
+
+    playingPlayers.forEach(player => {
+        const playerTime = calculatePlayerTime(player.id);
+        const playerStats = getPlayerStats(player.id);
         
-        setTimeout(() => {
-            indicator.style.display = 'none';
-            indicator.style.background = 'rgba(0, 0, 0, 0.8)';
-        }, 3000);
+        const col = document.createElement('div');
+        col.className = 'col-6 col-md-4 mb-2';
+        col.innerHTML = `
+            <button class="btn btn-outline-primary w-100 player-select-btn" 
+                    data-player-id="${player.id}"
+                    data-player-name="${player.name}"
+                    data-player-type="${player.type}">
+                <div><strong>${player.name}</strong></div>
+                <div><small class="text-muted">${player.position}</small></div>
+                <div class="playing-time">⏱️ ${playerTime}</div>
+                <div class="player-stats">
+                    <span class="text-success">${playerStats.positive}</span> |
+                    <span class="text-warning">★${playerStats.special}</span> |
+                    <span class="text-danger">${playerStats.negative}</span>
+                </div>
+            </button>
+        `;
+        row.appendChild(col);
     });
 }
 
-// Player evaluation
+// Mostrar critérios - IGUAL AO ORIGINAL
 function showCriteriaForPlayer(player) {
     document.getElementById('selectedPlayerName').textContent = player.name;
-    document.getElementById('playerPosition').textContent = player.type === 'goalkeeper' ? 'Goleiro' : 'Linha';
+    document.getElementById('playerPosition').textContent = player.position;
     document.getElementById('criteriaSection').style.display = 'block';
     
-    // Show appropriate criteria
+    // Mostrar critérios específicos baseado no tipo do jogador
     if (player.type === 'goalkeeper') {
         document.getElementById('fieldPlayerCriteria').style.display = 'none';
         document.getElementById('goalkeeperCriteria').style.display = 'block';
@@ -791,98 +762,69 @@ function showCriteriaForPlayer(player) {
         document.getElementById('fieldPlayerCriteria').style.display = 'block';
         document.getElementById('goalkeeperCriteria').style.display = 'none';
     }
-    
-    // Scroll to criteria section
-    document.getElementById('criteriaSection').scrollIntoView({ 
-        behavior: 'smooth' 
-    });
 }
 
-function addEvaluation(playerId, criteriaId, criteriaCode, category, points) {
-    // Primeiro vamos encontrar o GamePlayer ID correto
-    // Isso é necessário porque o backend espera game_player_id, não player_id
+// Adicionar avaliação - SALVAMENTO LOCAL
+function addEvaluation(playerId, criteria, category, points) {
+    if (!evaluationData[playerId]) {
+        evaluationData[playerId] = {
+            positivo: {},
+            especial: {},
+            negativo: {},
+            timeline: []
+        };
+    }
+
+    if (!evaluationData[playerId][category][criteria]) {
+        evaluationData[playerId][category][criteria] = 0;
+    }
+
+    evaluationData[playerId][category][criteria] += points;
     
-    fetch('{% url 'core:api_add_evaluation' %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-            player_id: playerId,  // Enviamos o player_id
-            game_id: {{ game.id }},  // E o game_id
-            criteria_id: criteriaId,
-            game_time: Math.floor(gameTimer.elapsed / 1000),
-            notes: ''
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update player stats in real time
-            updatePlayerStats(playerId, data.stats);
-            console.log('✅ Avaliação adicionada:', data.message);
-            
-            // Show success feedback
-            showToast('success', data.message);
-        } else {
-            console.error('❌ Erro:', data.error);
-            showToast('error', 'Erro ao adicionar avaliação: ' + data.error);
-        }
-    })
-    .catch(error => {
-        console.error('❌ Erro de rede:', error);
-        showToast('error', 'Erro de conexão. Tente novamente.');
+    // Registrar na timeline
+    evaluationData[playerId].timeline.push({
+        time: gameTimer.elapsed,
+        criteria: criteria,
+        category: category,
+        points: points,
+        timestamp: new Date().toISOString(),
+        gameTime: document.getElementById('gameTimer').textContent
     });
+
+    console.log(`✅ Avaliação adicionada: ${criteria} (${points}) para jogador ${playerId}`);
 }
 
-function updatePlayerStats(playerId, stats) {
-    const playerBtn = document.querySelector(`[data-player-id="${playerId}"]`);
-    if (playerBtn) {
-        const statsDiv = playerBtn.querySelector('.player-stats');
-        if (statsDiv) {
-            const positiveCount = stats && stats.positive ? stats.positive.count || 0 : 0;
-            const specialCount = stats && stats.special ? stats.special.count || 0 : 0;
-            const negativeCount = stats && stats.negative ? Math.abs(stats.negative.count) || 0 : 0;
-            
-            statsDiv.innerHTML = `
-                <span class="text-success">${positiveCount}</span> |
-                <span class="text-warning">★${specialCount}</span> |
-                <span class="text-danger">${negativeCount}</span>
-            `;
+// Calcular estatísticas - IGUAL AO ORIGINAL
+function getPlayerStats(playerId) {
+    const playerData = evaluationData[playerId] || {positivo: {}, especial: {}, negativo: {}};
+    
+    return {
+        positive: Object.values(playerData.positivo).reduce((sum, val) => sum + val, 0),
+        special: Object.values(playerData.especial).reduce((sum, val) => sum + val, 0),
+        negative: Math.abs(Object.values(playerData.negativo).reduce((sum, val) => sum + val, 0))
+    };
+}
+
+// Calcular tempo de jogo - IGUAL AO ORIGINAL
+function calculatePlayerTime(playerId) {
+    if (!playerTimes[playerId]) return '00:00';
+    
+    let totalMs = playerTimes[playerId].totalTime;
+    
+    // Adicionar sessão atual se estiver jogando
+    if (playingPlayers.some(p => p.id === playerId)) {
+        const currentSession = playerTimes[playerId].sessions.find(s => !s.end);
+        if (currentSession && gameTimer.isRunning) {
+            totalMs += Date.now() - currentSession.start;
         }
     }
+
+    const minutes = Math.floor(totalMs / 60000);
+    const seconds = Math.floor((totalMs % 60000) / 1000);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Toast notification system
-function showToast(type, message) {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    toast.style.cssText = `
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        max-width: 400px;
-    `;
-    
-    toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        if (document.body.contains(toast)) {
-            toast.remove();
-        }
-    }, 3000);
-}
-
+// Efeitos visuais - IGUAL AO ORIGINAL
 function showClickEffect(btn, points) {
     const originalClasses = btn.className;
     
@@ -931,9 +873,57 @@ function createConfetti(btn) {
     }
 }
 
-// Substitution functions
+// Substituições - SEM RECARREGAR PÁGINA
 function openSubstitutionModal() {
     const modal = new bootstrap.Modal(document.getElementById('substitutionModal'));
+    
+    // Preencher jogadores em campo
+    const playersOutDiv = document.getElementById('playersToSubOut');
+    playersOutDiv.innerHTML = '';
+    playingPlayers.forEach(player => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <div class="form-check mb-2">
+                <input class="form-check-input player-out-radio" type="radio" name="playerOut" value="${player.id}" id="out${player.id}">
+                <label class="form-check-label" for="out${player.id}">
+                    ${player.name} (${player.position})
+                </label>
+            </div>
+        `;
+        playersOutDiv.appendChild(div);
+    });
+
+    // Preencher jogadores no banco
+    const playersInDiv = document.getElementById('playersToSubIn');
+    playersInDiv.innerHTML = '';
+    benchPlayers.forEach(player => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <div class="form-check mb-2">
+                <input class="form-check-input player-in-radio" type="radio" name="playerIn" value="${player.id}" id="in${player.id}">
+                <label class="form-check-label" for="in${player.id}">
+                    ${player.name} (${player.position})
+                </label>
+            </div>
+        `;
+        playersInDiv.appendChild(div);
+    });
+
+    // Event listeners para os radios
+    document.querySelectorAll('.player-out-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            selectedPlayerOut = parseInt(this.value);
+            checkSubstitutionReady();
+        });
+    });
+
+    document.querySelectorAll('.player-in-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            selectedPlayerIn = parseInt(this.value);
+            checkSubstitutionReady();
+        });
+    });
+
     modal.show();
 }
 
@@ -944,58 +934,283 @@ function checkSubstitutionReady() {
 
 function confirmSubstitution() {
     if (selectedPlayerOut && selectedPlayerIn) {
-        // Show loading
-        const confirmBtn = document.getElementById('confirmSubstitution');
-        const originalText = confirmBtn.innerHTML;
-        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
-        confirmBtn.disabled = true;
-        
-        fetch('{% url 'core:api_make_substitution' %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({
-                game_id: {{ game.id }},
-                player_out_id: selectedPlayerOut,
-                player_in_id: selectedPlayerIn,
-                game_time: Math.floor(gameTimer.elapsed / 1000)
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('success', '✅ Substituição realizada: ' + data.message);
-                
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('substitutionModal'));
-                modal.hide();
-                
-                // Reset selections
-                selectedPlayerOut = null;
-                selectedPlayerIn = null;
-                
-                // Refresh page to update player lists
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
-            } else {
-                showToast('error', 'Erro ao fazer substituição: ' + data.error);
-                confirmBtn.innerHTML = originalText;
-                confirmBtn.disabled = false;
+        // Finalizar tempo do jogador que sai
+        const currentTime = Date.now();
+        if (playerTimes[selectedPlayerOut]) {
+            const currentSession = playerTimes[selectedPlayerOut].sessions.find(s => !s.end);
+            if (currentSession) {
+                currentSession.end = currentTime;
+                playerTimes[selectedPlayerOut].totalTime += currentTime - currentSession.start;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('error', 'Erro de conexão ao fazer substituição.');
-            confirmBtn.innerHTML = originalText;
-            confirmBtn.disabled = false;
+        }
+
+        // Iniciar tempo do jogador que entra
+        if (!playerTimes[selectedPlayerIn]) {
+            playerTimes[selectedPlayerIn] = {
+                totalTime: 0,
+                sessions: []
+            };
+        }
+        playerTimes[selectedPlayerIn].sessions.push({
+            start: currentTime,
+            end: null
         });
+
+        // Fazer a substituição nos arrays
+        const playerOut = playingPlayers.find(p => p.id === selectedPlayerOut);
+        const playerIn = benchPlayers.find(p => p.id === selectedPlayerIn);
+
+        playingPlayers = playingPlayers.filter(p => p.id !== selectedPlayerOut);
+        benchPlayers = benchPlayers.filter(p => p.id !== selectedPlayerIn);
+        
+        playingPlayers.push(playerIn);
+        benchPlayers.push(playerOut);
+
+        // Registrar substituição
+        substitutionData.push({
+            time: gameTimer.elapsed,
+            playerOut: playerOut.name,
+            playerIn: playerIn.name,
+            timestamp: new Date().toISOString()
+        });
+
+        // Atualizar interface SEM RECARREGAR
+        renderPlayingPlayers();
+        
+        // Fechar modal
+        bootstrap.Modal.getInstance(document.getElementById('substitutionModal')).hide();
+        
+        // Reset seleções
+        selectedPlayerOut = null;
+        selectedPlayerIn = null;
+
+        // Salvar dados
+        saveDataLocally();
+        
+        console.log(`🔄 Substituição: ${playerOut.name} ⇄ ${playerIn.name}`);
     }
 }
 
-// Utility functions
+// Salvar dados localmente - INDICADOR VISUAL
+function saveDataLocally() {
+    const dataToSave = {
+        gameId: GAME_ID,
+        gameTitle: GAME_TITLE,
+        evaluationData,
+        playerTimes,
+        substitutionData,
+        gameTimer: {
+            elapsed: gameTimer.elapsed,
+            isRunning: gameTimer.isRunning
+        },
+        playingPlayers,
+        benchPlayers,
+        lastSave: new Date().toISOString()
+    };
+    
+    localStorage.setItem(`game_${GAME_ID}_data`, JSON.stringify(dataToSave));
+    
+    // Mostrar indicador de salvamento
+    const indicator = document.getElementById('saveIndicator');
+    indicator.style.opacity = '1';
+    setTimeout(() => {
+        indicator.style.opacity = '0';
+    }, 2000);
+}
+
+// Ver resultados - COM SCROLL CORRIGIDO
+function viewResults() {
+    const modal = new bootstrap.Modal(document.getElementById('resultsModal'));
+    const content = document.getElementById('resultsContent');
+    
+    // Calcular ranking
+    const playersWithScores = [...playingPlayers, ...benchPlayers].map(player => {
+        const stats = getPlayerStats(player.id);
+        const playTime = calculatePlayerTime(player.id);
+        
+        const totalScore = stats.positive + stats.special - stats.negative;
+
+        return {
+            ...player,
+            scores: {
+                positive: stats.positive,
+                special: stats.special,
+                negative: stats.negative,
+                total: totalScore
+            },
+            playTime: playTime,
+            isPlaying: playingPlayers.some(p => p.id === player.id)
+        };
+    }).sort((a, b) => b.scores.total - a.scores.total);
+
+    // Renderizar ranking
+    content.innerHTML = playersWithScores.map((player, index) => {
+        let rankBadge = '';
+        if (index === 0) rankBadge = '<span class="badge bg-warning fs-6">🥇 1º</span>';
+        else if (index === 1) rankBadge = '<span class="badge bg-secondary fs-6">🥈 2º</span>';
+        else if (index === 2) rankBadge = '<span class="badge bg-success fs-6">🥉 3º</span>';
+        else rankBadge = `<span class="badge bg-light text-dark fs-6">${index + 1}º</span>`;
+
+        return `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            ${rankBadge}
+                            <h5 class="mb-1">${player.name}</h5>
+                            <small class="text-muted">${player.position}</small>
+                            ${player.isPlaying ? '<span class="badge bg-success ms-2">Em Campo</span>' : '<span class="badge bg-secondary ms-2">No Banco</span>'}
+                            <div class="mt-1">
+                                <small class="text-info">⏱️ ${player.playTime}</small>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="p-2 bg-success text-white rounded">
+                                        <small>Boas</small><br>
+                                        <strong>+${player.scores.positive}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 bg-warning text-dark rounded">
+                                        <small>Impacto</small><br>
+                                        <strong>★${player.scores.special}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 bg-danger text-white rounded">
+                                        <small>Erros</small><br>
+                                        <strong>-${player.scores.negative}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <div class="p-2 bg-primary text-white rounded">
+                                    <small>TOTAL</small><br>
+                                    <strong style="font-size: 1.5rem;">${player.scores.total}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Mostrar substituições se houver
+    if (substitutionData.length > 0) {
+        content.innerHTML += `
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-exchange-alt"></i> Substituições Realizadas</h6>
+                </div>
+                <div class="card-body">
+                    ${substitutionData.map(sub => `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>${Math.floor(sub.time / 60000)}:${Math.floor((sub.time % 60000) / 1000).toString().padStart(2, '0')}</span>
+                            <span><strong>${sub.playerOut}</strong> ⇄ <strong>${sub.playerIn}</strong></span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    modal.show();
+}
+
+// Finalizar e salvar no Django
+function finishAndSaveGame() {
+    if (!confirm('🏁 Finalizar e salvar o jogo no banco de dados?\n\nTodas as avaliações serão permanentemente registradas.')) {
+        return;
+    }
+    
+    // Pausar timer
+    if (gameTimer.isRunning) {
+        pauseGameTimer();
+    }
+    
+    // Mostrar loading
+    const btn = document.querySelector('[onclick="finishAndSaveGame()"]');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+    btn.disabled = true;
+    
+    // Preparar dados para envio
+    const gameData = {
+        game_id: GAME_ID,
+        duration: Math.floor(gameTimer.elapsed / 1000),
+        status: 'finished',
+        evaluation_data: evaluationData,
+        player_times: playerTimes,
+        substitutions: substitutionData,
+        playing_players: playingPlayers.map(p => p.id),
+        bench_players: benchPlayers.map(p => p.id)
+    };
+    
+    // Enviar para Django
+    fetch('{% url 'core:api_save_complete_game' %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(gameData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Limpar dados locais
+            localStorage.removeItem(`game_${GAME_ID}_data`);
+            
+            alert('✅ Jogo salvo com sucesso!\n\n' + 
+                  `Total de avaliações: ${data.total_evaluations}\n` +
+                  `Substituições: ${data.total_substitutions}`);
+            
+            // Redirecionar para detalhes do jogo
+            window.location.href = `{% url 'core:game_detail' game.id %}`;
+        } else {
+            throw new Error(data.error || 'Erro desconhecido');
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao salvar:', error);
+        alert('❌ Erro ao salvar o jogo:\n' + error.message + '\n\nOs dados continuam salvos localmente.');
+        
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+    });
+}
+
+// Exportar dados locais
+function exportGameData() {
+    const dataToExport = {
+        resumo_jogo: {
+            titulo: GAME_TITLE,
+            data: new Date().toLocaleString('pt-BR'),
+            tempo_total: document.getElementById('gameTimer').textContent,
+            total_avaliacoes: Object.values(evaluationData).reduce((total, player) => {
+                return total + (player.timeline ? player.timeline.length : 0);
+            }, 0)
+        },
+        evaluation_data: evaluationData,
+        player_times: playerTimes,
+        substitutions: substitutionData,
+        playing_players: playingPlayers,
+        bench_players: benchPlayers
+    };
+
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${GAME_TITLE.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Utility function
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -1011,155 +1226,16 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function viewResults() {
-    // Show loading state
-    const resultsBtn = document.getElementById('quickResults') || document.querySelector('[onclick="viewResults()"]');
-    if (resultsBtn) {
-        const originalHTML = resultsBtn.innerHTML;
-        resultsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        
-        setTimeout(() => {
-            resultsBtn.innerHTML = originalHTML;
-        }, 2000);
-    }
-    
-    // Fetch game statistics
-    fetch(`{% url 'core:api_game_stats' game.id %}`)
-        .then(response => response.json())
-        .then(data => {
-            showResultsModal(data);
-        })
-        .catch(error => {
-            console.error('Error fetching stats:', error);
-            showToast('error', 'Erro ao carregar estatísticas.');
-        });
-}
+// Debug function
+window.debugGame = function() {
+    console.log('🔍 Estado atual do jogo:');
+    console.log('Timer:', gameTimer);
+    console.log('Jogador atual:', currentPlayer);
+    console.log('Avaliações:', evaluationData);
+    console.log('Tempos:', playerTimes);
+    console.log('Substituições:', substitutionData);
+};
 
-function showResultsModal(data) {
-    // Create results modal
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.innerHTML = `
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-chart-bar text-primary"></i>
-                        Estatísticas do Jogo
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center mb-4">
-                        <h6>${data.game_title}</h6>
-                        <p class="text-muted">Status: ${data.game_status} | Duração: ${data.duration}</p>
-                    </div>
-                    
-                    <div class="row">
-                        ${data.players.map((player, index) => `
-                            <div class="col-md-6 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="card-title mb-0">${player.player_name}</h6>
-                                            <span class="badge bg-${index < 5 ? 'success' : 'secondary'}">${player.status}</span>
-                                        </div>
-                                        <small class="text-muted">${player.position} | ⏱️ ${player.time_played}</small>
-                                        <div class="mt-2">
-                                            <div class="row text-center">
-                                                <div class="col-4">
-                                                    <div class="text-success">
-                                                        <i class="fas fa-plus-circle"></i><br>
-                                                        <strong>${player.stats.positive ? player.stats.positive.count || 0 : 0}</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="col-4">
-                                                    <div class="text-warning">
-                                                        <i class="fas fa-star"></i><br>
-                                                        <strong>${player.stats.special ? player.stats.special.count || 0 : 0}</strong>
-                                                    </div>
-                                                </div>
-                                                <div class="col-4">
-                                                    <div class="text-danger">
-                                                        <i class="fas fa-minus-circle"></i><br>
-                                                        <strong>${player.stats.negative ? Math.abs(player.stats.negative.count) || 0 : 0}</strong>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary" onclick="window.print()">
-                        <i class="fas fa-print"></i> Imprimir
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-    
-    // Remove modal when hidden
-    modal.addEventListener('hidden.bs.modal', () => {
-        document.body.removeChild(modal);
-    });
-}
-
-function endGame() {
-    if (confirm('🏁 Finalizar o jogo? Esta ação não pode ser desfeita.')) {
-        pauseGameTimer();
-        
-        // Update button state
-        const endBtn = document.querySelector('#endGame') || document.querySelector('[onclick="endGame()"]');
-        if (endBtn) {
-            endBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            endBtn.disabled = true;
-        }
-        
-        fetch(`{% url 'core:api_update_game_time' game.id %}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({
-                duration: Math.floor(gameTimer.elapsed / 1000),
-                status: 'finished'
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast('success', '🏁 Jogo finalizado com sucesso!');
-                
-                setTimeout(() => {
-                    window.location.href = '{% url 'core:game_detail' game.id %}';
-                }, 2000);
-            } else {
-                showToast('error', 'Erro ao finalizar jogo: ' + data.error);
-                if (endBtn) {
-                    endBtn.innerHTML = '<i class="fas fa-stop"></i>';
-                    endBtn.disabled = false;
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('error', 'Erro de conexão ao finalizar jogo.');
-            if (endBtn) {
-                endBtn.innerHTML = '<i class="fas fa-stop"></i>';
-                endBtn.disabled = false;
-            }
-        });
-    }
-}
+console.log('✅ Sistema de avaliação carregado! Use debugGame() para debug.');
 </script>
 {% endblock %}

@@ -37,4 +37,7 @@ urlpatterns = [
     path('api/substitution/make/', views_evaluation.api_make_substitution, name='api_make_substitution'),
     path('api/games/<int:game_id>/stats/', views_evaluation.api_game_stats, name='api_game_stats'),
     path('api/games/<int:game_id>/time/', views_evaluation.api_update_game_time, name='api_update_game_time'),
+    
+    # NOVA API para salvamento completo
+    path('api/games/save-complete/', views_evaluation.api_save_complete_game, name='api_save_complete_game'),
 ]

@@ -4,101 +4,127 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --surface: #ffffff;
+        --surface-variant: #f8fafc;
+        --on-surface: #1e293b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
     .login-container {
-        min-height: calc(100vh - 160px);
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 20px 0;
+        padding: 2rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M40 40c-11.046 0-20-8.954-20-20s8.954-20 20-20 20 8.954 20 20-8.954 20-20 20zm0-36c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16z'/%3E%3Cpath d='M20 60c-11.046 0-20-8.954-20-20s8.954-20 20-20 20 8.954 20 20-8.954 20-20 20zm0-36c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16z'/%3E%3Cpath d='M60 60c-11.046 0-20-8.954-20-20s8.954-20 20-20 20 8.954 20 20-8.954 20-20 20zm0-36c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16z'/%3E%3Cpath d='M60 20c-11.046 0-20-8.954-20-20s8.954-20 20-20 20 8.954 20 20-8.954 20-20 20zm0-36c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.25;
     }
     
     .login-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        background: var(--surface);
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
         overflow: hidden;
-        max-width: 900px;
+        max-width: 1000px;
         width: 100%;
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
     }
     
     .login-left {
-        background: linear-gradient(135deg, #007bff, #0056b3);
+        background: var(--primary-gradient);
         color: white;
-        padding: 3rem;
+        padding: 3rem 2rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
-        min-height: 500px;
+        min-height: 600px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-left::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M50 50m-20 0a20 20 0 1 1 40 0a20 20 0 1 1-40 0'/%3E%3Cpath d='M30 30l40 40M70 30l-40 40'/%3E%3Cpath d='M30 70l40-40M70 70l-40-40'/%3E%3Cpath d='M10 10l20 20M30 10l-20 20'/%3E%3Cpath d='M70 10l20 20M90 10l-20 20'/%3E%3Cpath d='M10 70l20 20M30 70l-20 20'/%3E%3Cpath d='M70 70l20 20M90 70l-20 20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.4;
     }
     
     .login-right {
-        padding: 3rem;
+        padding: 3rem 2rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        min-height: 500px;
+        min-height: 600px;
+        background: var(--surface);
     }
     
     .login-logo {
         font-size: 4rem;
-        margin-bottom: 1rem;
-        color: #28a745;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
     }
     
     .login-title {
         font-size: 2.5rem;
-        font-weight: bold;
+        font-weight: 700;
         margin-bottom: 1rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 1;
     }
     
     .login-subtitle {
         font-size: 1.1rem;
-        opacity: 0.9;
+        opacity: 0.95;
         line-height: 1.6;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
-    
-    .form-floating {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-control {
-        border-radius: 10px;
-        border: 2px solid #e9ecef;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .form-control:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-    
-    .btn-login {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        border: none;
-        border-radius: 10px;
-        padding: 0.875rem 2rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        width: 100%;
-    }
-    
-    .btn-login:hover {
-        background: linear-gradient(135deg, #0056b3, #004085);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
-    }
-    
+
     .login-features {
         list-style: none;
         padding: 0;
         margin: 2rem 0;
+        position: relative;
+        z-index: 1;
     }
     
     .login-features li {
@@ -106,25 +132,41 @@
         align-items: center;
         margin-bottom: 1rem;
         font-size: 1rem;
+        opacity: 0;
+        transform: translateX(-20px);
+        animation: slideInLeft 0.6s ease forwards;
     }
+
+    .login-features li:nth-child(1) { animation-delay: 0.2s; }
+    .login-features li:nth-child(2) { animation-delay: 0.4s; }
+    .login-features li:nth-child(3) { animation-delay: 0.6s; }
+    .login-features li:nth-child(4) { animation-delay: 0.8s; }
     
     .login-features li i {
         margin-right: 0.75rem;
-        color: #28a745;
+        color: #38ef7d;
         font-size: 1.2rem;
+        width: 20px;
+        text-align: center;
     }
-    
+
     .user-type-info {
         background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
+        border-radius: 16px;
         padding: 1.5rem;
         margin-top: 2rem;
         backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        z-index: 1;
     }
     
     .user-type-info h6 {
         margin-bottom: 1rem;
         font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     .user-type-info ul {
@@ -135,30 +177,244 @@
     
     .user-type-info li {
         display: flex;
-        align-items: center;
-        margin-bottom: 0.5rem;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
         font-size: 0.9rem;
+        opacity: 0.9;
     }
     
     .user-type-info li i {
-        margin-right: 0.5rem;
+        margin-right: 0.75rem;
         width: 16px;
+        margin-top: 0.125rem;
+        color: #38ef7d;
+    }
+
+    /* Form Styles */
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        color: var(--on-surface);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+        color: #64748b;
+        font-size: 1rem;
+    }
+    
+    .form-floating {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .form-control {
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        padding: 1rem 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: var(--surface-variant);
+        height: 60px;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: var(--surface);
+        outline: none;
+    }
+
+    .form-floating > label {
+        color: #64748b;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-login {
+        background: var(--primary-gradient);
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        width: 100%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-login:hover::before {
+        left: 100%;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: white;
+    }
+
+    .btn-login:disabled {
+        opacity: 0.7;
+        transform: none;
+        pointer-events: none;
+    }
+
+    .form-check {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .form-check-label {
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .forgot-password {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+
+    .forgot-password a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .forgot-password a:hover {
+        color: #4f46e5;
+        text-decoration: underline;
+    }
+
+    /* Demo Credentials */
+    .demo-credentials {
+        background: var(--surface-variant);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 2rem;
+        border-left: 4px solid #667eea;
+    }
+
+    .demo-credentials h6 {
+        color: var(--on-surface);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .demo-item {
+        background: var(--surface);
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid var(--border-color);
+        font-size: 0.875rem;
+    }
+
+    .demo-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .demo-type {
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 0.25rem;
+    }
+
+    .demo-creds {
+        font-family: 'Courier New', monospace;
+        color: #64748b;
+    }
+
+    /* Animations */
+    @keyframes slideInLeft {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    /* Loading State */
+    .btn-login.loading {
+        pointer-events: none;
+    }
+
+    .btn-login.loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
     
     /* Mobile Responsive */
     @media (max-width: 768px) {
         .login-container {
-            padding: 10px;
+            padding: 1rem 0.5rem;
         }
         
         .login-left {
             padding: 2rem 1.5rem;
             min-height: auto;
+            order: 2;
         }
         
         .login-right {
             padding: 2rem 1.5rem;
             min-height: auto;
+            order: 1;
         }
         
         .login-title {
@@ -168,46 +424,68 @@
         .login-logo {
             font-size: 3rem;
         }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+        }
         
         .login-features {
-            margin: 1rem 0;
+            margin: 1.5rem 0;
         }
         
         .user-type-info {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             padding: 1rem;
         }
-    }
-    
-    /* Animações */
-    .slide-in-left {
-        animation: slideInLeft 0.6s ease-out;
-    }
-    
-    .slide-in-right {
-        animation: slideInRight 0.6s ease-out;
-    }
-    
-    @keyframes slideInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
+
+        .demo-credentials {
+            margin-top: 1.5rem;
         }
     }
-    
-    @keyframes slideInRight {
-        from {
-            opacity: 0;
-            transform: translateX(50px);
+
+    @media (max-width: 576px) {
+        .login-container {
+            padding: 0.5rem;
         }
-        to {
-            opacity: 1;
-            transform: translateX(0);
+
+        .login-card {
+            border-radius: 16px;
         }
+
+        .login-left,
+        .login-right {
+            padding: 1.5rem 1rem;
+        }
+
+        .login-title {
+            font-size: 1.75rem;
+        }
+
+        .login-logo {
+            font-size: 2.5rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.25rem;
+        }
+
+        .btn-login {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Error Messages */
+    .alert {
+        border: none;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+        border-left: 4px solid #ef4444;
+        color: #dc2626;
     }
 </style>
 {% endblock %}
@@ -218,44 +496,46 @@
         <div class="row g-0">
             <!-- Left Side - Branding -->
             <div class="col-lg-6">
-                <div class="login-left slide-in-left">
-                    <div class="login-logo">
-                        <i class="fas fa-futbol"></i>
-                    </div>
+                <div class="login-left">
+                    <div class="login-logo">⚽</div>
                     <h1 class="login-title">ScoutPro</h1>
                     <p class="login-subtitle">
-                        Sistema profissional de avaliação de jogadores
+                        Sistema profissional de avaliação de jogadores em tempo real. 
+                        Transforme dados em performance.
                     </p>
                     
                     <ul class="login-features">
                         <li>
                             <i class="fas fa-chart-line"></i>
-                            Avaliações em tempo real
+                            Avaliação em tempo real durante jogos
                         </li>
                         <li>
                             <i class="fas fa-users"></i>
-                            Gestão completa de times
+                            Gestão completa de escalações
                         </li>
                         <li>
                             <i class="fas fa-mobile-alt"></i>
-                            Interface responsiva
+                            Interface otimizada para tablets e celulares
                         </li>
                         <li>
-                            <i class="fas fa-shield-alt"></i>
-                            Dados seguros e confiáveis
+                            <i class="fas fa-trophy"></i>
+                            Relatórios profissionais e estatísticas
                         </li>
                     </ul>
                     
                     <div class="user-type-info">
-                        <h6><i class="fas fa-info-circle"></i> Tipos de Usuário</h6>
+                        <h6>
+                            <i class="fas fa-info-circle"></i>
+                            Tipos de Acesso
+                        </h6>
                         <ul>
                             <li>
                                 <i class="fas fa-clipboard-check"></i>
-                                <strong>Comissão Técnica:</strong> Avaliação completa
+                                <strong>Comissão Técnica:</strong> Avaliação completa, gestão de jogos e relatórios
                             </li>
                             <li>
                                 <i class="fas fa-running"></i>
-                                <strong>Jogador:</strong> Acompanhamento pessoal
+                                <strong>Jogador:</strong> Acompanhamento pessoal e evolução individual
                             </li>
                         </ul>
                     </div>
@@ -264,11 +544,22 @@
             
             <!-- Right Side - Login Form -->
             <div class="col-lg-6">
-                <div class="login-right slide-in-right">
-                    <div class="text-center mb-4">
-                        <h2 class="mb-2">Bem-vindo de volta!</h2>
-                        <p class="text-muted">Faça login para acessar sua conta</p>
+                <div class="login-right fade-in">
+                    <div class="form-header">
+                        <h2>Bem-vindo de volta!</h2>
+                        <p>Faça login para acessar sua conta do ScoutPro</p>
                     </div>
+
+                    <!-- Error Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                     
                     <form method="post" id="loginForm">
                         {% csrf_token %}
@@ -285,7 +576,7 @@
                                 autocomplete="username"
                             >
                             <label for="id_username">
-                                <i class="fas fa-user me-2"></i>
+                                <i class="fas fa-user"></i>
                                 Nome de usuário
                             </label>
                         </div>
@@ -302,49 +593,48 @@
                                 autocomplete="current-password"
                             >
                             <label for="id_password">
-                                <i class="fas fa-lock me-2"></i>
+                                <i class="fas fa-lock"></i>
                                 Senha
                             </label>
                         </div>
                         
                         <!-- Remember Me -->
-                        <div class="form-check mb-3">
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me">
                             <label class="form-check-label" for="remember_me">
-                                Lembrar de mim
+                                Manter-me conectado
                             </label>
                         </div>
                         
                         <!-- Login Button -->
                         <button type="submit" class="btn btn-primary btn-login">
                             <i class="fas fa-sign-in-alt me-2"></i>
-                            Entrar
+                            Entrar no ScoutPro
                         </button>
                         
                         <!-- Forgot Password -->
-                        <div class="text-center mt-3">
-                            <a href="#" class="text-decoration-none">
+                        <div class="forgot-password">
+                            <a href="#" onclick="showForgotPassword()">
                                 <i class="fas fa-question-circle me-1"></i>
                                 Esqueceu sua senha?
                             </a>
                         </div>
                     </form>
-                    
-                    <!-- Demo Users Info -->
-                    <div class="alert alert-info mt-4" role="alert">
-                        <h6 class="alert-heading">
-                            <i class="fas fa-info-circle"></i>
-                            Usuários de Demonstração
+
+                    <!-- Demo Credentials -->
+                    <div class="demo-credentials">
+                        <h6>
+                            <i class="fas fa-key"></i>
+                            Credenciais de Demonstração
                         </h6>
-                        <hr>
-                        <p class="mb-2">
-                            <strong>Comissão Técnica:</strong><br>
-                            Usuário: <code>coach</code> | Senha: <code>coach123</code>
-                        </p>
-                        <p class="mb-0">
-                            <strong>Jogador:</strong><br>
-                            Usuário: <code>player</code> | Senha: <code>player123</code>
-                        </p>
+                        <div class="demo-item">
+                            <div class="demo-type">👨‍💼 Comissão Técnica</div>
+                            <div class="demo-creds">Usuário: <strong>coach</strong> | Senha: <strong>coach123</strong></div>
+                        </div>
+                        <div class="demo-item">
+                            <div class="demo-type">⚽ Jogadores</div>
+                            <div class="demo-creds">Usuário: <strong>player1</strong> | Senha: <strong>player123</strong></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -356,31 +646,135 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('loginForm');
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const loginForm = document.getElementById('loginForm');
+    const submitBtn = loginForm.querySelector('.btn-login');
+    const usernameInput = document.getElementById('id_username');
+    const passwordInput = document.getElementById('id_password');
     
-    form.addEventListener('submit', function(e) {
-        // Mostrar loading no botão
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Entrando...';
-        submitBtn.disabled = true;
+    // Form validation
+    function validateForm() {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
         
-        // Mostrar loader global
-        showLoader();
+        const isValid = username.length > 0 && password.length > 0;
+        submitBtn.disabled = !isValid;
+        
+        return isValid;
+    }
+    
+    // Real-time validation
+    usernameInput.addEventListener('input', validateForm);
+    passwordInput.addEventListener('input', validateForm);
+    
+    // Initial validation
+    validateForm();
+    
+    // Form submission
+    loginForm.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            showNotification('Preencha todos os campos', 'warning');
+            return;
+        }
+        
+        // Show loading state
+        submitBtn.classList.add('loading');
+        submitBtn.innerHTML = '';
+        
+        // Simulate processing time
+        setTimeout(() => {
+            // Form will submit naturally
+        }, 500);
     });
     
-    // Adicionar efeitos de focus nos inputs
-    const inputs = form.querySelectorAll('.form-control');
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.classList.add('focused');
-        });
-        
-        input.addEventListener('blur', function() {
-            if (!this.value) {
-                this.parentElement.classList.remove('focused');
+    // Demo credential helpers
+    document.querySelectorAll('.demo-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const credText = this.querySelector('.demo-creds').textContent;
+            const userMatch = credText.match(/Usuário: \*\*(.+?)\*\*/);
+            const passMatch = credText.match(/Senha: \*\*(.+?)\*\*/);
+            
+            if (userMatch && passMatch) {
+                usernameInput.value = userMatch[1];
+                passwordInput.value = passMatch[1];
+                validateForm();
+                
+                // Visual feedback
+                this.style.background = 'rgba(102, 126, 234, 0.1)';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 500);
+                
+                showNotification('Credenciais preenchidas automaticamente', 'success');
             }
         });
     });
+    
+    // Enter key navigation
+    usernameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            passwordInput.focus();
+        }
+    });
+    
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && validateForm()) {
+            loginForm.submit();
+        }
+    });
+    
+    // Auto-focus username on load
+    setTimeout(() => {
+        usernameInput.focus();
+    }, 500);
 });
+
+function showForgotPassword() {
+    showNotification('Entre em contato com a comissão técnica para recuperar sua senha', 'info');
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existing = document.querySelector('.notification-toast');
+    if (existing) existing.remove();
+    
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} notification-toast fade show`;
+    notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 4000);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Alt + C for coach credentials
+    if (e.altKey && e.key === 'c') {
+        e.preventDefault();
+        document.getElementById('id_username').value = 'coach';
+        document.getElementById('id_password').value = 'coach123';
+        showNotification('Credenciais de coach preenchidas', 'success');
+    }
+    
+    // Alt + P for player credentials
+    if (e.altKey && e.key === 'p') {
+        e.preventDefault();
+        document.getElementById('id_username').value = 'player1';
+        document.getElementById('id_password').value = 'player123';
+        showNotification('Credenciais de jogador preenchidas', 'success');
+    }
+});
+
+console.log('🚀 ScoutPro Login System Loaded');
+console.log('💡 Dicas: Alt+C (coach) | Alt+P (player)');
 </script>
 {% endblock %}

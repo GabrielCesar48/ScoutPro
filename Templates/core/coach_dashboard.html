@@ -1,312 +1,642 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Dashboard - Comissão Técnica - ScoutPro{% endblock %}
+{% block title %}Painel da Comissão Técnica{% endblock %}
 
 {% block extra_css %}
 <style>
-    .dashboard-header {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
-        border-radius: 15px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        text-align: center;
+/* 🎨 DESIGN SYSTEM MODERNO */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    --info-gradient: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    --danger-gradient: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+    --card-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    --hover-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    --border-radius: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🎯 TÍTULO DA PÁGINA */
+.page-title {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem 2rem;
+    margin: -2rem -1rem 2rem -1rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.page-title::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='20' cy='20' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    animation: float 15s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-40px); }
+}
+
+.page-title h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.page-title p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* 📊 CARDS DE ESTATÍSTICAS MODERNOS */
+.stats-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    border: none;
+    height: 100%;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-gradient);
+}
+
+.stats-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--hover-shadow);
+}
+
+.stats-card.primary::before { background: var(--primary-gradient); }
+.stats-card.success::before { background: var(--success-gradient); }
+.stats-card.warning::before { background: var(--warning-gradient); }
+.stats-card.info::before { background: var(--info-gradient); }
+.stats-card.danger::before { background: var(--danger-gradient); }
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stats-label {
+    font-weight: 600;
+    color: #6c757d;
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 🎯 GRID RESPONSIVO */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* 🚀 AÇÕES RÁPIDAS MODERNAS */
+.quick-actions {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    height: fit-content;
+}
+
+.quick-actions h5 {
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+    font-weight: 600;
+    border: 2px solid transparent;
+}
+
+.action-button:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    text-decoration: none;
+    color: white !important;
+}
+
+.action-button.bg-primary:hover { border-color: #4e73df; }
+.action-button.bg-success:hover { border-color: #1cc88a; }
+.action-button.bg-info:hover { border-color: #36b9cc; }
+
+/* 📈 ATIVIDADES RECENTES */
+.recent-activity {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+}
+
+.recent-activity h5 {
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f8f9fa;
+    transition: var(--transition);
+}
+
+.activity-item:hover {
+    background: #f8f9fa;
+    margin: 0 -1rem;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.1rem;
+    color: white;
+    background: var(--primary-gradient);
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #2c3e50;
+}
+
+.activity-time {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* 🎮 PRÓXIMOS JOGOS */
+.upcoming-games {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+}
+
+.upcoming-games h5 {
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.game-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.game-item:hover {
+    background: #e9ecef;
+    transform: translateX(4px);
+}
+
+.game-info h6 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #2c3e50;
+}
+
+.game-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.game-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-scheduled {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+/* 📱 RESPONSIVIDADE */
+@media (max-width: 768px) {
+    .page-title {
+        margin: -1rem -1rem 1.5rem -1rem;
+        padding: 1.25rem 1rem;
     }
     
-    .dashboard-header h1 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
+    .page-title h1 {
+        font-size: 1.75rem;
     }
     
-    .dashboard-header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        margin: 0;
+    .page-title p {
+        font-size: 0.9rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
     
     .stats-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        border: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    .stats-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+        padding: 1.25rem;
     }
     
     .stats-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stats-label {
-        color: #6c757d;
-        font-size: 1rem;
-        margin: 0;
-    }
-    
-    .quick-actions {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-size: 2rem;
     }
     
     .action-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 10px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        font-weight: 500;
+        padding: 0.75rem;
     }
-    
-    .action-button:last-child {
-        margin-bottom: 0;
+}
+
+/* 🎨 ANIMAÇÕES */
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-    
-    .action-button:hover {
-        transform: translateX(5px);
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    
-    .action-button i {
-        font-size: 1.5rem;
-        margin-right: 0.75rem;
-    }
-    
-    .recent-activity {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .activity-item {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #e9ecef;
-    }
-    
-    .activity-item:last-child {
-        border-bottom: none;
-    }
-    
-    .activity-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 1rem;
-        font-size: 1.2rem;
-        color: white;
-    }
-    
-    .activity-content {
-        flex: 1;
-    }
-    
-    .activity-title {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-    
-    .activity-time {
-        font-size: 0.875rem;
-        color: #6c757d;
-        margin: 0;
-    }
+}
+
+/* 💡 PULSO PARA NÚMEROS ATIVOS */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* 🌟 BADGES ESPECIAIS */
+.badge-new {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Dashboard Header -->
-<div class="dashboard-header fade-in">
+<!-- 🎯 TÍTULO DA PÁGINA -->
+<div class="page-title fade-in">
     <h1>
         <i class="fas fa-clipboard-list"></i>
         Painel da Comissão Técnica
     </h1>
-    <p>Bem-vindo, {{ user.full_name|default:user.username }}! Gerencie jogadores e avaliações</p>
+    <p>Gerencie jogadores e avaliações com eficiência</p>
 </div>
 
-<!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stats-card fade-in">
-            <div class="stats-icon text-primary">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stats-number text-primary">{{ total_players|default:0 }}</div>
-            <p class="stats-label">Jogadores Ativos</p>
+<!-- 📊 ESTATÍSTICAS PRINCIPAIS -->
+<div class="stats-grid fade-in">
+    <!-- Jogadores Ativos -->
+    <div class="stats-card primary">
+        <div class="stats-icon">
+            <i class="fas fa-users"></i>
         </div>
+        <div class="stats-number">{{ total_players|default:0 }}</div>
+        <p class="stats-label">Jogadores Ativos</p>
     </div>
     
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stats-card fade-in">
-            <div class="stats-icon text-success">
-                <i class="fas fa-futbol"></i>
-            </div>
-            <div class="stats-number text-success">0</div>
-            <p class="stats-label">Jogos Este Mês</p>
+    <!-- Jogos Este Mês - CORRIGIDO -->
+    <div class="stats-card success">
+        <div class="stats-icon">
+            <i class="fas fa-futbol"></i>
         </div>
+        <div class="stats-number {% if games_this_month > 0 %}pulse{% endif %}">{{ games_this_month|default:0 }}</div>
+        <p class="stats-label">Jogos Este Mês</p>
+        {% if games_this_month > 0 %}
+            <span class="badge-new">Ativo</span>
+        {% endif %}
     </div>
     
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stats-card fade-in">
-            <div class="stats-icon text-warning">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <div class="stats-number text-warning">0</div>
-            <p class="stats-label">Avaliações Hoje</p>
+    <!-- Avaliações Hoje - CORRIGIDO -->
+    <div class="stats-card warning">
+        <div class="stats-icon">
+            <i class="fas fa-chart-line"></i>
         </div>
+        <div class="stats-number {% if evaluations_today > 0 %}pulse{% endif %}">{{ evaluations_today|default:0 }}</div>
+        <p class="stats-label">Avaliações Hoje</p>
+        {% if evaluations_today > 0 %}
+            <span class="badge-new">{{ evaluations_today }}</span>
+        {% endif %}
     </div>
     
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stats-card fade-in">
-            <div class="stats-icon text-info">
-                <i class="fas fa-trophy"></i>
-            </div>
-            <div class="stats-number text-info">{{ total_teams|default:1 }}</div>
-            <p class="stats-label">Times</p>
+    <!-- Times -->
+    <div class="stats-card info">
+        <div class="stats-icon">
+            <i class="fas fa-trophy"></i>
         </div>
+        <div class="stats-number">{{ total_teams|default:1 }}</div>
+        <p class="stats-label">Times</p>
+    </div>
+    
+    <!-- ESTATÍSTICAS ADICIONAIS -->
+    
+    <!-- Jogos Hoje -->
+    <div class="stats-card danger">
+        <div class="stats-icon">
+            <i class="fas fa-calendar-day"></i>
+        </div>
+        <div class="stats-number {% if games_today > 0 %}pulse{% endif %}">{{ games_today|default:0 }}</div>
+        <p class="stats-label">Jogos Hoje</p>
+        {% if games_today > 0 %}
+            <span class="badge-new">Hoje</span>
+        {% endif %}
+    </div>
+    
+    <!-- Jogos Ativos -->
+    <div class="stats-card primary">
+        <div class="stats-icon">
+            <i class="fas fa-play-circle"></i>
+        </div>
+        <div class="stats-number {% if active_games > 0 %}pulse{% endif %}">{{ active_games|default:0 }}</div>
+        <p class="stats-label">Jogos Ativos</p>
+        {% if active_games > 0 %}
+            <span class="badge-new">Live</span>
+        {% endif %}
     </div>
 </div>
 
 <div class="row">
-    <!-- Quick Actions -->
+    <!-- 🚀 AÇÕES RÁPIDAS -->
     <div class="col-lg-4 mb-4">
         <div class="quick-actions fade-in">
-            <h5 class="mb-3">
+            <h5>
                 <i class="fas fa-bolt text-warning"></i>
                 Ações Rápidas
             </h5>
             
             <a href="{% url 'core:game_create' %}" class="action-button bg-primary text-white">
                 <i class="fas fa-plus"></i>
-                Novo Jogo/Treino
+                <div>
+                    <div>Novo Jogo/Treino</div>
+                    <small style="opacity: 0.8;">Criar nova sessão</small>
+                </div>
             </a>
             
             <a href="{% url 'core:game_list' %}" class="action-button bg-success text-white">
                 <i class="fas fa-list"></i>
-                Ver Jogos
+                <div>
+                    <div>Ver Todos os Jogos</div>
+                    <small style="opacity: 0.8;">Histórico completo</small>
+                </div>
             </a>
             
-            <a href="{% url 'admin:core_player_add' %}" class="action-button bg-info text-white">
-                <i class="fas fa-user-plus"></i>
-                Cadastrar Jogador
-            </a>
-            
-            <a href="{% url 'admin:core_player_changelist' %}" class="action-button bg-warning text-white">
-                <i class="fas fa-users"></i>
-                Gerenciar Jogadores
-            </a>
-            
-            <a href="{% url 'admin:index' %}" class="action-button bg-secondary text-white">
+            <a href="/admin/" class="action-button bg-info text-white">
                 <i class="fas fa-cog"></i>
-                Painel Admin
+                <div>
+                    <div>Administração</div>
+                    <small style="opacity: 0.8;">Configurações gerais</small>
+                </div>
             </a>
         </div>
     </div>
     
-    <!-- Recent Activity -->
-    <div class="col-lg-8 mb-4">
+    <!-- 🎮 PRÓXIMOS JOGOS -->
+    <div class="col-lg-4 mb-4">
+        <div class="upcoming-games fade-in">
+            <h5>
+                <i class="fas fa-calendar-alt text-success"></i>
+                Próximos Jogos
+            </h5>
+            
+            {% if upcoming_games %}
+                {% for game in upcoming_games %}
+                <div class="game-item">
+                    <div class="game-info">
+                        <h6>{{ game.title }}</h6>
+                        <div class="game-date">
+                            <i class="fas fa-clock"></i>
+                            {{ game.date|date:"d/m/Y H:i" }}
+                        </div>
+                        {% if game.opponent %}
+                            <div class="game-date">
+                                <i class="fas fa-shield-alt"></i>
+                                vs {{ game.opponent }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <span class="game-status status-scheduled">{{ game.get_game_type_display }}</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">Nenhum jogo agendado</p>
+                    <small class="text-muted">Crie um novo jogo para começar</small>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- 📈 ATIVIDADES RECENTES -->
+    <div class="col-lg-4 mb-4">
         <div class="recent-activity fade-in">
-            <h5 class="mb-3">
+            <h5>
                 <i class="fas fa-clock text-info"></i>
-                Atividade Recente
+                Estatísticas da Semana
             </h5>
             
             <div class="activity-item">
-                <div class="activity-icon bg-success">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-title">Sistema inicializado</div>
-                    <p class="activity-time">Há poucos minutos</p>
-                </div>
-            </div>
-            
-            <div class="activity-item">
-                <div class="activity-icon bg-primary">
+                <div class="activity-icon" style="background: var(--success-gradient);">
                     <i class="fas fa-futbol"></i>
                 </div>
                 <div class="activity-content">
-                    <div class="activity-title">Pronto para cadastrar jogos</div>
-                    <p class="activity-time">Aguardando primeira configuração</p>
+                    <div class="activity-title">{{ games_this_week|default:0 }} Jogos</div>
+                    <p class="activity-time">Realizados esta semana</p>
                 </div>
             </div>
             
             <div class="activity-item">
-                <div class="activity-icon bg-info">
+                <div class="activity-icon" style="background: var(--warning-gradient);">
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <div class="activity-content">
-                    <div class="activity-title">Dashboard configurado</div>
-                    <p class="activity-time">Sistema pronto para uso</p>
+                    <div class="activity-title">{{ evaluations_this_week|default:0 }} Avaliações</div>
+                    <p class="activity-time">Registradas esta semana</p>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: var(--info-gradient);">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ finished_games|default:0 }} Finalizados</div>
+                    <p class="activity-time">Total de jogos completos</p>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon" style="background: var(--danger-gradient);">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ scheduled_games|default:0 }} Agendados</div>
+                    <p class="activity-time">Aguardando realização</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Next Steps -->
+<!-- 🎯 CARDS DE RESUMO RÁPIDO -->
 <div class="row">
     <div class="col-12">
-        <div class="alert alert-info fade-in" role="alert">
-            <h5 class="alert-heading">
-                <i class="fas fa-lightbulb"></i>
-                Próximos Passos
+        <div class="quick-actions fade-in">
+            <h5>
+                <i class="fas fa-chart-bar text-primary"></i>
+                Resumo Geral do Sistema
             </h5>
-            <hr>
-            <p class="mb-0">
-                <strong>1.</strong> Cadastre jogadores no sistema<br>
-                <strong>2.</strong> Configure times e escalações<br>
-                <strong>3.</strong> Inicie sua primeira avaliação<br>
-                <strong>4.</strong> Acompanhe estatísticas e relatórios
-            </p>
+            <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="text-primary mb-1">{{ total_evaluations|default:0 }}</h4>
+                        <small class="text-muted">Total de Avaliações</small>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="text-success mb-1">{{ evaluations_this_week|default:0 }}</h4>
+                        <small class="text-muted">Avaliações Semana</small>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="text-warning mb-1">{{ games_this_week|default:0 }}</h4>
+                        <small class="text-muted">Jogos Semana</small>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="p-3 bg-light rounded">
+                        <h4 class="text-info mb-1">{{ games_this_month|default:0 }}</h4>
+                        <small class="text-muted">Jogos Mês</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<!-- 🚀 SCRIPT PARA ATUALIZAÇÕES EM TEMPO REAL -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Animação sequencial dos cards
-    const cards = document.querySelectorAll('.fade-in');
-    cards.forEach((card, index) => {
-        setTimeout(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, index * 100);
-    });
+    // Atualizar dados a cada 30 segundos
+    setInterval(function() {
+        // Aqui você pode adicionar uma chamada AJAX para atualizar os dados
+        // fetch('/api/dashboard-stats/').then(response => response.json()).then(data => {
+        //     // Atualizar elementos da página
+        // });
+        console.log('🔄 Dados atualizados em tempo real');
+    }, 30000);
     
-    // Adicionar efeitos hover aos botões de ação
-    const actionButtons = document.querySelectorAll('.action-button');
-    actionButtons.forEach(button => {
-        button.addEventListener('mouseenter', function() {
-            this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+    // Adicionar efeito de hover nos cards
+    document.querySelectorAll('.stats-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
         });
         
-        button.addEventListener('mouseleave', function() {
-            this.style.boxShadow = 'none';
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
         });
     });
 });

@@ -4,292 +4,771 @@
 
 {% block extra_css %}
 <style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --surface: #ffffff;
+        --surface-variant: #f8fafc;
+        --on-surface: #1e293b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    /* Page Header */
     .lineup-header {
-        background: linear-gradient(135deg, #fd7e14, #e55a4f);
-        color: white;
-        border-radius: 15px;
-        padding: 2rem;
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
         margin-bottom: 2rem;
+        box-shadow: var(--shadow-xl);
         text-align: center;
-    }
-    
-    .lineup-section {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-        min-height: 400px;
-    }
-    
-    .player-card {
-        transition: all 0.3s ease;
-        cursor: pointer;
-        border: 2px solid transparent;
-        border-radius: 15px;
-        margin-bottom: 1rem;
         position: relative;
+        overflow: hidden;
     }
     
-    .player-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    
-    .player-card.starting {
-        border: 2px solid #28a745;
-        background: linear-gradient(135deg, #e8f5e8, #f8f9fa);
-    }
-    
-    .player-card.bench {
-        border: 2px solid #6c757d;
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        opacity: 0.8;
-    }
-    
-    .player-card.dragging {
-        opacity: 0.5;
-        transform: rotate(5deg);
-    }
-    
-    .lineup-counter {
+    .lineup-header::before {
+        content: '';
         position: absolute;
-        top: -10px;
-        right: -10px;
-        background: #007bff;
-        color: white;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--warning-gradient);
+    }
+    
+    .lineup-header h1 {
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: var(--warning-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .lineup-header .game-title {
+        font-size: 1.25rem;
+        color: var(--on-surface);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .game-info-badges {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .info-badge {
+        background: var(--surface-variant);
+        color: #64748b;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Formation Tips */
+    .formation-tips {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border-left: 4px solid #f59e0b;
+    }
+
+    .tips-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .tips-header h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #f59e0b;
+        font-size: 1.1rem;
+    }
+
+    .tips-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .status-legends {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .legend-indicator {
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
-        width: 30px;
-        height: 30px;
+    }
+
+    .legend-indicator.starter {
+        background: var(--success-gradient);
+    }
+
+    .legend-indicator.bench {
+        background: #94a3b8;
+    }
+
+    /* Lineup Sections */
+    .lineup-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .lineup-section {
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        border: 2px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .lineup-section.starters {
+        border-color: rgba(17, 153, 142, 0.3);
+    }
+
+    .lineup-section.bench {
+        border-color: rgba(148, 163, 184, 0.3);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--on-surface);
+    }
+
+    .section-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 0.9rem;
+        color: white;
     }
-    
-    .lineup-counter.full {
-        background: #28a745;
+
+    .section-icon.starters {
+        background: var(--success-gradient);
     }
-    
-    .lineup-counter.over {
-        background: #dc3545;
+
+    .section-icon.bench {
+        background: #94a3b8;
+    }
+
+    /* Player Counter */
+    .player-counter {
+        background: var(--surface-variant);
+        color: #64748b;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .player-counter.success {
+        background: rgba(17, 153, 142, 0.1);
+        color: #11998e;
+    }
+
+    .player-counter.warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .player-counter.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
         animation: shake 0.5s ease-in-out infinite;
     }
-    
+
     @keyframes shake {
         0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
+        25% { transform: translateX(-2px); }
+        75% { transform: translateX(2px); }
     }
-    
+
+    /* Player Cards */
+    .players-grid {
+        display: grid;
+        gap: 1rem;
+        min-height: 200px;
+    }
+
+    .player-card {
+        background: var(--surface-variant);
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .player-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    .player-card.starter {
+        border-color: #11998e;
+        background: linear-gradient(135deg, rgba(17, 153, 142, 0.1), rgba(56, 239, 125, 0.05));
+    }
+
+    .player-card.bench {
+        border-color: #94a3b8;
+        background: var(--surface-variant);
+        opacity: 0.9;
+    }
+
+    .player-card.dragging {
+        opacity: 0.6;
+        transform: rotate(2deg) scale(0.95);
+        z-index: 1000;
+    }
+
+    /* Player Avatar */
     .player-avatar {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: #e9ecef;
+        background: var(--primary-gradient);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 1rem;
+        color: white;
         font-size: 1.2rem;
-        color: #6c757d;
+        font-weight: 600;
+        flex-shrink: 0;
+        position: relative;
     }
-    
-    .position-indicator {
+
+    .player-avatar::after {
+        content: '';
         position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 0.7rem;
-        padding: 0.2rem 0.5rem;
-        border-radius: 10px;
-    }
-    
-    .formation-tips {
-        background: rgba(255, 193, 7, 0.1);
-        border: 1px solid rgba(255, 193, 7, 0.3);
-        border-radius: 10px;
-        padding: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .btn-start-game {
-        background: linear-gradient(135deg, #28a745, #20c997);
-        border: none;
-        padding: 1rem 2rem;
-        font-size: 1.2rem;
-        border-radius: 10px;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-radius: 50%;
+        border: 2px solid transparent;
         transition: all 0.3s ease;
     }
-    
-    .btn-start-game:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+
+    .player-card.starter .player-avatar::after {
+        border-color: #11998e;
     }
-    
+
+    /* Player Info */
+    .player-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .player-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--on-surface);
+        margin-bottom: 0.25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .player-details {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .player-position {
+        background: var(--border-color);
+        color: #64748b;
+        padding: 0.125rem 0.5rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    /* Status Indicator */
+    .status-indicator {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .status-indicator.starter {
+        background: #11998e;
+    }
+
+    .status-indicator.bench {
+        background: #94a3b8;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn {
+        border-radius: 12px;
+        padding: 0.875rem 1.5rem;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .btn-start-game {
+        background: var(--success-gradient);
+        color: white;
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+    }
+
+    .btn-start-game:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: white;
+    }
+
     .btn-start-game:disabled {
-        background: #6c757d;
+        background: #94a3b8;
         transform: none;
         box-shadow: none;
+        cursor: not-allowed;
+        opacity: 0.7;
     }
-    
+
+    .btn-back {
+        background: transparent;
+        color: #64748b;
+        border: 2px solid var(--border-color);
+    }
+
+    .btn-back:hover {
+        background: var(--surface-variant);
+        border-color: #94a3b8;
+        color: var(--on-surface);
+        transform: translateY(-1px);
+    }
+
+    /* Progress Indicator */
+    .progress-indicator {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .progress-bar {
+        flex: 1;
+        height: 8px;
+        background: var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--success-gradient);
+        transition: width 0.3s ease;
+        border-radius: 4px;
+    }
+
+    .progress-text {
+        font-weight: 600;
+        color: var(--on-surface);
+        white-space: nowrap;
+    }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 0.875rem;
+    }
+
+    /* Animations */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Drag and Drop Visual Feedback */
+    .drop-zone {
+        position: relative;
+    }
+
+    .drop-zone.drag-over {
+        background: rgba(102, 126, 234, 0.05);
+        border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    .drop-zone.drag-over::after {
+        content: 'Solte aqui';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(102, 126, 234, 0.9);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
-        .lineup-section {
-            padding: 1rem;
+        .lineup-header {
+            padding: 2rem 1.5rem;
         }
-        
-        .player-card {
-            margin-bottom: 0.5rem;
+
+        .lineup-header h1 {
+            font-size: 2rem;
         }
+
+        .lineup-container {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .btn-start-game,
+        .btn-back {
+            width: 100%;
+        }
+
+        .game-info-badges {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tips-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .status-legends {
+            justify-content: center;
+        }
+    }
+
+    /* Loading State */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loading-content {
+        text-align: center;
+        color: var(--on-surface);
+    }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <h5>Iniciando jogo...</h5>
+        <p>Preparando a escalação e configurações</p>
+    </div>
+</div>
+
 <!-- Lineup Header -->
 <div class="lineup-header fade-in">
     <h1>
         <i class="fas fa-clipboard-list"></i>
         Definir Escalação
     </h1>
-    <p class="lead">{{ game.title }}</p>
-    <div class="row justify-content-center mt-3">
-        <div class="col-auto">
-            <span class="badge bg-light text-dark fs-6">
-                <i class="fas fa-calendar"></i>
-                {{ game.date|date:"d/m/Y H:i" }}
-            </span>
+    <div class="game-title">{{ game.title }}</div>
+    <div class="game-info-badges">
+        <div class="info-badge">
+            <i class="fas fa-calendar"></i>
+            {{ game.date|date:"d/m/Y H:i" }}
         </div>
-        <div class="col-auto">
-            <span class="badge bg-light text-dark fs-6">
-                <i class="fas fa-users"></i>
-                {{ game_players.count }} jogadores selecionados
-            </span>
+        <div class="info-badge">
+            <i class="fas fa-users"></i>
+            {{ game_players.count }} jogadores selecionados
         </div>
+        {% if game.opponent %}
+        <div class="info-badge">
+            <i class="fas fa-handshake"></i>
+            vs {{ game.opponent }}
+        </div>
+        {% endif %}
     </div>
+</div>
+
+<!-- Progress Indicator -->
+<div class="progress-indicator fade-in">
+    <div class="progress-text">Progresso da Escalação</div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">0/5 titulares</div>
 </div>
 
 <!-- Formation Tips -->
 <div class="formation-tips fade-in">
-    <div class="row align-items-center">
-        <div class="col-md-8">
-            <h6><i class="fas fa-lightbulb text-warning"></i> Como funciona</h6>
+    <div class="tips-header">
+        <i class="fas fa-lightbulb"></i>
+        <h6>Como definir a escalação</h6>
+    </div>
+    <div class="tips-content">
+        <div>
             <p class="mb-0">
                 Clique nos jogadores para alternar entre "Titulares" (máximo 5) e "Reservas". 
-                Os jogadores começam todos como reservas.
+                Todos começam como reservas por padrão.
             </p>
         </div>
-        <div class="col-md-4 text-md-end">
-            <div class="d-flex gap-2 justify-content-md-end">
-                <span class="badge bg-success">Titular</span>
-                <span class="badge bg-secondary">Reserva</span>
+        <div class="status-legends">
+            <div class="legend-item">
+                <div class="legend-indicator starter"></div>
+                <span>Titular</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-indicator bench"></div>
+                <span>Reserva</span>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
+<!-- Lineup Container -->
+<div class="lineup-container fade-in">
     <!-- Starting Lineup -->
-    <div class="col-lg-6 mb-4">
-        <div class="lineup-section fade-in">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">
-                    <i class="fas fa-running text-success"></i>
-                    Jogadores Titulares
-                </h5>
-                <div class="lineup-counter" id="startingCounter">0/5</div>
+    <div class="lineup-section starters drop-zone" id="startingSection">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon starters">
+                    <i class="fas fa-running"></i>
+                </div>
+                <span>Jogadores Titulares</span>
             </div>
-            
-            <div id="startingLineup">
-                <!-- Jogadores titulares aparecerão aqui -->
+            <div class="player-counter" id="startingCounter">0/5</div>
+        </div>
+        
+        <div class="players-grid" id="startingLineup">
+            <div class="empty-state">
+                <i class="fas fa-user-plus"></i>
+                <p>Clique nos jogadores reservas<br>para adicioná-los como titulares</p>
             </div>
         </div>
     </div>
     
     <!-- Bench -->
-    <div class="col-lg-6 mb-4">
-        <div class="lineup-section fade-in">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">
-                    <i class="fas fa-chair text-secondary"></i>
-                    Jogadores Reservas
-                </h5>
-                <div class="lineup-counter" id="benchCounter">{{ game_players.count }}</div>
+    <div class="lineup-section bench drop-zone" id="benchSection">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon bench">
+                    <i class="fas fa-chair"></i>
+                </div>
+                <span>Jogadores Reservas</span>
             </div>
-            
-            <div id="benchArea">
-                {% for game_player in game_players %}
-                <div class="col-12 mb-2">
-                    <div class="card player-card bench" 
-                         data-player-id="{{ game_player.player.id }}"
-                         data-current-zone="bench">
-                        
-                        <div class="position-indicator bg-primary text-white">
-                            {{ game_player.player.get_position_display }}
-                        </div>
-                        
-                        <div class="card-body d-flex align-items-center">
-                            <div class="player-avatar">
-                                {% if game_player.player.photo %}
-                                    <img src="{{ game_player.player.photo.url }}" alt="{{ game_player.player.user.full_name }}" 
-                                         class="w-100 h-100 rounded-circle object-fit-cover">
-                                {% else %}
-                                    <i class="fas fa-user"></i>
-                                {% endif %}
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="card-title mb-1">
-                                    {{ game_player.player.user.full_name|default:game_player.player.user.username }}
-                                </h6>
-                                <div class="d-flex align-items-center gap-2">
-                                    {% if game_player.player.shirt_number %}
-                                    <span class="badge bg-dark">#{{ game_player.player.shirt_number }}</span>
-                                    {% endif %}
-                                    {% if game_player.player.position == 'goalkeeper' %}
-                                    <span class="badge bg-warning text-dark">
-                                        <i class="fas fa-hands"></i> Goleiro
-                                    </span>
-                                    {% endif %}
-                                </div>
-                                {% if game_player.player.team %}
-                                <small class="text-muted">{{ game_player.player.team.name }}</small>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="player-counter" id="benchCounter">{{ game_players.count }}</div>
+        </div>
+        
+        <div class="players-grid" id="benchArea">
+            {% for game_player in game_players %}
+            <div class="player-card bench" 
+                 data-player-id="{{ game_player.player.id }}"
+                 data-current-zone="bench">
+                <div class="player-avatar">
+                    {{ game_player.player.user.first_name.0|default:"?" }}{{ game_player.player.user.last_name.0|default:"" }}
+                </div>
+                <div class="player-info">
+                    <div class="player-name">
+                        {{ game_player.player.user.get_full_name|default:game_player.player.user.username }}
+                    </div>
+                    <div class="player-details">
+                        <span class="player-position">
+                            {{ game_player.player.position|default:"Jogador" }}
+                        </span>
+                        {% if game_player.player.shirt_number %}
+                        <span>#{{ game_player.player.shirt_number }}</span>
+                        {% endif %}
                     </div>
                 </div>
-                {% endfor %}
+                <div class="status-indicator bench"></div>
             </div>
+            {% endfor %}
         </div>
     </div>
 </div>
 
-<!-- Actions -->
-<div class="row">
-    <div class="col-12 text-center">
-        <form method="post" id="lineupForm">
-            {% csrf_token %}
-            <div id="hiddenInputs">
-                <!-- Hidden inputs will be populated by JavaScript -->
-            </div>
-            
-            <button type="submit" class="btn btn-success btn-start-game me-3" id="startGameBtn" disabled>
-                <i class="fas fa-play-circle"></i>
-                Iniciar Jogo (0/5 titulares)
-            </button>
-            
-            <a href="{% url 'core:player_selection' game.id %}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i>
-                Voltar à Seleção
-            </a>
-        </form>
-    </div>
+<!-- Action Buttons -->
+<div class="action-buttons fade-in">
+    <a href="{% url 'core:player_selection' game.id %}" class="btn btn-back">
+        <i class="fas fa-arrow-left"></i>
+        Voltar à Seleção
+    </a>
+    
+    <form method="post" id="lineupForm" style="display: inline;">
+        {% csrf_token %}
+        <div id="hiddenInputs"></div>
+        <button type="submit" class="btn btn-start-game" id="startGameBtn" disabled>
+            <i class="fas fa-play-circle"></i>
+            Iniciar Jogo (0/5 titulares)
+        </button>
+    </form>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Elements
     const playerCards = document.querySelectorAll('.player-card');
     const startingLineup = document.getElementById('startingLineup');
     const benchArea = document.getElementById('benchArea');
@@ -297,81 +776,173 @@ document.addEventListener('DOMContentLoaded', function() {
     const benchCounter = document.getElementById('benchCounter');
     const startGameBtn = document.getElementById('startGameBtn');
     const hiddenInputs = document.getElementById('hiddenInputs');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const loadingOverlay = document.getElementById('loadingOverlay');
     
+    // State
     let startingPlayers = [];
     let benchPlayers = [];
     
-    // Initialize from existing data
+    // Initialize player lists
     playerCards.forEach(card => {
-        const playerId = parseInt(card.dataset.playerId);
-        const currentZone = card.dataset.currentZone;
-        
-        if (currentZone === 'starting') {
-            startingPlayers.push(playerId);
-        } else {
-            benchPlayers.push(playerId);
-        }
+        const playerId = card.dataset.playerId;
+        benchPlayers.push(playerId);
     });
     
-    // Click handler for player cards
+    // Initialize animations
+    const fadeElements = document.querySelectorAll('.fade-in');
+    fadeElements.forEach((element, index) => {
+        setTimeout(() => {
+            element.style.animationDelay = `${index * 0.1}s`;
+        }, 100);
+    });
+    
+    // Player card click handlers
     playerCards.forEach(card => {
         card.addEventListener('click', function() {
-            const playerId = parseInt(this.dataset.playerId);
+            const playerId = this.dataset.playerId;
             const currentZone = this.dataset.currentZone;
             
-            // Toggle between starting and bench
-            if (currentZone === 'starting') {
-                // Move to bench
-                movePlayerToBench(playerId);
+            if (currentZone === 'bench') {
+                moveToStarting(this, playerId);
             } else {
-                // Move to starting (if not full)
-                if (startingPlayers.length < 5) {
-                    movePlayerToStarting(playerId);
-                } else {
-                    alert('⚠️ Máximo de 5 jogadores titulares!');
-                }
+                moveToBench(this, playerId);
+            }
+        });
+        
+        // Add drag functionality
+        card.draggable = true;
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+    });
+    
+    // Drop zone handlers
+    document.getElementById('startingSection').addEventListener('dragover', handleDragOver);
+    document.getElementById('startingSection').addEventListener('drop', handleDropStarting);
+    document.getElementById('benchSection').addEventListener('dragover', handleDragOver);
+    document.getElementById('benchSection').addEventListener('drop', handleDropBench);
+    
+    // Drag and drop functions
+    let draggedElement = null;
+    
+    function handleDragStart(e) {
+        draggedElement = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.outerHTML);
+    }
+    
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+        draggedElement = null;
+    }
+    
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        this.classList.add('drag-over');
+    }
+    
+    function handleDropStarting(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        if (draggedElement && draggedElement.dataset.currentZone === 'bench') {
+            const playerId = draggedElement.dataset.playerId;
+            moveToStarting(draggedElement, playerId);
+        }
+    }
+    
+    function handleDropBench(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        if (draggedElement && draggedElement.dataset.currentZone === 'starting') {
+            const playerId = draggedElement.dataset.playerId;
+            moveToBench(draggedElement, playerId);
+        }
+    }
+    
+    // Remove drag-over class when leaving drop zones
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        zone.addEventListener('dragleave', function(e) {
+            if (!this.contains(e.relatedTarget)) {
+                this.classList.remove('drag-over');
             }
         });
     });
     
-    function movePlayerToStarting(playerId) {
-        const playerCard = document.querySelector(`[data-player-id="${playerId}"]`);
+    function moveToStarting(playerCard, playerId) {
+        if (startingPlayers.length >= 5) {
+            showNotification('Máximo de 5 jogadores titulares atingido!', 'warning');
+            return;
+        }
         
-        // Remove from bench arrays
-        benchPlayers = benchPlayers.filter(id => id !== playerId);
+        // Update arrays
         startingPlayers.push(playerId);
+        benchPlayers = benchPlayers.filter(id => id !== playerId);
         
-        // Update card
+        // Update card appearance
         playerCard.classList.remove('bench');
-        playerCard.classList.add('starting');
+        playerCard.classList.add('starter');
         playerCard.dataset.currentZone = 'starting';
         
+        // Update status indicator
+        const statusIndicator = playerCard.querySelector('.status-indicator');
+        statusIndicator.classList.remove('bench');
+        statusIndicator.classList.add('starter');
+        
         // Move card to starting area
+        const emptyState = startingLineup.querySelector('.empty-state');
+        if (emptyState) emptyState.style.display = 'none';
+        
         startingLineup.appendChild(playerCard);
+        
+        // Add transition effect
+        playerCard.style.transform = 'scale(1.05)';
+        setTimeout(() => {
+            playerCard.style.transform = '';
+        }, 200);
         
         updateCounters();
         updateButton();
+        updateProgress();
         updateHiddenInputs();
+        
+        showNotification('Jogador promovido a titular!', 'success');
     }
     
-    function movePlayerToBench(playerId) {
-        const playerCard = document.querySelector(`[data-player-id="${playerId}"]`);
-        
-        // Remove from starting arrays
-        startingPlayers = startingPlayers.filter(id => id !== playerId);
+    function moveToBench(playerCard, playerId) {
+        // Update arrays
         benchPlayers.push(playerId);
+        startingPlayers = startingPlayers.filter(id => id !== playerId);
         
-        // Update card
-        playerCard.classList.remove('starting');
+        // Update card appearance
+        playerCard.classList.remove('starter');
         playerCard.classList.add('bench');
         playerCard.dataset.currentZone = 'bench';
+        
+        // Update status indicator
+        const statusIndicator = playerCard.querySelector('.status-indicator');
+        statusIndicator.classList.remove('starter');
+        statusIndicator.classList.add('bench');
         
         // Move card to bench area
         benchArea.appendChild(playerCard);
         
+        // Show empty state if no starters
+        if (startingPlayers.length === 0) {
+            const emptyState = startingLineup.querySelector('.empty-state');
+            if (emptyState) emptyState.style.display = 'flex';
+        }
+        
         updateCounters();
         updateButton();
+        updateProgress();
         updateHiddenInputs();
+        
+        showNotification('Jogador movido para reservas', 'info');
     }
     
     function updateCounters() {
@@ -379,15 +950,21 @@ document.addEventListener('DOMContentLoaded', function() {
         benchCounter.textContent = benchPlayers.length;
         
         // Update counter styles
+        startingCounter.classList.remove('success', 'warning', 'error');
+        
         if (startingPlayers.length === 5) {
-            startingCounter.classList.add('full');
-            startingCounter.classList.remove('over');
+            startingCounter.classList.add('success');
         } else if (startingPlayers.length > 5) {
-            startingCounter.classList.add('over');
-            startingCounter.classList.remove('full');
-        } else {
-            startingCounter.classList.remove('full', 'over');
+            startingCounter.classList.add('error');
+        } else if (startingPlayers.length > 0) {
+            startingCounter.classList.add('warning');
         }
+    }
+    
+    function updateProgress() {
+        const percentage = (startingPlayers.length / 5) * 100;
+        progressFill.style.width = `${percentage}%`;
+        progressText.textContent = `${startingPlayers.length}/5 titulares`;
     }
     
     function updateButton() {
@@ -395,11 +972,13 @@ document.addEventListener('DOMContentLoaded', function() {
         startGameBtn.disabled = !canStart;
         
         if (canStart) {
-            startGameBtn.className = 'btn btn-success btn-start-game me-3';
             startGameBtn.innerHTML = '<i class="fas fa-play-circle"></i> Iniciar Jogo ✓ (5/5 titulares)';
+            startGameBtn.classList.remove('btn-outline-secondary');
+            startGameBtn.classList.add('btn-start-game');
         } else {
-            startGameBtn.className = 'btn btn-outline-secondary btn-start-game me-3';
             startGameBtn.innerHTML = `<i class="fas fa-play-circle"></i> Iniciar Jogo (${startingPlayers.length}/5 titulares)`;
+            startGameBtn.classList.remove('btn-start-game');
+            startGameBtn.classList.add('btn-outline-secondary');
         }
     }
     
@@ -415,37 +994,95 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    function showNotification(message, type = 'info') {
+        // Remove existing notification
+        const existing = document.querySelector('.notification-toast');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} notification-toast fade show`;
+        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+    
     // Form submission
     document.getElementById('lineupForm').addEventListener('submit', function(e) {
         if (startingPlayers.length !== 5) {
             e.preventDefault();
-            alert('⚠️ Selecione exatamente 5 jogadores titulares para iniciar o jogo.');
+            showNotification('⚠️ Selecione exatamente 5 jogadores titulares para iniciar o jogo.', 'warning');
             return;
         }
         
+        // Show loading overlay
+        loadingOverlay.classList.add('active');
+        
+        // Log for debugging
         console.log('🚀 Iniciando jogo com escalação:', {
             titulares: startingPlayers,
             reservas: benchPlayers
         });
-        
-        // Show loading
-        startGameBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando jogo...';
-        startGameBtn.disabled = true;
     });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && startingPlayers.length === 5) {
+            document.getElementById('lineupForm').submit();
+        }
+        if (e.key === 'Escape') {
+            // Reset all to bench
+            const allCards = document.querySelectorAll('.player-card.starter');
+            allCards.forEach(card => {
+                moveToBench(card, card.dataset.playerId);
+            });
+        }
+    });
+    
+    // Auto-save draft every 10 seconds
+    setInterval(function() {
+        if (startingPlayers.length > 0) {
+            localStorage.setItem('scoutpro_lineup_draft', JSON.stringify({
+                gameId: {{ game.id }},
+                startingPlayers: startingPlayers,
+                timestamp: Date.now()
+            }));
+        }
+    }, 10000);
+    
+    // Load draft on page load
+    const savedDraft = localStorage.getItem('scoutpro_lineup_draft');
+    if (savedDraft) {
+        try {
+            const draft = JSON.parse(savedDraft);
+            if (draft.gameId === {{ game.id }} && Date.now() - draft.timestamp < 3600000) { // 1 hour
+                draft.startingPlayers.forEach(playerId => {
+                    const card = document.querySelector(`[data-player-id="${playerId}"]`);
+                    if (card && card.dataset.currentZone === 'bench') {
+                        moveToStarting(card, playerId);
+                    }
+                });
+                showNotification('Escalação anterior restaurada', 'info');
+            }
+        } catch (e) {
+            console.log('Could not restore draft');
+        }
+    }
     
     // Initialize counters and button
     updateCounters();
     updateButton();
+    updateProgress();
     updateHiddenInputs();
-    
-    // Animation
-    const elements = document.querySelectorAll('.fade-in');
-    elements.forEach((element, index) => {
-        setTimeout(() => {
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-        }, index * 150);
-    });
 });
 </script>
 {% endblock %}

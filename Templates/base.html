@@ -11,9 +11,32 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <style>
         :root {
+            /* Design System Colors */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            
+            /* Neutral Colors */
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            /* Legacy Colors */
             --primary-color: #007bff;
             --secondary-color: #6c757d;
             --success-color: #28a745;
@@ -21,13 +44,343 @@
             --danger-color: #dc3545;
             --dark-color: #343a40;
             --light-color: #f8f9fa;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* Transitions */
+            --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gray-50);
+            line-height: 1.6;
         }
-
+        
+        /* Modern Header Styles */
+        .modern-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-300);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition-all);
+        }
+        
+        .modern-header.scrolled {
+            background: var(--white);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid var(--gray-400);
+        }
+        
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .navbar-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+        
+        /* Logo & Brand */
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            transition: var(--transition-all);
+        }
+        
+        .brand-container:hover {
+            transform: translateY(-1px);
+        }
+        
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-all);
+        }
+        
+        .brand-container:hover .brand-icon {
+            transform: rotate(5deg) scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .brand-subtitle {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 500;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--gray-600);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition-all);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: var(--transition-all);
+            z-index: -1;
+        }
+        
+        .nav-link:hover::before {
+            left: 0;
+        }
+        
+        .nav-link:hover {
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .nav-link.active {
+            background: var(--primary-gradient);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .nav-link i {
+            font-size: 1rem;
+            transition: var(--transition-all);
+        }
+        
+        .nav-link:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* User Profile Section */
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .notifications-btn {
+            position: relative;
+            background: var(--gray-100);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            transition: var(--transition-all);
+            cursor: pointer;
+        }
+        
+        .notifications-btn:hover {
+            background: var(--gray-200);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--secondary-gradient);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            background: var(--gray-50);
+            border-radius: 12px;
+            transition: var(--transition-all);
+            cursor: pointer;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .user-profile:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--success-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .dropdown-chevron {
+            color: var(--gray-400);
+            font-size: 0.8rem;
+            transition: var(--transition-all);
+        }
+        
+        .user-profile:hover .dropdown-chevron {
+            transform: rotate(180deg);
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition-all);
+        }
+        
+        .mobile-menu-btn:hover {
+            color: var(--gray-900);
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: calc(100vh - 70px - 120px);
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        }
+        
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-content {
+                height: 60px;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .brand-subtitle {
+                display: none;
+            }
+            
+            .user-info {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+        }
+        
+        /* Legacy Styles for Compatibility */
         .navbar-brand {
             font-weight: bold;
             font-size: 1.5rem;
@@ -36,12 +389,6 @@
         .navbar-brand i {
             color: var(--success-color);
             margin-right: 8px;
-        }
-
-        .main-content {
-            min-height: calc(100vh - 120px);
-            padding-top: 20px;
-            padding-bottom: 20px;
         }
 
         .footer {
@@ -103,10 +450,6 @@
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            .main-content {
-                padding-top: 10px;
-            }
-            
             .navbar-brand {
                 font-size: 1.2rem;
             }
@@ -116,77 +459,108 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'core:home' %}">
-                <i class="fas fa-futbol"></i>
-                ScoutPro
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'core:dashboard' %}">
+    <!-- Modern Header -->
+    <header class="modern-header" id="header">
+        <div class="navbar-container">
+            <div class="navbar-content">
+                <!-- Brand/Logo -->
+                <a href="{% url 'core:home' %}" class="brand-container">
+                    <div class="brand-icon">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <div class="brand-text">
+                        <div class="brand-title">ScoutPro</div>
+                        <div class="brand-subtitle">Avaliação de Jogadores</div>
+                    </div>
+                </a>
+                
+                {% if user.is_authenticated %}
+                    <!-- Navigation Menu -->
+                    <nav class="nav-menu">
+                        <div class="nav-item">
+                            <a href="{% url 'core:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                                 <i class="fas fa-tachometer-alt"></i>
                                 Dashboard
                             </a>
-                        </li>
+                        </div>
                         
                         {% if user.user_type == 'coach' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'core:coach_dashboard' %}">
+                            <div class="nav-item">
+                                <a href="{% url 'core:coach_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'coach_dashboard' %}active{% endif %}">
                                     <i class="fas fa-clipboard-list"></i>
                                     Comissão Técnica
                                 </a>
-                            </li>
+                            </div>
                         {% endif %}
                         
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'core:profile' %}">
+                        <div class="nav-item">
+                            <a href="{% url 'core:profile' %}" class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
                                 <i class="fas fa-user"></i>
                                 Perfil
                             </a>
-                        </li>
+                        </div>
+                    </nav>
+                    
+                    <!-- User Section -->
+                    <div class="user-section">
+                        <!-- Notifications -->
+                        <button class="notifications-btn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Notificações">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
                         
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i>
-                                {{ user.full_name|default:user.username }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'core:profile' %}">
-                                        <i class="fas fa-user"></i>
-                                        Meu Perfil
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="{% url 'core:logout' %}">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                        Sair
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'core:login' %}">
-                                <i class="fas fa-sign-in-alt"></i>
-                                Entrar
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
+                        <!-- User Profile -->
+                        <div class="user-profile dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar">
+                                {% if user.full_name %}
+                                    {{ user.full_name|slice:":2"|upper }}
+                                {% else %}
+                                    {{ user.username|slice:":2"|upper }}
+                                {% endif %}
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">{{ user.full_name|default:user.username }}</div>
+                                <div class="user-role">
+                                    {% if user.user_type == 'coach' %}
+                                        Comissão Técnica
+                                    {% else %}
+                                        Jogador
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down dropdown-chevron"></i>
+                        </div>
+                        
+                        <!-- Dropdown Menu -->
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'core:dashboard' %}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a></li>
+                            {% if user.user_type == 'coach' %}
+                                <li><a class="dropdown-item" href="{% url 'core:coach_dashboard' %}">
+                                    <i class="fas fa-clipboard-list me-2"></i>Comissão Técnica
+                                </a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'core:profile' %}">
+                                <i class="fas fa-user me-2"></i>Meu Perfil
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'core:logout' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                            </a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <!-- Login Button for Anonymous Users -->
+                    <div class="user-section">
+                        <a href="{% url 'core:login' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Messages -->
     {% if messages %}
@@ -218,7 +592,7 @@
                         ScoutPro
                     </h5>
                     <p class="mb-2">Sistema profissional de avaliação de jogadores</p>
-                    <small class=>Desenvolvido Por Gabriel Pereirap</small>
+                    <small>Desenvolvido Por Gabriel Pereira</small>
                 </div>
                 <div class="col-md-3">
                     <h6 class="mb-3">Links Úteis</h6>
@@ -246,7 +620,7 @@
             <hr class="my-3">
             <div class="row">
                 <div class="col-12 text-center">
-                    <small class="">
+                    <small>
                         © {% now "Y" %} ScoutPro. Todos os direitos reservados.
                     </small>
                 </div>
@@ -259,9 +633,25 @@
     
     <!-- Custom JavaScript -->
     <script>
+        // Efeito de scroll no header
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
         // Adicionar classe fade-in aos elementos quando carregam
         document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.add('fade-in');
+            
+            // Inicializar tooltips
+            const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(tooltip => {
+                new bootstrap.Tooltip(tooltip);
+            });
             
             // Auto-hide alerts após 5 segundos
             setTimeout(function() {

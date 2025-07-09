@@ -227,7 +227,7 @@ def game_evaluation_view(request, game_id):
 @require_POST
 def api_add_evaluation(request):
     """
-    API para adicionar avaliação via AJAX
+    API para adicionar avaliação via AJAX - COM INTEGRAÇÃO DE PLACAR
     """
     if request.user.user_type != 'coach':
         return JsonResponse({'error': 'Acesso negado'}, status=403)
@@ -251,18 +251,37 @@ def api_add_evaluation(request):
             notes=notes
         )
         
+        # INTEGRAÇÃO COM PLACAR - SE FOR GOL, INCREMENTAR AUTOMATICAMENTE
+        goal_added = False
+        if criteria.code == 'gol':
+            game = game_player.game
+            game.team_goals += 1
+            game.save()
+            goal_added = True
+        
         # Retornar estatísticas atualizadas
         stats = get_player_stats(game_player.player, game_player.game)
         
-        return JsonResponse({
+        response_data = {
             'success': True,
             'evaluation_id': evaluation.id,
             'stats': stats,
             'message': f'Avaliação adicionada: {criteria.name}'
-        })
+        }
         
+        # Adicionar dados do placar se foi gol
+        if goal_added:
+            response_data['goal_added'] = True
+            response_data['team_goals'] = game.team_goals
+            response_data['opponent_goals'] = game.opponent_goals
+            response_data['score_display'] = game.score_display
+        
+        return JsonResponse(response_data)
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Dados inválidos'}, status=400)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        return JsonResponse({'error': f'Erro interno: {str(e)}'}, status=500)
 
 
 @login_required
@@ -370,16 +389,57 @@ def api_update_game_time(request, game_id):
         })
         
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        return JsonResponse({'error': str(e)}, status=400)        
+        
+@login_required
+@require_POST
+def api_opponent_goal(request):
+    """
+    API para controlar gols do adversário E do time
+    """
+    if request.user.user_type != 'coach':
+        return JsonResponse({'error': 'Acesso negado'}, status=403)
     
-    
-    # ADICIONAR esta função ao arquivo core/views_evaluation.py
+    try:
+        data = json.loads(request.body)
+        game_id = data.get('game_id')
+        action = data.get('action')  # 'add' ou 'remove'
+        team_goal = data.get('team_goal', False)  # True se for gol do time
+        
+        game = get_object_or_404(Game, id=game_id)
+        
+        if action == 'add':
+            if team_goal:
+                game.team_goals += 1
+            else:
+                game.opponent_goals += 1
+        elif action == 'remove':
+            if team_goal:
+                game.team_goals = max(0, game.team_goals - 1)
+            else:
+                game.opponent_goals = max(0, game.opponent_goals - 1)
+        else:
+            return JsonResponse({'error': 'Ação inválida'}, status=400)
+        
+        game.save()
+        
+        return JsonResponse({
+            'success': True,
+            'team_goals': game.team_goals,
+            'opponent_goals': game.opponent_goals,
+            'score_display': game.score_display
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Dados inválidos'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Erro: {str(e)}'}, status=500)
 
 @login_required
 @require_POST
 def api_save_complete_game(request):
     """
-    API para salvar jogo completo de uma vez (dados do localStorage)
+    API para salvar jogo completo no banco de dados com placar
     """
     if request.user.user_type != 'coach':
         return JsonResponse({'error': 'Acesso negado'}, status=403)
@@ -391,128 +451,107 @@ def api_save_complete_game(request):
         game = get_object_or_404(Game, id=game_id)
         
         with transaction.atomic():
-            # Atualizar dados do jogo
+            # Atualizar dados básicos do jogo
             game.duration = data.get('duration', 0)
             game.status = data.get('status', 'finished')
+            
+            # ATUALIZAR PLACAR
+            if 'team_goals' in data:
+                game.team_goals = data['team_goals']
+            if 'opponent_goals' in data:
+                game.opponent_goals = data['opponent_goals']
+            
             game.save()
             
-            # Atualizar status dos jogadores
-            playing_player_ids = data.get('playing_players', [])
-            bench_player_ids = data.get('bench_players', [])
-            
-            # Atualizar GamePlayers
-            for player_id in playing_player_ids:
-                GamePlayer.objects.filter(
-                    game=game, 
-                    player_id=player_id
-                ).update(status='playing')
-            
-            for player_id in bench_player_ids:
-                GamePlayer.objects.filter(
-                    game=game, 
-                    player_id=player_id
-                ).update(status='bench')
+            # Limpar avaliações antigas
+            PlayerEvaluation.objects.filter(game_player__game=game).delete()
             
             # Salvar avaliações
             evaluation_data = data.get('evaluation_data', {})
             total_evaluations = 0
             
-            for player_id_str, player_data in evaluation_data.items():
-                player_id = int(player_id_str)
-                
+            for player_id, player_data in evaluation_data.items():
                 try:
-                    game_player = GamePlayer.objects.get(game=game, player_id=player_id)
+                    player = Player.objects.get(id=player_id)
+                    game_player = GamePlayer.objects.get(game=game, player=player)
                     
                     # Salvar timeline de avaliações
                     timeline = player_data.get('timeline', [])
                     for evaluation in timeline:
-                        # Buscar critério pelo código
-                        criteria_code = evaluation.get('criteria')
-                        try:
-                            criteria = EvaluationCriteria.objects.get(code=criteria_code)
-                            
-                            PlayerEvaluation.objects.create(
-                                game_player=game_player,
-                                criteria=criteria,
-                                game_time=evaluation.get('time', 0) // 1000,  # converter ms para segundos
-                                evaluated_by=request.user,
-                                notes=f"Avaliado em {evaluation.get('gameTime', '')}"
-                            )
-                            total_evaluations += 1
-                        except EvaluationCriteria.DoesNotExist:
-                            print(f"Critério não encontrado: {criteria_code}")
-                            continue
-                            
-                except GamePlayer.DoesNotExist:
-                    print(f"GamePlayer não encontrado: game={game_id}, player={player_id}")
+                        # Criar ou buscar critério
+                        criteria, created = EvaluationCriteria.objects.get_or_create(
+                            code=evaluation['criteria'],
+                            defaults={
+                                'name': evaluation['criteria'].replace('_', ' ').title(),
+                                'criteria_type': evaluation['category'],
+                                'points': evaluation['points'],
+                                'player_type': 'all',
+                                'is_active': True
+                            }
+                        )
+                        
+                        PlayerEvaluation.objects.create(
+                            game_player=game_player,
+                            criteria=criteria,
+                            game_time=evaluation.get('time', 0),
+                            evaluated_by=request.user,
+                            notes=f"Tempo: {evaluation.get('gameTime', '00:00')}"
+                        )
+                        total_evaluations += 1
+                        
+                except (Player.DoesNotExist, GamePlayer.DoesNotExist):
                     continue
             
-            # Salvar tempos dos jogadores
+            # Atualizar tempos dos jogadores
             player_times = data.get('player_times', {})
-            for player_id_str, time_data in player_times.items():
-                player_id = int(player_id_str)
-                total_time_ms = time_data.get('totalTime', 0)
-                
+            for player_id, time_data in player_times.items():
                 try:
-                    game_player = GamePlayer.objects.get(game=game, player_id=player_id)
-                    game_player.total_time = total_time_ms // 1000  # converter ms para segundos
-                    game_player.time_sessions = time_data.get('sessions', [])
+                    player = Player.objects.get(id=player_id)
+                    game_player = GamePlayer.objects.get(game=game, player=player)
+                    game_player.total_time = time_data.get('totalTime', 0) // 1000  # Converter para segundos
                     game_player.save()
-                except GamePlayer.DoesNotExist:
+                except (Player.DoesNotExist, GamePlayer.DoesNotExist):
                     continue
+            
+            # Limpar substituições antigas
+            Substitution.objects.filter(game=game).delete()
             
             # Salvar substituições
-            substitutions_data = data.get('substitutions', [])
+            substitutions = data.get('substitutions', [])
             total_substitutions = 0
             
-            for sub_data in substitutions_data:
-                player_out_name = sub_data.get('playerOut')
-                player_in_name = sub_data.get('playerIn')
-                
-                # Buscar jogadores pelo nome (não é ideal, mas funciona)
+            for sub_data in substitutions:
                 try:
-                    player_out = Player.objects.get(
-                        user__full_name=player_out_name
-                    )
-                except Player.DoesNotExist:
-                    try:
-                        player_out = Player.objects.get(
-                            user__username=player_out_name
+                    # Buscar jogadores pelos nomes (pode ser melhorado)
+                    player_out = Player.objects.filter(
+                        user__full_name__icontains=sub_data['playerOut']
+                    ).first()
+                    player_in = Player.objects.filter(
+                        user__full_name__icontains=sub_data['playerIn']
+                    ).first()
+                    
+                    if player_out and player_in:
+                        Substitution.objects.create(
+                            game=game,
+                            player_out=player_out,
+                            player_in=player_in,
+                            game_time=sub_data.get('time', 0) // 1000,  # Converter para segundos
+                            made_by=request.user
                         )
-                    except Player.DoesNotExist:
-                        continue
-                
-                try:
-                    player_in = Player.objects.get(
-                        user__full_name=player_in_name
-                    )
-                except Player.DoesNotExist:
-                    try:
-                        player_in = Player.objects.get(
-                            user__username=player_in_name
-                        )
-                    except Player.DoesNotExist:
-                        continue
-                
-                Substitution.objects.create(
-                    game=game,
-                    player_out=player_out,
-                    player_in=player_in,
-                    game_time=sub_data.get('time', 0) // 1000,  # converter ms para segundos
-                    made_by=request.user
-                )
-                total_substitutions += 1
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Jogo salvo com sucesso',
-            'total_evaluations': total_evaluations,
-            'total_substitutions': total_substitutions,
-            'game_duration': game.duration_formatted
-        })
-        
+                        total_substitutions += 1
+                        
+                except Exception as e:
+                    continue
+            
+            return JsonResponse({
+                'success': True,
+                'total_evaluations': total_evaluations,
+                'total_substitutions': total_substitutions,
+                'final_score': game.score_display,
+                'message': 'Jogo salvo com sucesso!'
+            })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Dados JSON inválidos'}, status=400)
     except Exception as e:
-        print(f"Erro ao salvar jogo: {str(e)}")
-        return JsonResponse({
-            'error': f'Erro interno: {str(e)}'
-        }, status=500)
+        return JsonResponse({'error': f'Erro interno: {str(e)}'}, status=500)

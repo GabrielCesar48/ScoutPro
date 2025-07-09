@@ -273,6 +273,16 @@ class Game(models.Model):
         help_text='Dados adicionais como configurações específicas'
     )
     
+    team_goals = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Gols do Time'
+    )
+    
+    opponent_goals = models.PositiveIntegerField(
+        default=0,
+        verbose_name='Gols do Adversário'
+    )
+    
     def __str__(self):
         return f"{self.title} - {self.date.strftime('%d/%m/%Y %H:%M')}"
     
@@ -282,6 +292,11 @@ class Game(models.Model):
         minutes = self.duration // 60
         seconds = self.duration % 60
         return f"{minutes:02d}:{seconds:02d}"
+    
+    @property
+    def score_display(self):
+        """Retorna o placar formatado"""
+        return f"{self.team_goals} x {self.opponent_goals}"
     
     class Meta:
         verbose_name = 'Jogo'

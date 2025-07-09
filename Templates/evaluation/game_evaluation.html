@@ -8,57 +8,282 @@
         background-color: #f8f9fa;
     }
     
+    /* HEADER PRINCIPAL REDESENHADO */
     .evaluation-header {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        background: linear-gradient(135deg, #17a2b8, #138496);
         color: white;
-        border-radius: 15px;
-        padding: 1.5rem;
+        border-radius: 20px;
+        padding: 20px;
         margin-bottom: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
     }
     
-    .game-timer {
-        background: linear-gradient(45deg, #17a2b8, #138496);
-        color: white;
-        border-radius: 15px;
-        padding: 15px;
+    .game-title {
         text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(255,255,255,0.2);
+    }
+    
+    .game-title h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+        line-height: 1.2;
+    }
+    
+    .game-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-top: 5px;
+    }
+    
+    /* PLACAR PRINCIPAL REDESENHADO */
+    .main-scoreboard {
+        display: flex;
+        justify-content: center;
         margin-bottom: 20px;
     }
     
-    .timer-display {
-        font-size: 2rem;
-        font-weight: bold;
-        font-family: 'Courier New', monospace;
+    .scoreboard-container {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.2);
+        min-width: 300px;
     }
     
+    .score-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    
+    .team-section, .opponent-section {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .team-label, .opponent-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        opacity: 0.9;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .score-number {
+        font-size: 3rem;
+        font-weight: 900;
+        line-height: 1;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .score-vs {
+        font-size: 1.2rem;
+        font-weight: bold;
+        opacity: 0.8;
+        margin: 0 20px;
+        align-self: center;
+    }
+    
+    .opponent-controls {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    
+    .opponent-controls .btn {
+        background: #ff6b35;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+    }
+    
+    .opponent-controls .btn:hover {
+        background: #e55a2b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255,107,53,0.4);
+    }
+    
+    .opponent-controls .btn:active {
+        transform: translateY(0);
+    }
+    
+    /* CONTROLES CENTRALIZADOS */
+    .game-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .timer-section {
+        text-align: center;
+    }
+    
+    .timer-display {
+        font-size: 2.5rem;
+        font-weight: 900;
+        font-family: 'Courier New', monospace;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 5px;
+    }
+    
+    .timer-status {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        font-weight: 500;
+    }
+    
+    .control-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .control-btn {
+        background: rgba(255,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        min-width: 50px;
+        backdrop-filter: blur(5px);
+    }
+    
+    .control-btn:hover {
+        background: rgba(255,255,255,0.3);
+        border-color: rgba(255,255,255,0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        color: white;
+    }
+    
+    .control-btn:active {
+        transform: translateY(0);
+    }
+    
+    .control-btn.btn-play {
+        background: #28a745;
+        border-color: #28a745;
+    }
+    
+    .control-btn.btn-play:hover {
+        background: #218838;
+        border-color: #218838;
+    }
+    
+    .control-btn.btn-pause {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+    
+    .control-btn.btn-pause:hover {
+        background: #e0a800;
+        border-color: #e0a800;
+        color: #000;
+    }
+    
+    .control-btn.btn-danger {
+        background: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .control-btn.btn-danger:hover {
+        background: #c82333;
+        border-color: #c82333;
+    }
+    
+    /* ANIMAÇÕES */
+    .goal-animation {
+        animation: goalCelebration 1.2s ease-out;
+    }
+    
+    @keyframes goalCelebration {
+        0% { transform: scale(1); }
+        20% { transform: scale(1.2); color: #ffd700; }
+        40% { transform: scale(1.1); }
+        60% { transform: scale(1.15); color: #ff6b35; }
+        80% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .pulse-effect {
+        animation: pulse 0.6s ease-in-out;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
+    
+    /* JOGADORES */
     .player-card {
         transition: all 0.3s ease;
         cursor: pointer;
-        border-radius: 10px;
+        border-radius: 15px;
         margin-bottom: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
     .player-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
     
     .player-card.active {
-        border: 2px solid #28a745;
+        border: 3px solid #28a745;
         background-color: #f8f9fa;
+        transform: translateY(-2px);
     }
     
+    .playing-time {
+        font-size: 0.8rem;
+        color: #28a745;
+        font-weight: bold;
+    }
+    
+    .player-stats {
+        font-size: 0.8rem;
+        background: rgba(0,123,255,0.1);
+        border-radius: 8px;
+        padding: 5px;
+        margin-top: 5px;
+    }
+    
+    /* CRITÉRIOS */
     .criteria-btn {
-        margin: 2px;
+        margin: 3px;
         min-height: 80px;
         font-size: 1.1rem;
         position: relative;
         overflow: hidden;
-        border-radius: 10px;
+        border-radius: 12px;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
-    /* Efeito de clique incrível - IGUAL AO ORIGINAL */
+    .criteria-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+    
     .criteria-btn.clicked {
         transform: scale(0.95);
         box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
@@ -79,18 +304,10 @@
         color: white !important;
     }
     
-    /* Animação de pulso */
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-    
     .criteria-btn.pulse {
         animation: pulse 0.3s ease-in-out;
     }
     
-    /* Efeito de confetti */
     @keyframes confetti {
         0% { transform: translateY(0) rotate(0deg); opacity: 1; }
         100% { transform: translateY(-50px) rotate(360deg); opacity: 0; }
@@ -98,19 +315,20 @@
     
     .confetti {
         position: absolute;
-        width: 10px;
-        height: 10px;
-        background: #ffc107;
-        animation: confetti 0.6s ease-out;
+        width: 8px;
+        height: 8px;
+        background: #ffd700;
+        animation: confetti 0.8s ease-out;
         pointer-events: none;
     }
     
     .category-header {
         background: linear-gradient(45deg, #28a745, #1e7e34);
         color: white;
-        margin: 10px 0;
-        padding: 10px;
-        border-radius: 8px;
+        margin: 15px 0 10px 0;
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
     .category-header.negative {
@@ -122,21 +340,6 @@
         color: #000;
     }
     
-    .playing-time {
-        font-size: 0.8rem;
-        color: #28a745;
-        font-weight: bold;
-    }
-    
-    .player-stats {
-        font-size: 0.8rem;
-        background: rgba(0,123,255,0.1);
-        border-radius: 5px;
-        padding: 5px;
-        margin-top: 5px;
-    }
-    
-    /* Modal de resultados com scroll */
     .results-modal-body {
         max-height: 70vh;
         overflow-y: auto;
@@ -156,25 +359,119 @@
         transition: opacity 0.3s ease;
     }
     
-    .substitution-panel {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
+    /* EFEITOS ESPECIAIS */
+    .confetti-burst {
+        position: fixed;
+        pointer-events: none;
+        z-index: 1000;
     }
     
+    .confetti-piece {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #ffd700;
+        animation: confetti-fall 1.5s ease-out forwards;
+    }
+    
+    @keyframes confetti-fall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(150px) rotate(360deg); opacity: 0; }
+    }
+    
+    /* RESPONSIVIDADE MOBILE */
     @media (max-width: 768px) {
         .evaluation-header {
-            padding: 1rem;
+            padding: 15px;
+            border-radius: 15px;
+        }
+        
+        .game-title h3 {
+            font-size: 1.3rem;
+        }
+        
+        .game-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .scoreboard-container {
+            min-width: 280px;
+            padding: 15px;
+        }
+        
+        .score-number {
+            font-size: 2.5rem;
         }
         
         .timer-display {
-            font-size: 1.5rem;
+            font-size: 2rem;
+        }
+        
+        .control-buttons {
+            gap: 8px;
+        }
+        
+        .control-btn {
+            padding: 10px 12px;
+            font-size: 1rem;
+            min-width: 45px;
+        }
+        
+        .opponent-controls .btn {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+        
+        .criteria-btn {
+            min-height: 70px;
+            font-size: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .evaluation-header {
+            padding: 12px;
+        }
+        
+        .game-title {
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+        }
+        
+        .game-title h3 {
+            font-size: 1.2rem;
+        }
+        
+        .scoreboard-container {
+            min-width: 260px;
+            padding: 12px;
+        }
+        
+        .score-number {
+            font-size: 2.2rem;
+        }
+        
+        .timer-display {
+            font-size: 1.8rem;
+        }
+        
+        .control-buttons {
+            gap: 6px;
+        }
+        
+        .control-btn {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            min-width: 40px;
+        }
+        
+        .score-vs {
+            margin: 0 15px;
         }
         
         .criteria-btn {
             min-height: 60px;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
     }
 </style>
@@ -186,62 +483,77 @@
     <i class="fas fa-save"></i> Dados salvos localmente
 </div>
 
-<!-- Evaluation Header -->
-<div class="evaluation-header fade-in">
-    <div class="row align-items-center">
-        <div class="col-6">
-            <h4 class="mb-1">{{ game.title }}</h4>
-            <small>Avaliação em Tempo Real</small>
-        </div>
-        <div class="col-6 text-end">
-            <div class="btn-group btn-group-sm">
-                <a href="{% url 'core:game_detail' game.pk %}" class="btn btn-light btn-sm">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <button class="btn btn-warning btn-sm" onclick="viewResults()">
-                    <i class="fas fa-chart-bar"></i> Resultados
-                </button>
-                <button class="btn btn-danger btn-sm" onclick="finishAndSaveGame()">
-                    <i class="fas fa-save"></i> Finalizar
-                </button>
+<!-- HEADER REDESENHADO -->
+<div class="evaluation-header">
+    <!-- TÍTULO CENTRALIZADO -->
+    <div class="game-title">
+        <h3>{{ game.title }}</h3>
+        <div class="game-subtitle">Avaliação em Tempo Real</div>
+    </div>
+    
+    <!-- PLACAR PRINCIPAL -->
+    <div class="main-scoreboard">
+        <div class="scoreboard-container">
+            <div class="score-display">
+                <div class="team-section">
+                    <div class="team-label">Nosso Time</div>
+                    <div class="score-number" id="teamScore">{{ game.team_goals }}</div>
+                </div>
+                
+                <div class="score-vs">×</div>
+                
+                <div class="opponent-section">
+                    <div class="opponent-label">{{ game.opponent|default:"Adversário" }}</div>
+                    <div class="score-number" id="opponentScore">{{ game.opponent_goals }}</div>
+                    <div class="opponent-controls">
+                        <button class="btn" onclick="changeOpponentScore('add')" title="Adicionar gol do adversário">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="btn" onclick="changeOpponentScore('remove')" title="Remover gol do adversário">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Timer do Jogo -->
-<div class="game-timer fade-in">
-    <div class="row align-items-center">
-        <div class="col-3">
-            <button id="playPauseBtn" class="btn btn-light btn-lg">
+    
+    <!-- CONTROLES CENTRALIZADOS -->
+    <div class="game-controls">
+        <div class="timer-section">
+            <div class="timer-display" id="gameTimer">00:00</div>
+            <div class="timer-status" id="gameStatus">Parado</div>
+        </div>
+        
+        <div class="control-buttons">
+            <button id="playPauseBtn" class="control-btn btn-play" onclick="toggleGameTimer()" title="Iniciar/Pausar">
                 <i class="fas fa-play"></i>
             </button>
-        </div>
-        <div class="col-6 text-center">
-            <div class="timer-display" id="gameTimer">00:00</div>
-            <div><small id="gameStatus">Parado</small></div>
-        </div>
-        <div class="col-3 text-end">
-            <button id="resetTimer" class="btn btn-secondary btn-sm mb-1" title="Reiniciar Cronômetro">
-                <i class="fas fa-redo"></i>
-            </button><br>
-            <button id="makeSubstitution" class="btn btn-warning btn-sm" title="Substituição">
+            <button class="control-btn" onclick="resetGameTimer()" title="Resetar cronômetro">
+                <i class="fas fa-stop"></i>
+            </button>
+            <button class="control-btn" onclick="openSubstitutionModal()" title="Fazer substituição">
                 <i class="fas fa-exchange-alt"></i>
             </button>
+            <button class="control-btn" onclick="viewResults()" title="Ver resultados">
+                <i class="fas fa-chart-bar"></i>
+            </button>
+            <button class="control-btn btn-danger" onclick="finishAndSaveGame()" title="Finalizar jogo">
+                <i class="fas fa-save"></i>
+            </button>
+            <a href="{% url 'core:game_detail' game.pk %}" class="control-btn" title="Voltar">
+                <i class="fas fa-arrow-left"></i>
+            </a>
         </div>
     </div>
 </div>
 
-<!-- Painel de Substituições -->
-<div class="substitution-panel fade-in">
-    <div class="row align-items-center">
-        <div class="col-8">
-            <h6><i class="fas fa-exchange-alt"></i> Substituições</h6>
-        </div>
-        <div class="col-4 text-end">
-            <button id="makeSubstitutionBtn" class="btn btn-warning btn-sm">
-                <i class="fas fa-people-arrows"></i> Substituir
-            </button>
+<!-- INSTRUÇÕES -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="alert alert-info text-center" role="alert">
+            <i class="fas fa-info-circle"></i>
+            <strong>Instruções:</strong> Clique em um jogador para avaliá-lo. Use o cronômetro para controlar o tempo de jogo.
         </div>
     </div>
 </div>
@@ -253,7 +565,7 @@
         <div class="row" id="playingPlayersRow">
             {% for player in playing_players %}
             <div class="col-6 col-md-4 mb-2">
-                <button class="btn btn-outline-primary w-100 player-select-btn" 
+                <button class="btn btn-outline-primary w-100 player-select-btn player-card" 
                         data-player-id="{{ player.player.id }}"
                         data-player-name="{{ player.player.user.full_name|default:player.player.user.username }}"
                         data-player-type="{{ player.player.position }}">
@@ -272,7 +584,7 @@
     </div>
 </div>
 
-<!-- Critérios de Avaliação - LAYOUT ORIGINAL -->
+<!-- Critérios de Avaliação -->
 <div id="criteriaSection" style="display: none;" class="fade-in">
     <div class="row">
         <div class="col-12">
@@ -414,7 +726,7 @@
     </div>
 </div>
 
-<!-- Modal de Substituição - SEM RECARREGAR PÁGINA -->
+<!-- Modal de Substituição -->
 <div class="modal fade" id="substitutionModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -450,7 +762,7 @@
     </div>
 </div>
 
-<!-- Modal de Resultados com SCROLL CORRIGIDO -->
+<!-- Modal de Resultados -->
 <div class="modal fade" id="resultsModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -479,10 +791,9 @@
 
 {% block extra_js %}
 <script>
-// SISTEMA HÍBRIDO: JavaScript Local + Persistência Django
-// Baseado no sistema original que funcionava perfeitamente
+// ============= SISTEMA DE AVALIAÇÃO COM DESIGN MELHORADO =============
 
-// Estado da aplicação - IGUAL AO ORIGINAL
+// Estado da aplicação
 let selectedPlayers = [];
 let playingPlayers = [];
 let benchPlayers = [];
@@ -503,12 +814,13 @@ let selectedPlayerIn = null;
 const GAME_ID = {{ game.id }};
 const GAME_TITLE = "{{ game.title }}";
 
-// Inicialização
+// ============= INICIALIZAÇÃO =============
 document.addEventListener('DOMContentLoaded', function() {
     loadGameData();
     setupEventListeners();
     renderPlayingPlayers();
     updateTimerDisplay();
+    loadSavedData();
     
     // Auto-save local a cada 10 segundos
     setInterval(function() {
@@ -526,12 +838,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    console.log('🚀 Sistema carregado! Usando armazenamento local durante o jogo.');
+    console.log('🚀 Sistema carregado com design melhorado!');
 });
 
-// Carregar dados do Django para JavaScript
+// ============= CARREGAR DADOS DO DJANGO =============
 function loadGameData() {
-    // Carregar jogadores do Django
     playingPlayers = [
         {% for player in playing_players %}
         {
@@ -554,23 +865,7 @@ function loadGameData() {
         {% endfor %}
     ];
     
-    // Tentar carregar dados salvos localmente
-    const savedData = localStorage.getItem(`game_${GAME_ID}_data`);
-    if (savedData) {
-        try {
-            const data = JSON.parse(savedData);
-            evaluationData = data.evaluationData || {};
-            playerTimes = data.playerTimes || {};
-            substitutionData = data.substitutionData || [];
-            gameTimer.elapsed = data.gameTimer?.elapsed || 0;
-            
-            console.log('📁 Dados locais carregados:', data);
-        } catch (e) {
-            console.error('Erro ao carregar dados locais:', e);
-        }
-    }
-    
-    // Inicializar dados de avaliação se não existirem
+    // Inicializar dados
     [...playingPlayers, ...benchPlayers].forEach(player => {
         if (!evaluationData[player.id]) {
             evaluationData[player.id] = {
@@ -588,7 +883,7 @@ function loadGameData() {
         }
     });
     
-    // Inicializar sessões de tempo para jogadores em campo
+    // Inicializar sessões de tempo
     playingPlayers.forEach(player => {
         const hasActiveSessions = playerTimes[player.id].sessions.some(s => !s.end);
         if (!hasActiveSessions) {
@@ -600,39 +895,28 @@ function loadGameData() {
     });
 }
 
-// Event Listeners - BASEADO NO SISTEMA ORIGINAL
+// ============= EVENT LISTENERS =============
 function setupEventListeners() {
-    // Controles do timer
-    document.getElementById('playPauseBtn').addEventListener('click', toggleGameTimer);
-    document.getElementById('resetTimer').addEventListener('click', function() {
-        if (confirm('Reiniciar cronômetro? (Os dados dos jogadores não serão perdidos)')) {
-            resetGameTimer();
-        }
-    });
-    
-    // Seleção de jogador para avaliar
+    // Seleção de jogador
     document.getElementById('playingPlayersRow').addEventListener('click', function(e) {
         const btn = e.target.closest('.player-select-btn');
         if (!btn) return;
 
         const playerId = parseInt(btn.dataset.playerId);
-        const playerName = btn.dataset.playerName;
-        const playerType = btn.dataset.playerType;
-        
         currentPlayer = playingPlayers.find(p => p.id === playerId);
         
         // Atualizar interface
         document.querySelectorAll('.player-select-btn').forEach(b => {
-            b.classList.remove('btn-primary');
+            b.classList.remove('btn-primary', 'active');
             b.classList.add('btn-outline-primary');
         });
-        btn.classList.add('btn-primary');
+        btn.classList.add('btn-primary', 'active');
         btn.classList.remove('btn-outline-primary');
         
         showCriteriaForPlayer(currentPlayer);
     });
     
-    // Clique nos critérios - EFEITOS ORIGINAIS
+    // Clique nos critérios
     document.addEventListener('click', function(e) {
         if (e.target.closest('.criteria-btn')) {
             const btn = e.target.closest('.criteria-btn');
@@ -642,14 +926,8 @@ function setupEventListeners() {
             
             if (currentPlayer && gameTimer.isRunning) {
                 addEvaluation(currentPlayer.id, criteria, category, points);
-                
-                // Efeito visual INCRÍVEL - IGUAL AO ORIGINAL
                 showClickEffect(btn, points);
-                
-                // Atualizar stats em tempo real
                 renderPlayingPlayers();
-                
-                // Salvar localmente
                 saveDataLocally();
             } else if (!gameTimer.isRunning) {
                 alert('⏰ Aperte PLAY no cronômetro para começar a avaliar!');
@@ -658,11 +936,10 @@ function setupEventListeners() {
     });
     
     // Substituições
-    document.getElementById('makeSubstitutionBtn').addEventListener('click', openSubstitutionModal);
     document.getElementById('confirmSubstitution').addEventListener('click', confirmSubstitution);
 }
 
-// Timer functions - IGUAL AO ORIGINAL
+// ============= CONTROLE DO TIMER =============
 function toggleGameTimer() {
     const btn = document.getElementById('playPauseBtn');
     const statusEl = document.getElementById('gameStatus');
@@ -670,10 +947,14 @@ function toggleGameTimer() {
     if (gameTimer.isRunning) {
         pauseGameTimer();
         btn.innerHTML = '<i class="fas fa-play"></i>';
+        btn.classList.remove('btn-pause');
+        btn.classList.add('btn-play');
         statusEl.textContent = 'Pausado';
     } else {
         startGameTimer();
         btn.innerHTML = '<i class="fas fa-pause"></i>';
+        btn.classList.remove('btn-play');
+        btn.classList.add('btn-pause');
         statusEl.textContent = 'Em andamento';
     }
 }
@@ -695,14 +976,17 @@ function pauseGameTimer() {
 }
 
 function resetGameTimer() {
-    pauseGameTimer();
-    gameTimer.elapsed = 0;
-    gameTimer.startTime = null;
-    updateTimerDisplay();
-    document.getElementById('gameStatus').textContent = 'Parado';
-    document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
-    
-    saveDataLocally();
+    if (confirm('Reiniciar cronômetro? (Os dados dos jogadores não serão perdidos)')) {
+        pauseGameTimer();
+        gameTimer.elapsed = 0;
+        gameTimer.startTime = null;
+        updateTimerDisplay();
+        document.getElementById('gameStatus').textContent = 'Parado';
+        document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
+        document.getElementById('playPauseBtn').classList.remove('btn-pause');
+        document.getElementById('playPauseBtn').classList.add('btn-play');
+        saveDataLocally();
+    }
 }
 
 function updateTimerDisplay() {
@@ -718,7 +1002,98 @@ function updateTimerDisplay() {
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Renderizar jogadores - COM STATS ATUALIZADAS
+// ============= CONTROLE DO PLACAR =============
+function changeOpponentScore(action) {
+    const data = {
+        game_id: GAME_ID,
+        action: action
+    };
+    
+    fetch('/api/opponent-goal/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateScoreDisplay(data.team_goals, data.opponent_goals);
+            
+            // Animação especial para gol
+            const opponentScore = document.getElementById('opponentScore');
+            animateGoal(opponentScore, false);
+            
+            saveDataLocally();
+        } else {
+            alert('Erro: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro de conexão');
+    });
+}
+
+function updateScoreDisplay(teamGoals, opponentGoals) {
+    document.getElementById('teamScore').textContent = teamGoals;
+    document.getElementById('opponentScore').textContent = opponentGoals;
+}
+
+function animateGoal(element, isTeamGoal = true) {
+    element.classList.add('goal-animation');
+    
+    // Adicionar efeito pulse ao container
+    const container = element.closest('.scoreboard-container');
+    container.classList.add('pulse-effect');
+    
+    // Criar confetti
+    createConfettiEffect(element);
+    
+    // Vibração se suportada
+    if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200, 100, 200]);
+    }
+    
+    // Remover classes após animação
+    setTimeout(() => {
+        element.classList.remove('goal-animation');
+        container.classList.remove('pulse-effect');
+    }, 1200);
+}
+
+function createConfettiEffect(element) {
+    const rect = element.getBoundingClientRect();
+    const colors = ['#ffd700', '#ff6b35', '#28a745', '#007bff', '#e74c3c'];
+    
+    const confettiContainer = document.createElement('div');
+    confettiContainer.className = 'confetti-burst';
+    confettiContainer.style.left = (rect.left + rect.width/2) + 'px';
+    confettiContainer.style.top = rect.top + 'px';
+    document.body.appendChild(confettiContainer);
+    
+    for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = (Math.random() * 40 - 20) + 'px';
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.animationDelay = Math.random() * 0.3 + 's';
+            
+            confettiContainer.appendChild(piece);
+        }, i * 30);
+    }
+    
+    setTimeout(() => {
+        if (document.body.contains(confettiContainer)) {
+            document.body.removeChild(confettiContainer);
+        }
+    }, 1500);
+}
+
+// ============= RENDERIZAÇÃO =============
 function renderPlayingPlayers() {
     const row = document.getElementById('playingPlayersRow');
     row.innerHTML = '';
@@ -730,7 +1105,7 @@ function renderPlayingPlayers() {
         const col = document.createElement('div');
         col.className = 'col-6 col-md-4 mb-2';
         col.innerHTML = `
-            <button class="btn btn-outline-primary w-100 player-select-btn" 
+            <button class="btn btn-outline-primary w-100 player-select-btn player-card" 
                     data-player-id="${player.id}"
                     data-player-name="${player.name}"
                     data-player-type="${player.type}">
@@ -748,13 +1123,11 @@ function renderPlayingPlayers() {
     });
 }
 
-// Mostrar critérios - IGUAL AO ORIGINAL
 function showCriteriaForPlayer(player) {
     document.getElementById('selectedPlayerName').textContent = player.name;
     document.getElementById('playerPosition').textContent = player.position;
     document.getElementById('criteriaSection').style.display = 'block';
     
-    // Mostrar critérios específicos baseado no tipo do jogador
     if (player.type === 'goalkeeper') {
         document.getElementById('fieldPlayerCriteria').style.display = 'none';
         document.getElementById('goalkeeperCriteria').style.display = 'block';
@@ -762,9 +1135,12 @@ function showCriteriaForPlayer(player) {
         document.getElementById('fieldPlayerCriteria').style.display = 'block';
         document.getElementById('goalkeeperCriteria').style.display = 'none';
     }
+    
+    // Scroll suave para os critérios
+    document.getElementById('criteriaSection').scrollIntoView({ behavior: 'smooth' });
 }
 
-// Adicionar avaliação - SALVAMENTO LOCAL
+// ============= AVALIAÇÃO =============
 function addEvaluation(playerId, criteria, category, points) {
     if (!evaluationData[playerId]) {
         evaluationData[playerId] = {
@@ -781,7 +1157,6 @@ function addEvaluation(playerId, criteria, category, points) {
 
     evaluationData[playerId][category][criteria] += points;
     
-    // Registrar na timeline
     evaluationData[playerId].timeline.push({
         time: gameTimer.elapsed,
         criteria: criteria,
@@ -791,10 +1166,42 @@ function addEvaluation(playerId, criteria, category, points) {
         gameTime: document.getElementById('gameTimer').textContent
     });
 
+    // SE FOR GOL, ATUALIZAR PLACAR
+    if (criteria === 'gol') {
+        updateTeamGoals();
+    }
+
     console.log(`✅ Avaliação adicionada: ${criteria} (${points}) para jogador ${playerId}`);
 }
 
-// Calcular estatísticas - IGUAL AO ORIGINAL
+function updateTeamGoals() {
+    const currentTeamGoals = parseInt(document.getElementById('teamScore').textContent);
+    const newTeamGoals = currentTeamGoals + 1;
+    
+    document.getElementById('teamScore').textContent = newTeamGoals;
+    
+    // Animação especial para gol do time
+    const teamScore = document.getElementById('teamScore');
+    animateGoal(teamScore, true);
+    
+    // Salvar no banco
+    fetch('/api/opponent-goal/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            game_id: GAME_ID,
+            action: 'add',
+            team_goal: true
+        })
+    })
+    .catch(error => {
+        console.error('Erro ao salvar gol no banco:', error);
+    });
+}
+
 function getPlayerStats(playerId) {
     const playerData = evaluationData[playerId] || {positivo: {}, especial: {}, negativo: {}};
     
@@ -805,13 +1212,11 @@ function getPlayerStats(playerId) {
     };
 }
 
-// Calcular tempo de jogo - IGUAL AO ORIGINAL
 function calculatePlayerTime(playerId) {
     if (!playerTimes[playerId]) return '00:00';
     
     let totalMs = playerTimes[playerId].totalTime;
     
-    // Adicionar sessão atual se estiver jogando
     if (playingPlayers.some(p => p.id === playerId)) {
         const currentSession = playerTimes[playerId].sessions.find(s => !s.end);
         if (currentSession && gameTimer.isRunning) {
@@ -824,7 +1229,7 @@ function calculatePlayerTime(playerId) {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Efeitos visuais - IGUAL AO ORIGINAL
+// ============= EFEITOS VISUAIS =============
 function showClickEffect(btn, points) {
     const originalClasses = btn.className;
     
@@ -850,7 +1255,7 @@ function showClickEffect(btn, points) {
 
 function createConfetti(btn) {
     const rect = btn.getBoundingClientRect();
-    const colors = ['#ffc107', '#28a745', '#dc3545', '#007bff', '#fd7e14'];
+    const colors = ['#ffd700', '#28a745', '#dc3545', '#007bff', '#fd7e14'];
     
     for (let i = 0; i < 8; i++) {
         setTimeout(() => {
@@ -868,16 +1273,15 @@ function createConfetti(btn) {
                 if (document.body.contains(confetti)) {
                     document.body.removeChild(confetti);
                 }
-            }, 600);
+            }, 800);
         }, i * 50);
     }
 }
 
-// Substituições - SEM RECARREGAR PÁGINA
+// ============= SUBSTITUIÇÕES =============
 function openSubstitutionModal() {
     const modal = new bootstrap.Modal(document.getElementById('substitutionModal'));
     
-    // Preencher jogadores em campo
     const playersOutDiv = document.getElementById('playersToSubOut');
     playersOutDiv.innerHTML = '';
     playingPlayers.forEach(player => {
@@ -893,7 +1297,6 @@ function openSubstitutionModal() {
         playersOutDiv.appendChild(div);
     });
 
-    // Preencher jogadores no banco
     const playersInDiv = document.getElementById('playersToSubIn');
     playersInDiv.innerHTML = '';
     benchPlayers.forEach(player => {
@@ -909,7 +1312,6 @@ function openSubstitutionModal() {
         playersInDiv.appendChild(div);
     });
 
-    // Event listeners para os radios
     document.querySelectorAll('.player-out-radio').forEach(radio => {
         radio.addEventListener('change', function() {
             selectedPlayerOut = parseInt(this.value);
@@ -934,7 +1336,6 @@ function checkSubstitutionReady() {
 
 function confirmSubstitution() {
     if (selectedPlayerOut && selectedPlayerIn) {
-        // Finalizar tempo do jogador que sai
         const currentTime = Date.now();
         if (playerTimes[selectedPlayerOut]) {
             const currentSession = playerTimes[selectedPlayerOut].sessions.find(s => !s.end);
@@ -944,7 +1345,6 @@ function confirmSubstitution() {
             }
         }
 
-        // Iniciar tempo do jogador que entra
         if (!playerTimes[selectedPlayerIn]) {
             playerTimes[selectedPlayerIn] = {
                 totalTime: 0,
@@ -956,7 +1356,6 @@ function confirmSubstitution() {
             end: null
         });
 
-        // Fazer a substituição nos arrays
         const playerOut = playingPlayers.find(p => p.id === selectedPlayerOut);
         const playerIn = benchPlayers.find(p => p.id === selectedPlayerIn);
 
@@ -966,7 +1365,6 @@ function confirmSubstitution() {
         playingPlayers.push(playerIn);
         benchPlayers.push(playerOut);
 
-        // Registrar substituição
         substitutionData.push({
             time: gameTimer.elapsed,
             playerOut: playerOut.name,
@@ -974,56 +1372,22 @@ function confirmSubstitution() {
             timestamp: new Date().toISOString()
         });
 
-        // Atualizar interface SEM RECARREGAR
         renderPlayingPlayers();
-        
-        // Fechar modal
         bootstrap.Modal.getInstance(document.getElementById('substitutionModal')).hide();
         
-        // Reset seleções
         selectedPlayerOut = null;
         selectedPlayerIn = null;
-
-        // Salvar dados
         saveDataLocally();
         
         console.log(`🔄 Substituição: ${playerOut.name} ⇄ ${playerIn.name}`);
     }
 }
 
-// Salvar dados localmente - INDICADOR VISUAL
-function saveDataLocally() {
-    const dataToSave = {
-        gameId: GAME_ID,
-        gameTitle: GAME_TITLE,
-        evaluationData,
-        playerTimes,
-        substitutionData,
-        gameTimer: {
-            elapsed: gameTimer.elapsed,
-            isRunning: gameTimer.isRunning
-        },
-        playingPlayers,
-        benchPlayers,
-        lastSave: new Date().toISOString()
-    };
-    
-    localStorage.setItem(`game_${GAME_ID}_data`, JSON.stringify(dataToSave));
-    
-    // Mostrar indicador de salvamento
-    const indicator = document.getElementById('saveIndicator');
-    indicator.style.opacity = '1';
-    setTimeout(() => {
-        indicator.style.opacity = '0';
-    }, 2000);
-}
-
-// Ver resultados - COM SCROLL CORRIGIDO
+// ============= RESULTADOS =============
 function viewResults() {
     const modal = new bootstrap.Modal(document.getElementById('resultsModal'));
     const content = document.getElementById('resultsContent');
     
-    // Calcular ranking
     const playersWithScores = [...playingPlayers, ...benchPlayers].map(player => {
         const stats = getPlayerStats(player.id);
         const playTime = calculatePlayerTime(player.id);
@@ -1043,7 +1407,6 @@ function viewResults() {
         };
     }).sort((a, b) => b.scores.total - a.scores.total);
 
-    // Renderizar ranking
     content.innerHTML = playersWithScores.map((player, index) => {
         let rankBadge = '';
         if (index === 0) rankBadge = '<span class="badge bg-warning fs-6">🥇 1º</span>';
@@ -1098,7 +1461,6 @@ function viewResults() {
         `;
     }).join('');
 
-    // Mostrar substituições se houver
     if (substitutionData.length > 0) {
         content.innerHTML += `
             <div class="card mt-4">
@@ -1120,24 +1482,80 @@ function viewResults() {
     modal.show();
 }
 
-// Finalizar e salvar no Django
+// ============= SALVAMENTO =============
+function saveDataLocally() {
+    const dataToSave = {
+        gameId: GAME_ID,
+        gameTitle: GAME_TITLE,
+        evaluationData,
+        playerTimes,
+        substitutionData,
+        gameTimer: {
+            elapsed: gameTimer.elapsed,
+            isRunning: gameTimer.isRunning
+        },
+        playingPlayers,
+        benchPlayers,
+        teamGoals: parseInt(document.getElementById('teamScore').textContent || '0'),
+        opponentGoals: parseInt(document.getElementById('opponentScore').textContent || '0'),
+        lastSave: new Date().toISOString()
+    };
+    
+    localStorage.setItem(`game_${GAME_ID}_data`, JSON.stringify(dataToSave));
+    
+    const indicator = document.getElementById('saveIndicator');
+    indicator.style.opacity = '1';
+    setTimeout(() => {
+        indicator.style.opacity = '0';
+    }, 2000);
+}
+
+function loadSavedData() {
+    const savedData = localStorage.getItem(`game_${GAME_ID}_data`);
+    if (savedData) {
+        try {
+            const data = JSON.parse(savedData);
+            
+            if (data.evaluationData) {
+                evaluationData = data.evaluationData;
+            }
+            if (data.playerTimes) {
+                playerTimes = data.playerTimes;
+            }
+            if (data.substitutionData) {
+                substitutionData = data.substitutionData;
+            }
+            if (data.gameTimer) {
+                gameTimer.elapsed = data.gameTimer.elapsed;
+                gameTimer.isRunning = data.gameTimer.isRunning;
+            }
+            if (data.teamGoals !== undefined && data.opponentGoals !== undefined) {
+                updateScoreDisplay(data.teamGoals, data.opponentGoals);
+            }
+            
+            renderPlayingPlayers();
+            console.log('📁 Dados locais carregados');
+        } catch (error) {
+            console.error('Erro ao carregar dados salvos:', error);
+        }
+    }
+}
+
+// ============= FINALIZAÇÃO =============
 function finishAndSaveGame() {
     if (!confirm('🏁 Finalizar e salvar o jogo no banco de dados?\n\nTodas as avaliações serão permanentemente registradas.')) {
         return;
     }
     
-    // Pausar timer
     if (gameTimer.isRunning) {
         pauseGameTimer();
     }
     
-    // Mostrar loading
     const btn = document.querySelector('[onclick="finishAndSaveGame()"]');
     const originalHTML = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
     btn.disabled = true;
     
-    // Preparar dados para envio
     const gameData = {
         game_id: GAME_ID,
         duration: Math.floor(gameTimer.elapsed / 1000),
@@ -1146,10 +1564,11 @@ function finishAndSaveGame() {
         player_times: playerTimes,
         substitutions: substitutionData,
         playing_players: playingPlayers.map(p => p.id),
-        bench_players: benchPlayers.map(p => p.id)
+        bench_players: benchPlayers.map(p => p.id),
+        team_goals: parseInt(document.getElementById('teamScore').textContent || '0'),
+        opponent_goals: parseInt(document.getElementById('opponentScore').textContent || '0')
     };
     
-    // Enviar para Django
     fetch('{% url 'core:api_save_complete_game' %}', {
         method: 'POST',
         headers: {
@@ -1161,14 +1580,13 @@ function finishAndSaveGame() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Limpar dados locais
             localStorage.removeItem(`game_${GAME_ID}_data`);
             
             alert('✅ Jogo salvo com sucesso!\n\n' + 
                   `Total de avaliações: ${data.total_evaluations}\n` +
-                  `Substituições: ${data.total_substitutions}`);
+                  `Substituições: ${data.total_substitutions}\n` +
+                  `Placar final: ${gameData.team_goals} x ${gameData.opponent_goals}`);
             
-            // Redirecionar para detalhes do jogo
             window.location.href = `{% url 'core:game_detail' game.id %}`;
         } else {
             throw new Error(data.error || 'Erro desconhecido');
@@ -1183,13 +1601,13 @@ function finishAndSaveGame() {
     });
 }
 
-// Exportar dados locais
 function exportGameData() {
     const dataToExport = {
         resumo_jogo: {
             titulo: GAME_TITLE,
             data: new Date().toLocaleString('pt-BR'),
             tempo_total: document.getElementById('gameTimer').textContent,
+            placar: `${document.getElementById('teamScore').textContent} x ${document.getElementById('opponentScore').textContent}`,
             total_avaliacoes: Object.values(evaluationData).reduce((total, player) => {
                 return total + (player.timeline ? player.timeline.length : 0);
             }, 0)
@@ -1210,7 +1628,7 @@ function exportGameData() {
     URL.revokeObjectURL(url);
 }
 
-// Utility function
+// ============= UTILITÁRIOS =============
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -1226,16 +1644,6 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// Debug function
-window.debugGame = function() {
-    console.log('🔍 Estado atual do jogo:');
-    console.log('Timer:', gameTimer);
-    console.log('Jogador atual:', currentPlayer);
-    console.log('Avaliações:', evaluationData);
-    console.log('Tempos:', playerTimes);
-    console.log('Substituições:', substitutionData);
-};
-
-console.log('✅ Sistema de avaliação carregado! Use debugGame() para debug.');
+console.log('✅ Sistema de avaliação com design melhorado carregado!');
 </script>
 {% endblock %}
